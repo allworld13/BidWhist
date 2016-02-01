@@ -22,13 +22,13 @@ import java.util.stream.Collectors;
 
 public class BiddingScreenActor extends _BidActor implements InputProcessor {
 
-    BidPlayer biddingPlayer = null;
+    BidPlayer bidWinner, biddingPlayer = null;
     Group grpKitty, grpSouthPlayer, grpBidding;
     TextButton btnNumber;
     private GamePlay.BidRule_Direction bidDirection = null;
     private int biddingBooks = 0;
     boolean finishedBidding = false;
-
+    Table tblMaster;
     //region ctor
     BiddingScreenActor() {
         super();
@@ -66,23 +66,31 @@ public class BiddingScreenActor extends _BidActor implements InputProcessor {
             }
         }
         if (finishedBidding) {
-            bidWhistGame.DetermineBidWinner();
+            bidWinner = bidWhistGame.DetermineBidWinner();
+            biddingPlayer = bidWinner;
         }
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        super.draw(batch, parentAlpha);
 
         batch.draw(Assets.text_background, 0,0, stage.getWidth(), stage.getHeight());
 
-        if (bidWhistGame.gamePlay.ShowKitty || bidWhistGame.gamePlay.SportKitty) {
+        if (bidWinner != null) {
             grpKitty.draw(batch, 1F);
-            //bidWhistGame.gamePlay.ShowKitty = false;
         }
 
-        LoadBidNumberButtons();
+        if (!finishedBidding) {
+            if (bidWinner == null) {
+                LoadBidNumberButtons();
+            }
+        } else {
+            stage.getActors().removeValue(tblMaster, true);
+            tblMaster.setVisible(false);
+        }
+
         ShowPlayersName(batch);
         ShowPlayersHand(batch, biddingPlayer , 65 );
     }
@@ -111,7 +119,8 @@ public class BiddingScreenActor extends _BidActor implements InputProcessor {
     }
 
     private void LoadBidNumberButtons() {
-        Table tblNumbers, tblDirection, tblOutter, tblMaster ;
+        if (finishedBidding) return;
+        Table tblNumbers, tblDirection, tblOutter;
 
         tblOutter = new Table();
 
@@ -127,16 +136,17 @@ public class BiddingScreenActor extends _BidActor implements InputProcessor {
         for (int i = 3; i < 8 ; i++) {
             btnNumber = new TextButton(Integer.toString(i), Assets.Skins);
             btnNumber.setName(Integer.toString(i));
+            btnNumber.setUserObject(Integer.toString(i));
             btnNumber.setSize(Gdx.graphics.getWidth() / 4, Gdx.graphics.getWidth() / 10);
             btnNumber.setBounds(0, 0, btnNumber.getWidth(), btnNumber.getHeight());
             btnNumber.align(Align.center|Align.center);
             btnNumber.pad(0f,30f,0f,30f);
-            //btnNumber.addListener(new BidAmountClickListener()
             btnNumber.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     super.clicked(event, x, y);
                     Gdx.app.log("BiddingScreenActor", " - " + event.getListenerActor().getName());
+                    biddingBooks = Integer.parseInt(event.getListenerActor().getUserObject().toString());
                 }
             });
             tblNumbers.add(btnNumber);
@@ -160,41 +170,24 @@ public class BiddingScreenActor extends _BidActor implements InputProcessor {
         tblDirection.pad(0f, 20f, 0f, 20f);
 
         btnNumber = new TextButton("Up", Assets.Skins);
-        btnNumber.setName("UpTown");
+        btnNumber.setName("Uptown");
         btnNumber.pad(0f, 10f, 0f, 10f);
         tblDirection.add(btnNumber);
-
         btnNumber.addListener(new BidDirectionClicked());
 
         tblOutter.add(tblDirection);
 
         btnNumber = new TextButton("Dn", Assets.Skins);
-        btnNumber.setName("DownTown");
+        btnNumber.setName("Downtown");
         btnNumber.pad(0f, 10f, 0f, 10f);
-
-        //btnNumber.addListener(new BidDirectionEvent()
-        btnNumber.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                super.clicked(event, x, y);
-                Gdx.app.log("BiddingScreenActor -> Direction", " - " + event.getListenerActor().getName());
-            }
-        });
+        btnNumber.addListener(new BidDirectionClicked());
 
         tblDirection.add(btnNumber);
 
         btnNumber = new TextButton(" X ", Assets.Skins);
         btnNumber.setName("NoTrump");
         btnNumber.pad(0f, 10f, 0f, 10f);
-
-        //btnNumber.addListener(new BidDirectionEvent()
-        btnNumber.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                super.clicked(event, x, y);
-                Gdx.app.log("BiddingScreenActor -> Direction:", " - " + event.getListenerActor().getName());
-            }
-        });
+        btnNumber.addListener(new BidDirectionClicked());
 
         tblDirection.add(btnNumber);
 
@@ -287,6 +280,19 @@ public class BiddingScreenActor extends _BidActor implements InputProcessor {
     }
     //endregion
 
+
+    private class BidDirectionClicked extends ClickListener {
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+            super.clicked(event, x, y);
+            Gdx.app.log("BiddingScreenActor -> Direction", " - " + event.getListenerActor().getName());
+            String btnName = event.getListenerActor().getName();
+
+            bidDirection = GamePlay.BidRule_Direction.valueOf(btnName);
+        }
+    }
+
+
     private class PassOrBidPlayClickListener extends ClickListener {
         @Override
         public void clicked(InputEvent event, float x, float y) {
@@ -313,14 +319,4 @@ public class BiddingScreenActor extends _BidActor implements InputProcessor {
         }
     }
 
-    private class BidDirectionClicked  extends ClickListener {
-        @Override
-        public void clicked(InputEvent event, float x, float y) {
-            super.clicked(event, x, y);
-            Gdx.app.log("BiddingScreenActor -> Direction", " - " + event.getListenerActor().getName());
-            String btnName =  event.getListenerActor().getName();
-
-            bidDirection = GamePlay.BidRule_Direction.valueOf(btnName);
-        }
-    }
 }

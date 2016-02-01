@@ -92,7 +92,8 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     //endregion
     //region init
     public void Init() {
-        ShowKitty = true;
+        ShowKitty = false;
+        SportKitty = false;
         InitializeDeck();
         InitializeKitty();
         InitializePlayers();
@@ -154,7 +155,8 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     //region all players bidding
 
     public void GetPlayersBids() {
-        bidWinner = collectPlayersBids();
+        collectPlayersBids();
+        bidWinner = DetermineBidWinner();
         if (bidWinner.getBidDirection() != BidRule_Direction.NoTrump) {
             GamePlay.SetTrumpSuit(bidWinner);
             if (gameEvents != null)
@@ -171,7 +173,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         setGamePlayerPlayOrder(bidWinner);
     }
 
-    BidPlayer collectPlayersBids() {
+    void collectPlayersBids() {
         BidPlayer bp;
         System.out.println(
                 String.format("\nStart Bidding between %1d and %2d, or press %3d to pass your bid.",
@@ -183,6 +185,10 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         for (int i = 0; i < MAX_NO_PLAYERS; i++) {
             gamePlayers.get(i).bidHand();
         }
+    }
+
+    public BidPlayer DetermineBidWinner() {
+        BidPlayer bp;
         bp = DeclareBidWinner();
         while (!bp.isAwardedTheBid()) {
             gamePlayers.get(MAX_NO_PLAYERS - 1).bidHand();

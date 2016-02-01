@@ -129,14 +129,14 @@ public class BidWhistGame extends Game implements InputProcessor {
 		promptShown = true;
 	}
 
-	public void DetermineBidWinner() {
+	public BidPlayer DetermineBidWinner() {
+		BidPlayer bidWinner;
 		if (!promptShown)
 			Gdx.app.log("Bidding", "Determining Bid Winner");
 
-
-
-
 		promptShown = true;
+		bidWinner = gamePlay.DetermineBidWinner();
+		return bidWinner;
 	}
 
 	public boolean PlayerHasBidded(BidPlayer biddingPlayer) throws InterruptedException {
