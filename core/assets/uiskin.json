@@ -1,0 +1,11 @@
+{
+    com.badlogic.gdx.graphics.g2d.BitmapFont : { name-font: { file: fonts/DancingScript.fnt } },
+    com.badlogic.gdx.graphics.g2d.BitmapFont : { default-font: { file: fonts/Gabriola.fnt } },
+    com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle : {
+        default: { down: default-round-down, up: default-round, font: default-font }
+    },
+    com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
+        default: { font: name-font }
+    }
+}
+
