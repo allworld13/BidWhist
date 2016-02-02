@@ -13,6 +13,7 @@ public class BiddingStage extends _BidWhistStage {
     public BiddingStage(BidWhistGame bidWhistGame, ScreenViewport sViewport) {
         super(bidWhistGame, sViewport);
         GamePlay.GAME_BOOKS = 0;
+
         currentScreen = new BiddingScreenActor(bidWhistGame, this);
         Assets.LoadBidScreen();
 

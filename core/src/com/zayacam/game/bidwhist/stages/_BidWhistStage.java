@@ -66,10 +66,8 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                         toStage = "MainMenuStage";
                         break;
                     case "TrumpSelectStage":
-                        toStage = "BiddingStage";
-                        break;
                     case "GamePlayStage":
-                        toStage = "TrumpSelectStage";
+                        toStage = "BiddingStage";
                         break;
                 }
                 break;

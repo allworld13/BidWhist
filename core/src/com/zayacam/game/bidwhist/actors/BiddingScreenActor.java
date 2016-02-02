@@ -317,7 +317,6 @@ public class BiddingScreenActor extends _BidActor implements InputProcessor {
         }
     }
 
-
     private class PassOrBidPlayClickListener extends ClickListener {
         @Override
         public void clicked(InputEvent event, float x, float y) {
