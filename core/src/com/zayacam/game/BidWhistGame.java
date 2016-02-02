@@ -9,10 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.zayacam.game.bidwhist.game.BidPlayer;
 import com.zayacam.game.bidwhist.game.GamePlay;
-import com.zayacam.game.bidwhist.stages.BiddingStage;
-import com.zayacam.game.bidwhist.stages.GamePlayStage;
-import com.zayacam.game.bidwhist.stages.MainMenuStage;
-import com.zayacam.game.bidwhist.stages._BidWhistStage;
+import com.zayacam.game.bidwhist.stages.*;
 
 public class BidWhistGame extends Game implements InputProcessor {
 
@@ -54,6 +51,9 @@ public class BidWhistGame extends Game implements InputProcessor {
 			case "BiddingStage":
 				LoadBiddingMenu();
 				break;
+			case "DetermineTrumpStage":
+				LoadDetermineTrumpStage();
+				break;
 			case "GamePlayStage":
 				LoadGamePlay();
 				break;
@@ -74,6 +74,10 @@ public class BidWhistGame extends Game implements InputProcessor {
 
 	private void LoadBiddingMenu() {
 		stage = new BiddingStage(this, sViewport);
+	}
+
+	private void LoadDetermineTrumpStage() {
+		stage = new TrumpSelectStage(this, sViewport);
 	}
 
 	private void LoadGamePlay() throws InterruptedException {

@@ -2,7 +2,6 @@ package com.zayacam.game.bidwhist.stages;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -47,6 +46,9 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                     case "BiddingStage":
                         toStage = "GamePlayStage";
                         break;
+                    case "TrumpSelectStage":
+                        toStage = "GamePlayStage";
+                        break;
                     case "GamePlayStage":
                         toStage = "BiddingStage";
                         break;
@@ -63,8 +65,11 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                     case "BiddingStage":
                         toStage = "MainMenuStage";
                         break;
-                    case "GamePlayStage":
+                    case "TrumpSelectStage":
                         toStage = "BiddingStage";
+                        break;
+                    case "GamePlayStage":
+                        toStage = "TrumpSelectStage";
                         break;
                 }
                 break;

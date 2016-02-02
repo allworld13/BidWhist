@@ -1,13 +1,15 @@
 package com.zayacam.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.*;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import java.util.ArrayList;
 
@@ -34,7 +36,7 @@ public class Assets {
     public static final float PlayerCardHeightRatio = .25F;
     public static final float PlayerCardWidthRatio = 8.8F;
     public static final float PlayerCard_Y_Ratio = 2.6F;
-
+    private static Sound sound;
 
     public static void LoadSplashScreen() {
         text_background = new Texture(Gdx.files.internal("screens/splashScreen.png"));
@@ -84,5 +86,16 @@ public class Assets {
             isDeckDrawn = false;
         }
         //loading_animation = new Animation(1/10F, gfxDeck.toArray(new TextureRegion[gfxDeck.size()]));
+    }
+
+    public static void PlayDeckShuffling() {
+        sound = Gdx.audio.newSound(Gdx.files.internal("sounds/shuffleDeck.wav"));
+        sound.play();
+    }
+
+    public static void LoadTrumpSelectScreen() {
+        text_background = new Texture(Gdx.files.internal("screens/pickASuit.png"));
+        sprite_background = new Sprite(text_background, Assets.GameWidth, Assets.GameHeight);
+        text_background.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
     }
 }

@@ -5,4 +5,6 @@ public interface IDeckEvents {
     void DeckShuffled();
 
     void JokersRemoved();
+
+    void DeckShuffling();
 }

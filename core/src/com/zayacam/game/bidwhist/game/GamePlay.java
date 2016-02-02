@@ -1,7 +1,9 @@
 package com.zayacam.game.bidwhist.game;
 
 import com.zayacam.Utils;
+import com.zayacam.game.Assets;
 import com.zayacam.game.bidwhist.cards.*;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -564,10 +566,15 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     @Override
     public String GetGameBid() {
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("\t -=[ %1s %2s %3s ]=- ", Integer.toString(GAME_BOOKS),
-                GAME_SUIT != null ? GAME_SUIT.name() : " ",
-                GAME_DIRECTION.name())
-        );
+        try {
+
+            sb.append(String.format("\t -=[ %1s %2s %3s ]=- ", Integer.toString(GAME_BOOKS),
+                    GAME_SUIT != null ? GAME_SUIT.name() : " ",
+                    GAME_DIRECTION.name())
+            );
+        } catch (Exception ex) {
+
+        }
         return sb.toString();
     }
 
@@ -584,6 +591,11 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     @Override
     public void JokersRemoved() {
         System.out.println("\n*** Jokers Removed!");
+    }
+
+    @Override
+    public void DeckShuffling() {
+        Assets.PlayDeckShuffling();
     }
 
     @Override

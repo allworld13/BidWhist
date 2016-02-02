@@ -112,8 +112,12 @@ public class Deck implements IHand {
     }
 
     public void Shuffle() {
-    	Random rand = new Random();
-    	ArrayList<Card> newDeck =  new ArrayList<Card>(); 
+
+		if (deckEvents != null)
+			deckEvents.DeckShuffled();
+
+		Random rand = new Random();
+		ArrayList<Card> newDeck =  new ArrayList<Card>();
     	Card c;
     	int nextNumber ;
     	for (int x = deck.size(); x > 0; x-- ) {

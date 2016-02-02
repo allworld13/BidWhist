@@ -3,6 +3,7 @@ package com.zayacam.game.bidwhist.actors;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -30,6 +31,8 @@ public class BiddingScreenActor extends _BidActor implements InputProcessor {
     boolean finishedBidding = false;
     Table tblMaster;
     //region ctor
+
+
     BiddingScreenActor() {
         super();
     }
@@ -44,6 +47,8 @@ public class BiddingScreenActor extends _BidActor implements InputProcessor {
         grpBidding = new Group();
         if (stage != null)
             stage.setKeyboardFocus(this);
+
+        Assets.PlayDeckShuffling();
     }
 
     //endregion
@@ -51,7 +56,7 @@ public class BiddingScreenActor extends _BidActor implements InputProcessor {
 
     @Override
     public void act(float delta) {
-        super.act(delta);
+        Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
         finishedBidding = bidWhistGame.gamePlay.gamePlayers
                 .stream().allMatch(p->p.PlayerHasBidded());
@@ -68,13 +73,23 @@ public class BiddingScreenActor extends _BidActor implements InputProcessor {
         if (finishedBidding) {
             bidWinner = bidWhistGame.DetermineBidWinner();
             biddingPlayer = bidWinner;
+            try {
+                if (bidWinner.getBidDirection() != GamePlay.BidRule_Direction.NoTrump) {
+                    bidWhistGame.ChangeScreenTo("DetermineTrumpStage");
+                } else {
+                    bidWhistGame.ChangeScreenTo("GamePlayStage");
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        super.draw(batch, parentAlpha);
+        //super.draw(batch, parentAlpha);
+
+        //Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
         batch.draw(Assets.text_background, 0,0, stage.getWidth(), stage.getHeight());
 
@@ -89,10 +104,11 @@ public class BiddingScreenActor extends _BidActor implements InputProcessor {
         } else {
             stage.getActors().removeValue(tblMaster, true);
             tblMaster.setVisible(false);
+            //tblMaster = null;
         }
 
         ShowPlayersName(batch);
-        ShowPlayersHand(batch, biddingPlayer , 65 );
+        ShowPlayersHand(batch, biddingPlayer, 65f);
     }
 
     private void ConfigureAndShowKitty(float offSet) {
@@ -119,7 +135,10 @@ public class BiddingScreenActor extends _BidActor implements InputProcessor {
     }
 
     private void LoadBidNumberButtons() {
-        if (finishedBidding) return;
+        if (finishedBidding)
+            return;
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         Table tblNumbers, tblDirection, tblOutter;
 
         tblOutter = new Table();
@@ -149,7 +168,13 @@ public class BiddingScreenActor extends _BidActor implements InputProcessor {
                     biddingBooks = Integer.parseInt(event.getListenerActor().getUserObject().toString());
                 }
             });
-            tblNumbers.add(btnNumber);
+            if (GamePlay.GAME_BOOKS == 0 || i >= GamePlay.GAME_BOOKS)
+                tblNumbers.add(btnNumber);
+            else {
+                btnNumber.setVisible(false);
+                tblNumbers.removeActor(btnNumber);
+            }
+
         }
         tblMaster.add(tblNumbers);
         tblMaster.row();
@@ -214,7 +239,7 @@ public class BiddingScreenActor extends _BidActor implements InputProcessor {
 
     }
 
-    private void ShowPlayersHand(Batch batch, BidPlayer bidWinner, float offSet) {
+    protected void ShowPlayersHand(Batch batch, BidPlayer bidWinner, float offSet) {
         float P1Width = stage.getWidth() / 8.5F;
         float P1Height = stage.getHeight() / 4.5F;
 
