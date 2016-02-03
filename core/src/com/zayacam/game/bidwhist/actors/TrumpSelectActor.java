@@ -4,12 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.zayacam.game.Assets;
 import com.zayacam.game.BidWhistGame;
 import com.zayacam.game.bidwhist.stages._BidWhistStage;
 
 public class TrumpSelectActor extends _BidActor implements InputProcessor {
 
+    Button button1, button2, button3, button4;
     //region ctor
     TrumpSelectActor() {
         super();

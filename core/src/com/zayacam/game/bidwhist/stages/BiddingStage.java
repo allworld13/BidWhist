@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 public class BiddingStage extends _BidWhistStage {
 
-    Button btnNumber, button1, button2, button3, button4;
+    Button btnNumber;
     private int minBid, biddingBooks = 0;
     boolean finishedBidding = false;
 
