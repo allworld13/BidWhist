@@ -2,7 +2,6 @@ package com.zayacam.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -17,7 +16,7 @@ public class BidWhistGame extends Game implements InputProcessor {
 	public _BidWhistStage stage;
 	public ScreenViewport sViewport;
 	public OrthographicCamera camera;
-	InputMultiplexer im;
+
 	public boolean promptShown = false;
 
 	@Override
@@ -30,6 +29,7 @@ public class BidWhistGame extends Game implements InputProcessor {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		stage.im.addProcessor(stage);
 	}
 
 	@Override
@@ -58,13 +58,9 @@ public class BidWhistGame extends Game implements InputProcessor {
 				LoadGamePlay();
 				break;
 		}
-		im = new InputMultiplexer();
-		if (stage != null) {
-			im.addProcessor(stage);
-		}
-		im.addProcessor(this);
+		stage.im.addProcessor(1, this);
+		Gdx.input.setInputProcessor(stage.im);
 
-		Gdx.input.setInputProcessor(im);
 	}
 
 	//region game screen
