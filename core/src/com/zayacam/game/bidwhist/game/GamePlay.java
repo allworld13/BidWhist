@@ -77,8 +77,8 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     private boolean bgMusic = false;
     private boolean isNewGame = true;
     private boolean hasGameCompleted;
-    private boolean downTownBeatsUpTown;
     private int team1Score, team2Score;
+    //private boolean downTownBeatsUpTown;
 
 
     //region ctors

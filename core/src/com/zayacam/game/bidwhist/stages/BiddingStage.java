@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class BiddingStage extends _BidWhistStage {
 
     Button btnNumber, button1, button2, button3, button4;
-    private int biddingBooks = 0;
+    private int minBid, biddingBooks = 0;
     boolean finishedBidding = false;
 
     Table tblMaster;
@@ -32,10 +32,9 @@ public class BiddingStage extends _BidWhistStage {
 
         currentScreen = new BiddingScreenActor(bidWhistGame, this);
         Assets.LoadBidScreen();
-
+        minBid = bidWhistGame.gamePlay.getMinimalBid();
         this.addActor(currentScreen);
     }
-
 
     @Override
     public void act(float delta) {
@@ -68,14 +67,15 @@ public class BiddingStage extends _BidWhistStage {
 
     @Override
     public void draw() {
-        super.draw();
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        super.draw();
+
         getBatch().begin();
         this.getBatch().draw(Assets.text_background, 0, 0, this.getWidth(), this.getHeight());
 
         if (bidWinner != null) {
             grpKitty.draw(this.getBatch(), 1F);
-        }
+            }
 
         if (!finishedBidding) {
             if (bidWinner == null) {
@@ -94,10 +94,11 @@ public class BiddingStage extends _BidWhistStage {
     }
 
     private void LoadBidNumberButtons() {
-
-        if (finishedBidding)
-            return;
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        if (finishedBidding) {
+            return;
+        }
         Table tblNumbers, tblDirection, tblOutter;
 
         tblOutter = new Table();
@@ -110,7 +111,7 @@ public class BiddingStage extends _BidWhistStage {
         tblNumbers = new Table();
         tblNumbers.setName("tblBidNumbers");
 
-        for (int i = 3; i < 8; i++) {
+        for (int i = minBid; i < 8; i++) {
             btnNumber = new TextButton(Integer.toString(i), Assets.Skins);
             btnNumber.setName(Integer.toString(i));
             btnNumber.setUserObject(Integer.toString(i));
@@ -223,6 +224,9 @@ public class BiddingStage extends _BidWhistStage {
                     biddingPlayer.setBidHand_Books(biddingBooks);
                     try {
                         validBid = bidWhistGame.PlayerHasBidded(biddingPlayer);
+                        if (validBid && biddingPlayer.getBidDirection() != GamePlay.BidRule_Direction.NoTrump) {
+                            minBid = biddingPlayer.getBidHand_Books();
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
