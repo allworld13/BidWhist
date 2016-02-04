@@ -41,8 +41,9 @@ public class TrumpSelectStage extends _BidWhistStage {
     }
 
     /*
-        Gives the bid winner an opportunity to select a trump
+        Gives the bid winner an opportunity to select a trump.
      */
     private void ShowPickTrumpSelection() {
+        System.out.println();
     }
 }
