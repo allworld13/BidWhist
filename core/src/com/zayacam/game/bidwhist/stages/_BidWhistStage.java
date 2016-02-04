@@ -113,10 +113,11 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         String playerName = "";
         int playersIndex;
         float X = 0, Y = 0;
-
+        BidPlayer bp;
         for (int i = 0; i < bidWhistGame.gamePlay.MAX_NO_PLAYERS; i++) {
-            playerName = bidWhistGame.gamePlay.gamePlayers.get(i).getPlayerName();
-            playersIndex = bidWhistGame.gamePlay.gamePlayers.get(i).getIndex();
+            bp = bidWhistGame.gamePlay.gamePlayers.get(i);
+            playerName = bp.getPlayerName();
+            playersIndex = bp.getIndex();
             Assets.textBounds = new GlyphLayout();
             Assets.textBounds.setText(Assets.PlayerNameFont, playerName);
 
@@ -140,7 +141,10 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                     break;
             }
             Assets.PlayerNameFont.setColor(Color.WHITE);
-            if (biddingPlayer.getPlayerName() == playerName)
+            if (biddingPlayer == null && bidWinner != null && bidWinner.getPlayerName() == playerName)
+                Assets.PlayerNameFont.setColor(Color.GOLD);
+            else if (biddingPlayer == null) {
+            } else if (biddingPlayer.getPlayerName() == playerName)
                 Assets.PlayerNameFont.setColor(Color.GOLD);
             Assets.PlayerNameFont.draw(batch, playerName, X, Y);
         }

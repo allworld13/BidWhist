@@ -162,6 +162,10 @@ public class BidWhistGame extends Game implements InputProcessor {
 		promptShown = false;
 	}
 
+	public void YouMustBid(BidPlayer biddingPlayer) {
+		Gdx.app.log("Bidding", "\t **** " + biddingPlayer.toString() + " must bid!");
+	}
+
 
 	//endregion
 }

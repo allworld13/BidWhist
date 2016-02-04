@@ -52,8 +52,9 @@ public class BiddingStage extends _BidWhistStage {
         if (finishedBidding) {
             bidWinner = bidWhistGame.DetermineBidWinner();
             if (bidWinner == null) {
-                bidWhistGame.gamePlay.gamePlayers.get(bidWhistGame.gamePlay.MAX_NO_PLAYERS - 1).setAwardedTheBid(false);
-                bidWhistGame.gamePlay.gamePlayers.get(bidWhistGame.gamePlay.MAX_NO_PLAYERS - 1).setPlayerHasBidded(false);
+                biddingPlayer = bidWhistGame.gamePlay.gamePlayers.get(bidWhistGame.gamePlay.MAX_NO_PLAYERS - 1);
+                biddingPlayer.setPlayerHasBidded(false);
+                bidWhistGame.YouMustBid(biddingPlayer);
                 finishedBidding = false;
             } else {
                 biddingPlayer = bidWinner;
@@ -86,7 +87,7 @@ public class BiddingStage extends _BidWhistStage {
             if (bidWinner == null) {
                 LoadBidNumberButtons();
             }
-            }
+        }
         ShowPlayersName(batch);
         ShowPlayersHand(batch, biddingPlayer, 65f);
         batch.end();
