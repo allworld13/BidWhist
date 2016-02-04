@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.zayacam.game.Assets;
 import com.zayacam.game.BidWhistGame;
-import com.zayacam.game.bidwhist.actors.GamePlayActor;
 import com.zayacam.game.bidwhist.cards.Card;
 import com.zayacam.game.bidwhist.game.BidPlayer;
 
@@ -20,10 +19,6 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
 
     public GamePlayStage(BidWhistGame bidWhistGame, ScreenViewport sViewport) throws InterruptedException {
         super(bidWhistGame, sViewport);
-
-        currentScreen = new GamePlayActor(bidWhistGame, this);
-        currentScreen.setTouchable(Touchable.enabled);
-        Assets.LoadGamePlayScreen();
 
         this.addActor(currentScreen);
         this.setKeyboardFocus(currentScreen);

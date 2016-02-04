@@ -129,6 +129,9 @@ public class BidWhistGame extends Game implements InputProcessor {
 		promptShown = true;
 	}
 
+	/*
+		Declares the bid winner after all bids are accepted, and then declares the winner
+    */
 	public BidPlayer DetermineBidWinner() {
 		BidPlayer bidWinner;
 		if (!promptShown)

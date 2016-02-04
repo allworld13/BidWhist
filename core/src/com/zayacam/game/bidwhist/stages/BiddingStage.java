@@ -12,7 +12,6 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.zayacam.game.Assets;
 import com.zayacam.game.BidWhistGame;
-import com.zayacam.game.bidwhist.actors.BiddingScreenActor;
 import com.zayacam.game.bidwhist.game.BidPlayer;
 import com.zayacam.game.bidwhist.game.GamePlay;
 
@@ -24,20 +23,20 @@ public class BiddingStage extends _BidWhistStage {
     private int minBid, biddingBooks = 0;
     boolean finishedBidding = false;
 
-    Table tblMaster;
+    Table tblBiddingNumbers;
 
     public BiddingStage(BidWhistGame bidWhistGame, ScreenViewport sViewport) {
         super(bidWhistGame, sViewport);
-        GamePlay.GAME_BOOKS = 0;
+        ScreenTitleLabel = "Place your bid";
 
-        currentScreen = new BiddingScreenActor(bidWhistGame, this);
-        Assets.LoadBidScreen();
+        GamePlay.GAME_BOOKS = 0;
         minBid = bidWhistGame.gamePlay.getMinimalBid();
-        this.addActor(currentScreen);
+        Assets.PlayDeckShuffling();
     }
 
     @Override
     public void act(float delta) {
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         finishedBidding = bidWhistGame.gamePlay.gamePlayers
                 .stream().allMatch(p -> p.PlayerHasBidded());
 
@@ -52,58 +51,57 @@ public class BiddingStage extends _BidWhistStage {
         }
         if (finishedBidding) {
             bidWinner = bidWhistGame.DetermineBidWinner();
-            biddingPlayer = bidWinner;
-            try {
-                if (bidWinner.getBidDirection() != GamePlay.BidRule_Direction.NoTrump) {
-                    bidWhistGame.ChangeScreenTo("DetermineTrumpStage");
-                } else {
-                    bidWhistGame.ChangeScreenTo("GamePlayStage");
+            if (bidWinner == null) {
+                bidWhistGame.gamePlay.gamePlayers.get(bidWhistGame.gamePlay.MAX_NO_PLAYERS - 1).setAwardedTheBid(false);
+                bidWhistGame.gamePlay.gamePlayers.get(bidWhistGame.gamePlay.MAX_NO_PLAYERS - 1).setPlayerHasBidded(false);
+                finishedBidding = false;
+            } else {
+                biddingPlayer = bidWinner;
+                try {
+                    if (bidWinner.getBidDirection() != GamePlay.BidRule_Direction.NoTrump) {
+                        bidWhistGame.ChangeScreenTo("DetermineTrumpStage");
+                    } else {
+                        bidWhistGame.ChangeScreenTo("GamePlayStage");
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
     }
 
     @Override
     public void draw() {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         super.draw();
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        getBatch().begin();
-        this.getBatch().draw(Assets.text_background, 0, 0, this.getWidth(), this.getHeight());
-
+        batch.begin();
+        batch.draw(Assets.sprite_background, 0, 0, this.getWidth(), this.getHeight());
+        DrawTitle(batch);
         if (bidWinner != null) {
-            grpKitty.draw(this.getBatch(), 1F);
-            }
+            grpKitty.draw(batch, 1F);
+        }
 
         if (!finishedBidding) {
             if (bidWinner == null) {
                 LoadBidNumberButtons();
             }
-        } else {
-            this.getActors().removeValue(tblMaster, true);
-            tblMaster.setVisible(false);
-            //tblMaster = null;
-        }
-
-        ShowPlayersName(this.getBatch());
-        ShowPlayersHand(this.getBatch(), biddingPlayer, 65f);
-        getBatch().end();
-
+            }
+        ShowPlayersName(batch);
+        ShowPlayersHand(batch, biddingPlayer, 65f);
+        batch.end();
     }
 
-    private void LoadBidNumberButtons() {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+    private void LoadBidNumberButtons() {
         if (finishedBidding) {
             return;
         }
         Table tblNumbers, tblDirection, tblOutter;
 
         tblOutter = new Table();
-        tblMaster = new Table();
-        tblMaster.setName("tblMaster");
+        tblBiddingNumbers = new Table();
+        tblBiddingNumbers.setName("tblBiddingNumbers");
 
         //region main table layout
 
@@ -123,7 +121,7 @@ public class BiddingStage extends _BidWhistStage {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     super.clicked(event, x, y);
-                    Gdx.app.log("BiddingScreenActor", " - " + event.getListenerActor().getName());
+                    Gdx.app.log(getStageName(), " - " + event.getListenerActor().getName());
                     biddingBooks = Integer.parseInt(event.getListenerActor().getUserObject().toString());
                 }
             });
@@ -133,10 +131,9 @@ public class BiddingStage extends _BidWhistStage {
                 btnNumber.setVisible(false);
                 tblNumbers.removeActor(btnNumber);
             }
-
         }
-        tblMaster.add(tblNumbers);
-        tblMaster.row();
+        tblBiddingNumbers.add(tblNumbers);
+        tblBiddingNumbers.row();
         //endregion
 
         //region bid or pass buttons
@@ -186,23 +183,25 @@ public class BiddingStage extends _BidWhistStage {
 
         //endregion
 
-        tblMaster.add(tblOutter);
+        tblBiddingNumbers.add(tblOutter);
         //endregion
 
-        tblMaster.pad(Value.percentWidth(.20f));
-        tblMaster.setPosition(Gdx.graphics.getWidth() / 2 - tblMaster.getWidth() / 2, Gdx.graphics.getHeight() * .37f);
+        tblBiddingNumbers.pad(Value.percentWidth(.20f));
 
-        grpBidding.addActor(tblMaster);
-        grpBidding.setBounds(grpBidding.getX(), grpBidding.getY(), grpBidding.getWidth(), grpBidding.getHeight());
-        this.addActor(grpBidding);
-        grpBidding.draw(this.getBatch(), 1f);
+        grpBiddingNumbers.setPosition(Gdx.graphics.getWidth() / 2 - tblBiddingNumbers.getWidth() / 2,
+                Gdx.graphics.getHeight() * .41f);
+        grpBiddingNumbers.setBounds(grpBiddingNumbers.getX(), grpBiddingNumbers.getY(),
+                grpBiddingNumbers.getWidth(), grpBiddingNumbers.getHeight());
+        grpBiddingNumbers.addActor(tblBiddingNumbers);
+        this.addActor(grpBiddingNumbers);
+        grpBiddingNumbers.draw(batch, 1f);
     }
 
     private class BidDirectionClicked extends ClickListener {
         @Override
         public void clicked(InputEvent event, float x, float y) {
             super.clicked(event, x, y);
-            Gdx.app.log("BiddingScreenActor -> Direction", " - " + event.getListenerActor().getName());
+            Gdx.app.log(getStageName() + " -> Direction", " - " + event.getListenerActor().getName());
             String btnName = event.getListenerActor().getName();
 
             bidDirection = GamePlay.BidRule_Direction.valueOf(btnName);
@@ -216,7 +215,7 @@ public class BiddingStage extends _BidWhistStage {
             boolean validBid = false;
 
             String btnName = event.getListenerActor().getName();
-            Gdx.app.log("BiddingScreenActor -> Play", " - " + btnName);
+            Gdx.app.log(getStageName() + " -> Play", " - " + btnName);
 
             switch (btnName) {
                 case "Bid":

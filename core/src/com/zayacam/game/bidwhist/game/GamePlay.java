@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard {
 
+    public BidPlayer CurrentBidder;
+
     public enum BidRule_Number_Range {
         PASS(0),
         MIN_BID(3),
@@ -92,6 +94,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         isNewGame = true;
     }
     //endregion
+
     //region init
     public void Init() {
         ShowKitty = false;
@@ -101,7 +104,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         InitializePlayers();
 
         bidWinner = gamePlayers.get(0);
-        bidWinner.setAwardedTheBid(true);
+        //bidWinner.setAwardedTheBid(true);
     }
 
     //region init stuff
@@ -189,14 +192,23 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         }
     }
 
+
+    /*
+        Declares the bid winner after all bids are accepted, and then declares the winner
+    */
     public BidPlayer DetermineBidWinner() {
-        BidPlayer bp;
-        bp = DeclareBidWinner();
+        BidPlayer bidWinner = null;
+
+        if (gamePlayers.stream().anyMatch(bp -> bp.isAwardedTheBid()))
+            bidWinner = gamePlayers.stream().filter(bp -> bp.isAwardedTheBid()).findFirst().get();
+
+        /*
         while (!bp.isAwardedTheBid()) {
             gamePlayers.get(MAX_NO_PLAYERS - 1).bidHand();
             bp = DeclareBidWinner();
         }
-        return bp;
+        */
+        return bidWinner;
     }
 
     //endregion
@@ -206,34 +218,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     public UUID StartingNewGame() {
         System.out.println("\n*** Starting New Game");
         return this.id;
-    }
-
-    /*
-        Declares the bid winner after all bids are accepted, and then declares the winner
-    */
-    private BidPlayer DeclareBidWinner() {
-        BidPlayer bidWinner = null;
-
-        if (gamePlayers.stream().anyMatch(bp-> bp.isAwardedTheBid()))
-            bidWinner = gamePlayers.stream().filter(bp-> bp.isAwardedTheBid()).findFirst().get();
-
-        if (bidWinner == null) {
-            do {
-                System.out.println("You must bid!!");
-                gamePlayers.get(MAX_NO_PLAYERS-1).bidHand();
-                if (gamePlayers.get(MAX_NO_PLAYERS-1).isAwardedTheBid()) {
-                    bidWinner = gamePlayers.get(MAX_NO_PLAYERS-1);
-                    break;
-                }
-            } while (true);
-        }
-
-        if (bidWinner.isAwardedTheBid()) {
-            gameEvents.BidAwarded();
-            bidWinner.SetHandWinner(true);
-        }
-
-        return bidWinner;
     }
 
     /*

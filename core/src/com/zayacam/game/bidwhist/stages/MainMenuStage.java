@@ -2,7 +2,6 @@ package com.zayacam.game.bidwhist.stages;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -10,43 +9,46 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.zayacam.game.Assets;
 import com.zayacam.game.BidWhistGame;
-import com.zayacam.game.bidwhist.actors.MainMenuActor;
 
 public class MainMenuStage extends _BidWhistStage {
 
-    final Table table = new Table();
+    final Table tblMenuOptions = new Table();
     TextButton btnGameButton;
 
     public MainMenuStage(BidWhistGame bidWhistGame, ScreenViewport sViewport) {
         super(bidWhistGame, sViewport);
 
-        currentScreen = new MainMenuActor(bidWhistGame, this);
-        Assets.LoadMainMenuScreen();
-
         bidWhistGame.gamePlay.Init();
 
-        this.setKeyboardFocus(currentScreen);
-        this.addActor(currentScreen);
-
         //region load main menu buttons
-        table.align(Align.center | Align.topLeft);
-        table.setPosition(this.getWidth() * .68f,
+        tblMenuOptions.align(Align.center | Align.topLeft);
+        tblMenuOptions.setPosition(this.getWidth() * .68f,
                 (this.getHeight() + 6f) * .80f);
 
         btnGameButton = new TextButton("New Game  ", Assets.Skins);
         btnGameButton.setName("btnNewGame");
         btnGameButton.setSize(this.getWidth() * Assets.MainMenuButton_Width, this.getWidth() * Assets.MainMenuButton_Height);
         btnGameButton.addListener(new MainMenuButtonClickListener());
-        table.add(btnGameButton);
-        table.row();
+        tblMenuOptions.add(btnGameButton);
+        tblMenuOptions.row();
         btnGameButton = new TextButton("Options", Assets.Skins);
         btnGameButton.setName("btnOptions");
         btnGameButton.setSize(this.getWidth() * Assets.MainMenuButton_Width, this.getWidth() * Assets.MainMenuButton_Height);
         btnGameButton.addListener(new MainMenuButtonClickListener());
-        table.add(btnGameButton).align(Align.left);
+        tblMenuOptions.add(btnGameButton).align(Align.left);
 
-        this.addActor(table);
+        this.addActor(tblMenuOptions);
         //endregion
+    }
+
+    @Override
+    public void draw() {
+        super.draw();
+
+        batch.begin();
+        Assets.sprite_background.draw(batch);
+        tblMenuOptions.draw(batch, 1f);
+        batch.end();
     }
 
     class MainMenuButtonClickListener extends ClickListener {

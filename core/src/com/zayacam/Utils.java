@@ -1,7 +1,5 @@
 package com.zayacam;
 
-import com.zayacam.game.bidwhist.stages._BidWhistStage;
-
 import java.awt.*;
 
 /**
@@ -48,6 +46,6 @@ public class Utils {
         result = bidWhistStage.substring(
                 bidWhistStage.lastIndexOf(".") + 1, bidWhistStage.lastIndexOf("@")
         );
-        return result;
+        return result.trim();
     }
 }
