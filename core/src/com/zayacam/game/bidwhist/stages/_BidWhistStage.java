@@ -87,8 +87,8 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
     }
 
     protected void ShowPlayersHand(Batch batch, BidPlayer biddingPlayer, float offSet) {
-        float P1Width = this.getWidth() / 8.5F;
-        float P1Height = this.getHeight() / 4.5F;
+        float P1Width = this.getWidth() * .17f;
+        float P1Height = this.getHeight() * .29f;
 
         int XPos = 0;
         int cardIndex = 0;
@@ -104,7 +104,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                 XPos += (int) (this.getWidth() * .055F);
             }
         }
-        grpSouthPlayer.setPosition(this.getWidth() / 8 + 10, 0);// this.getHeight()  );
+        grpSouthPlayer.setPosition(this.getWidth() / 8.5f, 2);// this.getHeight()  );
         grpSouthPlayer.draw(batch, 1F);
         this.addActor(grpSouthPlayer);
     }

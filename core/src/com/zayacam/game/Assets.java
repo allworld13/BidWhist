@@ -10,11 +10,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import java.util.ArrayList;
 
 public class Assets {
+    public static final BitmapFont PlayerNameFont = new BitmapFont(Gdx.files.internal("fonts/DancingScript.fnt"));
+    public static final BitmapFont ScreenTitleFont = new BitmapFont(Gdx.files.internal("fonts/ScreenTitle.fnt"));
+    public static final Skin Skins = new Skin(Gdx.files.internal("uiskin.json"));
     public static Animation loading_animation;
     public static ArrayList<Image> gfxDeck;
-    public static TextureRegion current_frame;
+    public static ArrayList<TextureRegion> cardSuits = null;
     public static Texture text_background;
     public static Sprite sprite_background;
+    private static Sound sound;
+    public static GlyphLayout textBounds;
 
     public static boolean isDeckDrawn;
 
@@ -24,20 +29,19 @@ public class Assets {
     public static final int CardHeight = 343;
     public static final int CardBack = 54;
     public static final float P1YBaseLine = 5;
-    public static float P1CardYLevitate =  20f;
+    public static final float P1CardYLevitate = 20f;
     public static final float MainMenuButton_Width = .20f;
     public static final float MainMenuButton_Height = .10f;
-    public static final BitmapFont PlayerNameFont = new BitmapFont(Gdx.files.internal("fonts/DancingScript.fnt"));
-    public static final BitmapFont ScreenTitleFont = new BitmapFont(Gdx.files.internal("fonts/ScreenTitle.fnt"));
-    public static final Skin Skins = new Skin(Gdx.files.internal("uiskin.json"));
-    public static final float PlayerCardHeightRatio = .25F;
+    public static final float PlayerCardHeightRatio = 0.25F;
     public static final float PlayerCardWidthRatio = 8.8F;
     public static final float PlayerCard_Y_Ratio = 2.6F;
-    public static final float PlayerNameEastWest = .38f;
-
-    private static Sound sound;
-    public static GlyphLayout textBounds;
+    public static final float PlayerNameEastWest = 0.38f;
     public static final float ScreenTitleYPos = 0.9f;
+
+    static {
+        LoadSuits();
+    }
+
 
     public static void LoadSplashScreen() {
         text_background = new Texture(Gdx.files.internal("screens/splashScreen.png"));
@@ -84,6 +88,17 @@ public class Assets {
             isDeckDrawn = false;
         }
         //loading_animation = new Animation(1/10F, gfxDeck.toArray(new TextureRegion[gfxDeck.size()]));
+    }
+
+    private static void LoadSuits() {
+        Texture texture = new Texture(Gdx.files.internal("pickASuit.png"));
+        TextureRegion[][] textureRegions = TextureRegion.split(texture, 290, 300);
+        cardSuits = new ArrayList<>();
+        for (int i = 0; i < 1; i++) {
+            for (int j = 0; j < 4; j++) {
+                cardSuits.add(textureRegions[i][j]);
+            }
+        }
     }
 
     public static void PlayDeckShuffling() {
