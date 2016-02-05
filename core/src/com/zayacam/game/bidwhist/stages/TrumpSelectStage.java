@@ -33,14 +33,10 @@ public class TrumpSelectStage extends _BidWhistStage {
         btnGoPlay.setSize(150, 46);
         btnGoPlay.setPosition(getWidth() / 2 - btnGoPlay.getWidth() / 2f, getHeight() * .38f);
         btnGoPlay.pad(13f, 0, 13f, 0);
-        btnGoPlay.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                super.clicked(event, x, y);
-            }
-        });
-        this.addActor(btnGoPlay);
+        btnGoPlay.addListener(new PlayClickListener());
+        btnGoPlay.setVisible(false);
         LoadTrumps();
+        this.addActor(btnGoPlay);
     }
 
     private void LoadTrumps() {
@@ -96,7 +92,8 @@ public class TrumpSelectStage extends _BidWhistStage {
         ShowPlayersName(batch);
         ShowPickTrumpSelection();
         ShowPlayersHand(batch, bidWinner, 65f);
-        btnGoPlay.draw(batch, 1f);
+        if (btnGoPlay.isVisible())
+            btnGoPlay.draw(batch, 1f);
         batch.end();
     }
 
@@ -108,6 +105,14 @@ public class TrumpSelectStage extends _BidWhistStage {
         grpTrumps.draw(batch, 1f);
     }
 
+    private class PlayClickListener extends ClickListener {
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+            Gdx.app.log("Trump Selected", "Ready to play");
+        }
+    }
+
+
     private class TrumpClickListener extends ClickListener {
         CardSuit suitSelected = null;
 
@@ -116,6 +121,8 @@ public class TrumpSelectStage extends _BidWhistStage {
             super.clicked(event, x, y);
             suitSelected = (CardSuit) event.getListenerActor().getUserObject();
             GamePlay.GAME_SUIT = suitSelected;
+            btnGoPlay.setVisible(true);
+
             Gdx.app.log("Trump Selected", suitSelected.toString() + " - " + suitSelected.name());
         }
     }
