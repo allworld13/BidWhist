@@ -59,9 +59,9 @@ public class BidWhistGame extends Game implements InputProcessor {
 				LoadGamePlay();
 				break;
 		}
+		stage.im.addProcessor(0, stage);
 		stage.im.addProcessor(1, this);
 		Gdx.input.setInputProcessor(stage.im);
-
 	}
 
 	//region game screen
