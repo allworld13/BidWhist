@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -17,24 +16,36 @@ import com.zayacam.game.bidwhist.game.BidPlayer;
 import com.zayacam.game.bidwhist.game.GamePlay;
 
 public class TrumpSelectStage extends _BidWhistStage {
-
+    TextButton btnGoPlay;
     BidPlayer biddingPlayer;
     Group grpTrumps;
+    Image imgTrump = null;
+    float TrumpHeight;
 
     public TrumpSelectStage(BidWhistGame bidWhistGame, ScreenViewport sViewport) {
         super(bidWhistGame, sViewport);
-
         ScreenTitleLabel = "Pick your trump";
         biddingPlayer = bidWinner = bidWhistGame.gamePlay.bidWinner;
         GamePlay.GAME_SUIT = null;
+
+        btnGoPlay = new TextButton("Play", Assets.Skins);
+        btnGoPlay.setName("Play");
+        btnGoPlay.setSize(150, 46);
+        btnGoPlay.setPosition(getWidth() / 2 - btnGoPlay.getWidth() / 2f, getHeight() * .38f);
+        btnGoPlay.pad(13f, 0, 13f, 0);
+        btnGoPlay.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+            }
+        });
+        this.addActor(btnGoPlay);
         LoadTrumps();
     }
 
     private void LoadTrumps() {
         grpTrumps = new Group();
         grpTrumps.setName("grpTrumps");
-        Table table = new Table();
-        Image imgTrump = null;
         int XPos = 0, counter = 0;
         for (TextureRegion tr :
                 Assets.cardSuits) {
@@ -57,12 +68,14 @@ public class TrumpSelectStage extends _BidWhistStage {
             grpTrumps.addActor(imgTrump);//.padRight(counter==0?0:30f);
             this.addActor(grpTrumps);
             imgTrump.setPosition(XPos, 200f);
-            imgTrump.setSize(getWidth() * .20f, getHeight() * .25f);
+            TrumpHeight = getHeight() * .20f;
+            imgTrump.setSize(getWidth() * .17f, TrumpHeight);
             imgTrump.setName(((CardSuit) imgTrump.getUserObject()).name());
             counter++;
-            XPos += 200;
+            XPos += 170;
         }
-        grpTrumps.setBounds(0, 0, getWidth() * .225f * 4, 200f);
+
+        grpTrumps.setBounds(0, 0, getWidth() * .195f * 4, TrumpHeight + 500);
         grpTrumps.setPosition(getWidth() / 2f - grpTrumps.getWidth() / 2f, 100f);
         //grpTrumps.setSize(getWidth()*.,300f);
     }
@@ -79,9 +92,11 @@ public class TrumpSelectStage extends _BidWhistStage {
         batch.begin();
         batch.draw(Assets.sprite_background, 0, 0, this.getWidth(), this.getHeight());
         DrawTitle(batch);
+
         ShowPlayersName(batch);
         ShowPickTrumpSelection();
         ShowPlayersHand(batch, bidWinner, 65f);
+        btnGoPlay.draw(batch, 1f);
         batch.end();
     }
 

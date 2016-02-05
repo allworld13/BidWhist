@@ -16,4 +16,5 @@ public interface IBidPlayerEvents {
     void ThrowInCards() throws InterruptedException;
 
     boolean PlayerHasBidded();
+
 }

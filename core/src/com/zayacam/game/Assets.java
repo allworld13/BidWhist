@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import java.util.ArrayList;
 
 public class Assets {
+    //public static final Dialog PopMessage = new Dialog("",Assets.Skins);
     public static final BitmapFont PlayerNameFont = new BitmapFont(Gdx.files.internal("fonts/DancingScript.fnt"));
     public static final BitmapFont ScreenTitleFont = new BitmapFont(Gdx.files.internal("fonts/ScreenTitle.fnt"));
     public static final Skin Skins = new Skin(Gdx.files.internal("uiskin.json"));
@@ -20,7 +21,6 @@ public class Assets {
     public static Sprite sprite_background;
     private static Sound sound;
     public static GlyphLayout textBounds;
-
     public static boolean isDeckDrawn;
 
     public static final int GameWidth = 850; //1920;

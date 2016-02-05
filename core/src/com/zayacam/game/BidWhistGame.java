@@ -44,6 +44,7 @@ public class BidWhistGame extends Game implements InputProcessor {
 		if (stage != null)
 			stage.dispose();
 
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		switch (gamePlayScreen) {
 			case "MainMenuStage":
 				LoadMainMenu();
@@ -146,11 +147,15 @@ public class BidWhistGame extends Game implements InputProcessor {
 		boolean validBid = false;
 		Gdx.app.log("Bidding", "\t----> "+ biddingPlayer.toString() + " has bidded");
 		gamePlay.PlayerHasBidded(biddingPlayer);
-		validBid =  gamePlay.ValidatePlayersBid(biddingPlayer);
-		if (!validBid)  {
-			biddingPlayer.setPlayerHasBidded(false);
-		} else {
-			promptShown = false;
+		try {
+			validBid = gamePlay.ValidatePlayersBid(biddingPlayer);
+			if (!validBid) {
+				biddingPlayer.setPlayerHasBidded(false);
+			} else {
+				promptShown = false;
+			}
+		} catch (Exception ex) {
+			Gdx.app.log(stage.getStageName(), ex.getMessage());
 		}
 
 		return validBid;

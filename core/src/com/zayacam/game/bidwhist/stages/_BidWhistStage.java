@@ -128,7 +128,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
             X = this.getWidth() / 2f - Assets.textBounds.width / 2;
             switch (playersIndex) {
                 case 1:
-                    Y = this.getHeight() * .29f;
+                    Y = this.getHeight() * .355f;
                     break;
                 case 2:
                     X = 3f;
@@ -187,7 +187,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                         toStage = "BiddingStage";
                         break;
                     case "BiddingStage":
-                        toStage = "GamePlayStage";
+                        toStage = "TrumpSelectStage";
                         break;
                     case "TrumpSelectStage":
                         toStage = "GamePlayStage";
@@ -225,6 +225,4 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         }
         return false;
     }
-
-
 }

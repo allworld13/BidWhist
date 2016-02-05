@@ -20,8 +20,6 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
     public GamePlayStage(BidWhistGame bidWhistGame, ScreenViewport sViewport) throws InterruptedException {
         super(bidWhistGame, sViewport);
 
-        this.addActor(currentScreen);
-        this.setKeyboardFocus(currentScreen);
     }
 
     @Override

@@ -21,7 +21,7 @@ public class BiddingStage extends _BidWhistStage {
 
     Button btnNumber;
     private int minBid, biddingBooks = 0;
-    boolean finishedBidding = false;
+    boolean playerHasValidBid, finishedBidding = false;
 
     Table tblBiddingNumbers;
 
@@ -79,17 +79,14 @@ public class BiddingStage extends _BidWhistStage {
         batch.begin();
         batch.draw(Assets.sprite_background, 0, 0, this.getWidth(), this.getHeight());
         DrawTitle(batch);
-        if (bidWinner != null) {
-            grpKitty.draw(batch, 1F);
-        }
 
         if (!finishedBidding) {
             if (bidWinner == null) {
                 LoadBidNumberButtons();
             }
         }
-        ShowPlayersName(batch);
         ShowPlayersHand(batch, biddingPlayer, 65f);
+        ShowPlayersName(batch);
         batch.end();
     }
 
@@ -190,7 +187,7 @@ public class BiddingStage extends _BidWhistStage {
         tblBiddingNumbers.pad(Value.percentWidth(.20f));
 
         grpBiddingNumbers.setPosition(Gdx.graphics.getWidth() / 2 - tblBiddingNumbers.getWidth() / 2,
-                Gdx.graphics.getHeight() * .41f);
+                Gdx.graphics.getHeight() * .465f);
         grpBiddingNumbers.setBounds(grpBiddingNumbers.getX(), grpBiddingNumbers.getY(),
                 grpBiddingNumbers.getWidth(), grpBiddingNumbers.getHeight());
         grpBiddingNumbers.addActor(tblBiddingNumbers);
@@ -226,6 +223,8 @@ public class BiddingStage extends _BidWhistStage {
                         validBid = bidWhistGame.PlayerHasBidded(biddingPlayer);
                         if (validBid && biddingPlayer.getBidDirection() != GamePlay.BidRule_Direction.NoTrump) {
                             minBid = biddingPlayer.getBidHand_Books();
+                        } else {
+                            biddingPlayer.setPlayerHasBidded(false);
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
