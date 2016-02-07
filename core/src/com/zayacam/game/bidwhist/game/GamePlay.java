@@ -236,10 +236,11 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
                 && (bidPlayer.getBidDirection() != BidRule_Direction.Uptown ))
             throw new IllegalStateException("The Bid direction must be DownTown, UpTown, or No Trump only!");
 
-        // this player is assumed to win the bid
+        // this player is assumed to have won the bid
         validBid = true;
 
         if (bidPlayer.getBidHand_Books() > GAME_BOOKS) {
+
         } else if (bidPlayer.getBidHand_Books() == GAME_BOOKS &&
                 bidPlayer.getBidDirection().ordinal() > GAME_DIRECTION.ordinal()) {
         } else {

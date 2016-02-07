@@ -102,7 +102,10 @@ public class TrumpSelectStage extends _BidWhistStage {
      */
     private void ShowPickTrumpSelection() {
         //System.out.println();
-        grpTrumps.draw(batch, 1f);
+        if (GamePlay.GAME_DIRECTION != GamePlay.BidRule_Direction.NoTrump)
+            grpTrumps.draw(batch, 1f);
+        else
+            grpBiddingNumbers.draw(batch, 1f);
     }
 
     private class PlayClickListener extends ClickListener {
