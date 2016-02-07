@@ -35,7 +35,8 @@ public class BidWhistGame extends Game implements InputProcessor {
 	@Override
 	public void render() {
 		super.render();
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();
 	}
@@ -153,6 +154,9 @@ public class BidWhistGame extends Game implements InputProcessor {
 				biddingPlayer.setPlayerHasBidded(false);
 			} else {
 				promptShown = false;
+				GamePlay.GAME_BOOKS = biddingPlayer.getBidHand_Books();
+				GamePlay.GAME_DIRECTION = biddingPlayer.getBidDirection();
+				GamePlay.GAME_SUIT = biddingPlayer.getBidSuit();
 			}
 		} catch (Exception ex) {
 			Gdx.app.log(stage.getStageName(), ex.getMessage());

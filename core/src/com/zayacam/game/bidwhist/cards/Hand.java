@@ -136,7 +136,7 @@ public class Hand extends ArrayList<Card> implements IHand{
 	}
 
 	public void SetJokerSuit(CardSuit gameSuit, GamePlay.BidRule_Direction direction) {
-		if (gameSuit == CardSuit.NoTrump)
+		if (gameSuit == null)
 			return;
 
 		int deckValue = 0;

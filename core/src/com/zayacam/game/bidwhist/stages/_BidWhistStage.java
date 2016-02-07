@@ -44,7 +44,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
     protected Card selectedCard;
     protected boolean hasStartedPlaying, finishedBidding = false;
     protected GamePlay.BidRule_Direction bidDirection = null;
-
+    protected boolean ShowKitty = false;
 
     Group grpKitty, grpSouthPlayer, grpTableHand, grpBiddingNumbers;
     Table tblBiddingNumbers;
@@ -76,6 +76,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
     public _BidWhistStage(BidWhistGame bidWhistGame, ScreenViewport vPort) {
         this(vPort);
         this.bidWhistGame = bidWhistGame ;
+        minBid = bidWhistGame.gamePlay.getMinimalBid();
     }
     //endregion
 
@@ -193,11 +194,9 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                     biddingBooks = Integer.parseInt(event.getListenerActor().getUserObject().toString());
                 }
             });
-            if (GamePlay.GAME_BOOKS == 0 || i >= GamePlay.GAME_BOOKS)
+            if (GamePlay.GAME_BOOKS == 0 || i > GamePlay.GAME_BOOKS ||
+                    i == GamePlay.GAME_BOOKS && GamePlay.GAME_DIRECTION != GamePlay.BidRule_Direction.NoTrump) {
                 tblNumbers.add(btnNumber);
-            else {
-                btnNumber.setVisible(false);
-                tblNumbers.removeActor(btnNumber);
             }
         }
         tblBiddingNumbers.add(tblNumbers);
@@ -218,6 +217,13 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         tblDirection.setName("tblDirection");
         tblDirection.pad(0f, 20f, 0f, 20f);
 
+        btnNumber = new TextButton("Dn", Assets.Skins);
+        btnNumber.setName("Downtown");
+        btnNumber.pad(0f, 10f, 0f, 10f);
+        btnNumber.addListener(new BidDirectionClicked());
+
+        tblDirection.add(btnNumber);
+
         btnNumber = new TextButton("Up", Assets.Skins);
         btnNumber.setName("Uptown");
         btnNumber.pad(0f, 10f, 0f, 10f);
@@ -225,13 +231,6 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         btnNumber.addListener(new BidDirectionClicked());
 
         tblOutter.add(tblDirection);
-
-        btnNumber = new TextButton("Dn", Assets.Skins);
-        btnNumber.setName("Downtown");
-        btnNumber.pad(0f, 10f, 0f, 10f);
-        btnNumber.addListener(new BidDirectionClicked());
-
-        tblDirection.add(btnNumber);
 
         btnNumber = new TextButton(" X ", Assets.Skins);
         btnNumber.setName("NoTrump");
@@ -265,10 +264,9 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         grpBiddingNumbers.draw(batch, 1f);
     }
 
-
     protected void ConfigureAndShowKitty(float offSet) {
-        float P1Width = this.getWidth() / 9.5F;
-        float P1Height = this.getHeight() / 4.5F;
+        float P1Width = this.getWidth() * .17f;
+        float P1Height = this.getHeight() * .29f;
 
         grpKitty = new Group();
         grpKitty.setVisible(true);
@@ -284,9 +282,10 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                 this.getHeight() / 2,
                 XPos, P1Height);
 
-        grpKitty.setPosition((this.getWidth() / 2 - XPos / 2) - 30,
-                this.getHeight() - P1Height - offSet);
+        //grpKitty.setPosition((this.getWidth() / 2 - XPos / 2) - 30, this.getHeight() - P1Height - offSet);
+        grpKitty.setPosition((this.getWidth() / 2 - XPos / 2) - 62, this.getHeight() * 0.55f);
         this.addActor(grpKitty);
+        grpKitty.setVisible(true);
     }
 
     private class BidDirectionClicked extends ClickListener {

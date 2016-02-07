@@ -1,7 +1,6 @@
 package com.zayacam.game.bidwhist.stages;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -21,22 +20,35 @@ public class TrumpSelectStage extends _BidWhistStage {
     Group grpTrumps;
     Image imgTrump = null;
     float TrumpHeight;
+    boolean showTrump = true;
 
     public TrumpSelectStage(BidWhistGame bidWhistGame, ScreenViewport sViewport) {
         super(bidWhistGame, sViewport);
         ScreenTitleLabel = "Pick your trump";
-        biddingPlayer = bidWinner = bidWhistGame.gamePlay.bidWinner;
+        if (GamePlay.GAME_DIRECTION == GamePlay.BidRule_Direction.NoTrump) {
+            ScreenTitleLabel = "Select your direction";
+            showTrump = false;
+        }
         GamePlay.GAME_SUIT = null;
+        biddingPlayer = bidWinner = bidWhistGame.gamePlay.bidWinner;
 
-        btnGoPlay = new TextButton("Play", Assets.Skins);
-        btnGoPlay.setName("Play");
+        btnGoPlay = new TextButton("Ok", Assets.Skins);
+        btnGoPlay.setName("Ok");
         btnGoPlay.setSize(150, 46);
         btnGoPlay.setPosition(getWidth() / 2 - btnGoPlay.getWidth() / 2f, getHeight() * .38f);
         btnGoPlay.pad(13f, 0, 13f, 0);
-        btnGoPlay.addListener(new PlayClickListener());
+        btnGoPlay.addListener(new OkClickListener());
         btnGoPlay.setVisible(false);
-        LoadTrumps();
+        if (showTrump)
+            LoadTrumps();
+        else {
+            LoadDirection();
+        }
+
         this.addActor(btnGoPlay);
+    }
+
+    private void LoadDirection() {
     }
 
     private void LoadTrumps() {
@@ -73,8 +85,8 @@ public class TrumpSelectStage extends _BidWhistStage {
 
         grpTrumps.setBounds(0, 0, getWidth() * .195f * 4, TrumpHeight + 500);
         grpTrumps.setPosition(getWidth() / 2f - grpTrumps.getWidth() / 2f, 100f);
-        //grpTrumps.setSize(getWidth()*.,300f);
     }
+
 
     @Override
     public void act(float delta) {
@@ -83,7 +95,6 @@ public class TrumpSelectStage extends _BidWhistStage {
 
     @Override
     public void draw() {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         super.draw();
         batch.begin();
         batch.draw(Assets.sprite_background, 0, 0, this.getWidth(), this.getHeight());
@@ -92,6 +103,9 @@ public class TrumpSelectStage extends _BidWhistStage {
         ShowPlayersName(batch);
         ShowPickTrumpSelection();
         ShowPlayersHand(batch, bidWinner, 65f);
+        if (ShowKitty)
+            grpKitty.draw(batch, 1f);
+
         if (btnGoPlay.isVisible())
             btnGoPlay.draw(batch, 1f);
         batch.end();
@@ -102,17 +116,40 @@ public class TrumpSelectStage extends _BidWhistStage {
      */
     private void ShowPickTrumpSelection() {
         //System.out.println();
-        if (GamePlay.GAME_DIRECTION != GamePlay.BidRule_Direction.NoTrump)
-            grpTrumps.draw(batch, 1f);
+        if (GamePlay.GAME_DIRECTION != GamePlay.BidRule_Direction.NoTrump) {
+            if (grpTrumps != null)
+                grpTrumps.draw(batch, 1f);
+        }
         else
             grpBiddingNumbers.draw(batch, 1f);
+    }
+
+    private class OkClickListener extends ClickListener {
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+            Gdx.app.log("Trump/Direction selected", "Ok");
+            if (showTrump) {
+                ConfigureAndShowKitty(200);
+                ShowKitty = true;
+                ScreenTitleLabel = "";
+            }
+            grpTrumps = null;
+            btnGoPlay.setText("Play");
+            btnGoPlay.clearListeners();
+            btnGoPlay.addListener(new PlayClickListener());
+        }
     }
 
     private class PlayClickListener extends ClickListener {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-
             Gdx.app.log("Trump Selected", "Ready to play");
+
+            try {
+                bidWhistGame.ChangeScreenTo("GamePlayStage");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

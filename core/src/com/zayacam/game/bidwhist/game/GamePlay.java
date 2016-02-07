@@ -169,7 +169,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         } else {
             System.out.println();
             GamePlay.setGameDirection(bidWinner);
-            GAME_SUIT = CardSuit.NoTrump;
+            GAME_SUIT = null;
         }
         if (gameEvents != null) {
             gameEvents.GetGameBid();
@@ -389,7 +389,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         gamePlayers.stream().forEach(bidPlayer -> bidPlayer.SetHandWinner(false));
 
         System.out.println(String.format("\t\t\t\t\t\t\t\t-=< %2s %1s >=-"
-                ,GAME_SUIT != CardSuit.NoTrump ? GAME_SUIT.toString() : ""
+                , GAME_SUIT != null ? GAME_SUIT.toString() : ""
                 ,GAME_DIRECTION)
         );
         ShowTableCards(leadSuit);
@@ -663,6 +663,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         if (winnerResult) {
             GAME_BOOKS = p.getBidHand_Books();
             GAME_DIRECTION = p.getBidDirection();
+            GAME_SUIT = p.getBidSuit();
             ResetAllOtherBidAwards(p);
             bidWinner = p;
         }

@@ -1,7 +1,5 @@
 package com.zayacam.game.bidwhist.stages;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.zayacam.game.Assets;
 import com.zayacam.game.BidWhistGame;
@@ -26,7 +24,6 @@ public class BiddingStage extends _BidWhistStage {
 
     @Override
     public void act(float delta) {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         finishedBidding = bidWhistGame.gamePlay.gamePlayers
                 .stream().allMatch(p -> p.PlayerHasBidded());
 
@@ -49,11 +46,7 @@ public class BiddingStage extends _BidWhistStage {
             } else {
                 biddingPlayer = bidWinner;
                 try {
-                    if (bidWinner.getBidDirection() != GamePlay.BidRule_Direction.NoTrump) {
-                        bidWhistGame.ChangeScreenTo("DetermineTrumpStage");
-                    } else {
-                        bidWhistGame.ChangeScreenTo("GamePlayStage");
-                    }
+                    bidWhistGame.ChangeScreenTo("DetermineTrumpStage");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -64,7 +57,7 @@ public class BiddingStage extends _BidWhistStage {
     @Override
     public void draw() {
         super.draw();
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Assets.ClearScreen();
 
         batch.begin();
         batch.draw(Assets.sprite_background, 0, 0, this.getWidth(), this.getHeight());
@@ -74,10 +67,9 @@ public class BiddingStage extends _BidWhistStage {
             if (bidWinner == null) {
                 LoadBidNumberButtons();
             }
-        }
-        ShowPlayersHand(batch, biddingPlayer, 65f);
-        ShowPlayersName(batch);
+            ShowPlayersHand(batch, biddingPlayer, 65f);
+            ShowPlayersName(batch);
+            }
         batch.end();
     }
-
 }

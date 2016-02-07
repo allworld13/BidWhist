@@ -26,6 +26,7 @@ public class BidPlayer implements IBidPlayerEvents {
     private boolean isHuman;
     private int bidHand_Books ;
     private boolean playerHasBidded = false;
+    private CardSuit bidSuit;
 
     private BidPlayer() {
         id = UUID.randomUUID();
@@ -360,5 +361,9 @@ public class BidPlayer implements IBidPlayerEvents {
 
     public void setPlayerHasBidded(boolean playerHasBidded) {
         this.playerHasBidded = playerHasBidded;
+    }
+
+    public CardSuit getBidSuit() {
+        return bidSuit;
     }
 }
