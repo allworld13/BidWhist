@@ -108,6 +108,7 @@ public class TrumpSelectStage extends _BidWhistStage {
     private class PlayClickListener extends ClickListener {
         @Override
         public void clicked(InputEvent event, float x, float y) {
+
             Gdx.app.log("Trump Selected", "Ready to play");
         }
     }
