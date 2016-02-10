@@ -10,10 +10,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -98,15 +95,15 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                 getHeight() * Assets.ScreenTitleYPos);
     }
 
-    protected void ShowPlayersHand(Batch batch, BidPlayer biddingPlayer, float offSet) {
+    protected void ShowPlayersHand(Batch batch, BidPlayer bidPlayer, float offSet) {
         float P1Width = this.getWidth() * .17f;
         float P1Height = this.getHeight() * .29f;
 
         int XPos = 0;
         int cardIndex = 0;
-        if (biddingPlayer == null) return;
+        if (bidPlayer == null) return;
 
-        for (Card c : biddingPlayer.getHand()) {
+        for (Card c : bidPlayer.getHand()) {
             if (c.IsAvailable()) {
                 c.setGrpIndexName(++cardIndex);
                 c.PlayingCard().setPosition(XPos, c.PlayingCard().getY());
@@ -116,7 +113,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                 XPos += (int) (this.getWidth() * .055F);
             }
         }
-        grpSouthPlayer.setPosition(this.getWidth() / 8.5f, 2);// this.getHeight()  );
+        grpSouthPlayer.setPosition(this.getWidth() / 8.5f, 2);
         grpSouthPlayer.draw(batch, 1F);
         this.addActor(grpSouthPlayer);
     }
@@ -264,7 +261,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         grpBiddingNumbers.draw(batch, 1f);
     }
 
-    protected void ConfigureAndShowKitty(float offSet) {
+    protected void ConfigureAndShowKitty() {
         float P1Width = this.getWidth() * .17f;
         float P1Height = this.getHeight() * .29f;
 
@@ -275,6 +272,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
             c.PlayingCard().setPosition(XPos, c.PlayingCard().getY());
             c.PlayingCard().setSize(P1Width, P1Height);
             c.PlayingCard().setUserObject(c);
+
             grpKitty.addActor(c.PlayingCard());
             XPos += (int) (this.getWidth() * .045F);
         }
@@ -282,10 +280,10 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                 this.getHeight() / 2,
                 XPos, P1Height);
 
-        //grpKitty.setPosition((this.getWidth() / 2 - XPos / 2) - 30, this.getHeight() - P1Height - offSet);
-        grpKitty.setPosition((this.getWidth() / 2 - XPos / 2) - 62, this.getHeight() * 0.55f);
+        grpKitty.setPosition((this.getWidth() / 2 - XPos / 2) - 62, this.getHeight() * 0.5f);
         this.addActor(grpKitty);
         grpKitty.setVisible(true);
+        grpKitty.setTouchable(Touchable.disabled);
     }
 
     private class BidDirectionClicked extends ClickListener {

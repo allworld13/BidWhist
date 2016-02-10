@@ -129,9 +129,11 @@ public class TrumpSelectStage extends _BidWhistStage {
         public void clicked(InputEvent event, float x, float y) {
             Gdx.app.log("Trump/Direction selected", "Ok");
             if (showTrump) {
-                ConfigureAndShowKitty(200);
+                ConfigureAndShowKitty();
                 ShowKitty = true;
-                ScreenTitleLabel = "";
+                ScreenTitleLabel = "Discard  6  Cards";
+                grpTrumps.clear();
+                grpTrumps.remove();
             }
             grpTrumps = null;
             btnGoPlay.setText("Play");
