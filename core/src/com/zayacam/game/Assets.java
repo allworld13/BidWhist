@@ -38,8 +38,8 @@ public class Assets {
     public static final float PlayerCard_Y_Ratio = 2.6F;
     public static final float PlayerNameEastWest = 0.38f;
     public static final float ScreenTitleYPos = 0.9f;
-    public static final float FirstPlayerCardWidth = 0.20f;
-    public static final float FirstPlayerCardHeight = .29f;
+    public static float FirstPlayerCardWidth;
+    public static float FirstPlayerCardHeight;
 
     static {
         LoadSuits();

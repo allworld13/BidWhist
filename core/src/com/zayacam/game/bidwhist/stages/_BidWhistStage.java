@@ -57,6 +57,9 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
 
         screenTitle = new GlyphLayout();
 
+        Assets.FirstPlayerCardWidth = this.getWidth() * .20f;
+        Assets.FirstPlayerCardHeight = this.getHeight() * .28f;
+
         if (stageName.contains("MainMenuStage"))
             Assets.LoadGameScreen(true);
         else
@@ -97,8 +100,6 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
 
     protected void DrawPlayerHand(SpriteBatch batch, BidPlayer bidPlayer) {
         float EWMargin = .2F;
-        float P1Width = this.getWidth() * Assets.FirstPlayerCardWidth;
-        float P1Height = this.getHeight() * Assets.FirstPlayerCardHeight;
 
         int cardIndex = 0;
         for (BidPlayer bp : bidWhistGame.gamePlay.gamePlayers) {
@@ -107,12 +108,12 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                 case 1:
                     //South Player
                     XPos = 0;
-                    grpSouthPlayer.setPosition(this.getWidth() / 9.5f, 0);
+                    grpSouthPlayer.setPosition(this.getWidth() / 10f, 0);
                     for (Card c : bp.getHand()) {
                         if (c.IsAvailable()) {
                             c.setGrpIndexName(++cardIndex);
                             c.PlayingCard().setPosition(XPos, c.PlayingCard().getY());
-                            c.PlayingCard().setSize(P1Width, P1Height);
+                            c.PlayingCard().setSize(Assets.FirstPlayerCardWidth, Assets.FirstPlayerCardHeight);
                             c.PlayingCard().setUserObject(c);
                             grpSouthPlayer.addActor(c.PlayingCard());
                             XPos += (int) (this.getWidth() * .055F);
@@ -161,7 +162,6 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
             hasStartedPlaying = true;
         }
     }
-
 
     protected void ShowPlayersName(Batch batch) {
         String playerName = "";
@@ -307,25 +307,23 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
     }
 
     protected void ConfigureAndShowKitty() {
-        float P1Width = this.getWidth() * .17f;
-        float P1Height = this.getHeight() * .29f;
 
         grpKitty = new Group();
         grpKitty.setVisible(true);
         float XPos = 0;
         for (Card c : bidWhistGame.gamePlay.KittyHand) {
             c.PlayingCard().setPosition(XPos, c.PlayingCard().getY());
-            c.PlayingCard().setSize(P1Width, P1Height);
+            c.PlayingCard().setSize(Assets.FirstPlayerCardWidth, Assets.FirstPlayerCardHeight);
             c.PlayingCard().setUserObject(c);
 
             grpKitty.addActor(c.PlayingCard());
-            XPos += (int) (this.getWidth() * .045F);
+            XPos += (int) (this.getWidth() * .048F);
         }
         grpKitty.setBounds(this.getWidth() / 2 - XPos / 2,
                 this.getHeight() / 2,
-                XPos, P1Height);
+                XPos, Assets.FirstPlayerCardHeight);
 
-        grpKitty.setPosition((this.getWidth() / 2 - XPos / 2) - 62, this.getHeight() * 0.5f);
+        grpKitty.setPosition((this.getWidth() / 2 - XPos / 2) - 70, this.getHeight() * 0.5f);
         this.addActor(grpKitty);
         grpKitty.setVisible(true);
         grpKitty.setTouchable(Touchable.disabled);

@@ -77,13 +77,13 @@ public class TrumpSelectStage extends _BidWhistStage {
             this.addActor(grpTrumps);
             imgTrump.setPosition(XPos, 200f);
             TrumpHeight = getHeight() * .20f;
-            imgTrump.setSize(getWidth() * .17f, TrumpHeight);
+            imgTrump.setSize(getWidth() * .13f, TrumpHeight);
             imgTrump.setName(((CardSuit) imgTrump.getUserObject()).name());
             counter++;
-            XPos += 170;
+            XPos += 150;
         }
 
-        grpTrumps.setBounds(0, 0, getWidth() * .195f * 4, TrumpHeight + 500);
+        grpTrumps.setBounds(0, 0, (getWidth() / 2) + 125f, TrumpHeight + 500);
         grpTrumps.setPosition(getWidth() / 2f - grpTrumps.getWidth() / 2f, 100f);
     }
 
@@ -103,7 +103,6 @@ public class TrumpSelectStage extends _BidWhistStage {
         ShowPlayersName(batch);
         ShowPickTrumpSelection();
         DrawPlayerHand(batch, bidWinner);
-        //ShowPlayersHand(batch, bidWinner, 65f);
         if (ShowKitty)
             grpKitty.draw(batch, 1f);
 

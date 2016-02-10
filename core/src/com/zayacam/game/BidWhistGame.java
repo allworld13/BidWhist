@@ -30,6 +30,7 @@ public class BidWhistGame extends Game implements InputProcessor {
 			e.printStackTrace();
 		}
 		stage.im.addProcessor(stage);
+
 	}
 
 	@Override
