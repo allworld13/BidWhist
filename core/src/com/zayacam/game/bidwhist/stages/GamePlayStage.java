@@ -37,12 +37,12 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         bidWhistGame.gamePlay.setGameStarted(true);
         //}
 
-        this.getBatch().begin();
-        this.getBatch().draw(Assets.text_background, 0, 0, this.getWidth(), this.getHeight());
-        ShowPlayersName(this.getBatch());
-        DrawTableHand((SpriteBatch) this.getBatch());
-        ;
-        this.getBatch().end();
+        batch.begin();
+        batch.draw(Assets.text_background, 0, 0, this.getWidth(), this.getHeight());
+        ShowPlayersName(batch);
+        DrawTableHand(batch);
+        DrawPlayerHand(batch, bidWinner);
+        batch.end();
     }
 
 

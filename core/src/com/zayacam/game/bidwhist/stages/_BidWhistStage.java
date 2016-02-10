@@ -102,38 +102,36 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         float EWMargin = .2F;
 
         int cardIndex = 0;
+
+        //region South Player
+        //South Player
+        XPos = 0;
+        grpSouthPlayer.setPosition(this.getWidth() / 10f, 0);
+        for (Card c : bidPlayer.getHand()) {
+            if (c.IsAvailable()) {
+                c.setGrpIndexName(++cardIndex);
+                c.PlayingCard().setPosition(XPos, c.PlayingCard().getY());
+                c.PlayingCard().setSize(Assets.FirstPlayerCardWidth, Assets.FirstPlayerCardHeight);
+                c.PlayingCard().setUserObject(c);
+                grpSouthPlayer.addActor(c.PlayingCard());
+                XPos += (int) (this.getWidth() * .055F);
+            }
+        }
+        grpSouthPlayer.draw(batch, 1F);
+        this.addActor(grpSouthPlayer);
+
+        if (!hasStartedPlaying) {
+            System.out.println(String.format("%1f %2f  %3f",
+                    this.getWidth(),
+                    grpSouthPlayer.getWidth(),
+                    (this.getWidth() / 2 - grpSouthPlayer.getWidth() / 2)));
+
+            System.out.println(bidPlayer.getHand().GetCardsString());
+        }
+        //endregion
+
         for (BidPlayer bp : bidWhistGame.gamePlay.gamePlayers) {
             switch (bp.getIndex()) {
-                //region South Player
-                case 1:
-                    //South Player
-                    XPos = 0;
-                    grpSouthPlayer.setPosition(this.getWidth() / 10f, 0);
-                    for (Card c : bp.getHand()) {
-                        if (c.IsAvailable()) {
-                            c.setGrpIndexName(++cardIndex);
-                            c.PlayingCard().setPosition(XPos, c.PlayingCard().getY());
-                            c.PlayingCard().setSize(Assets.FirstPlayerCardWidth, Assets.FirstPlayerCardHeight);
-                            c.PlayingCard().setUserObject(c);
-                            grpSouthPlayer.addActor(c.PlayingCard());
-                            XPos += (int) (this.getWidth() * .055F);
-                        }
-                    }
-                    grpSouthPlayer.draw(batch, 1F);
-                    this.addActor(grpSouthPlayer);
-
-
-                    if (!hasStartedPlaying) {
-                        System.out.println(String.format("%1f %2f  %3f",
-                                this.getWidth(),
-                                grpSouthPlayer.getWidth(),
-                                (this.getWidth() / 2 - grpSouthPlayer.getWidth() / 2)));
-
-                        System.out.println(bp.getHand().GetCardsString());
-                    }
-                    break;
-                //endregion
-
                 //region West Player
                 case 2:
                     Assets.gfxDeck.get(Assets.CardBack).getDrawable()

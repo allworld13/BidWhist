@@ -87,7 +87,6 @@ public class TrumpSelectStage extends _BidWhistStage {
         grpTrumps.setPosition(getWidth() / 2f - grpTrumps.getWidth() / 2f, 100f);
     }
 
-
     @Override
     public void act(float delta) {
         super.act(delta);
@@ -155,7 +154,6 @@ public class TrumpSelectStage extends _BidWhistStage {
         }
     }
 
-
     private class TrumpClickListener extends ClickListener {
         CardSuit suitSelected = null;
 
@@ -169,4 +167,5 @@ public class TrumpSelectStage extends _BidWhistStage {
             Gdx.app.log("Trump Selected", suitSelected.toString() + " - " + suitSelected.name());
         }
     }
+
 }
