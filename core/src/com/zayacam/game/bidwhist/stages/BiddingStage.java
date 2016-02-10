@@ -67,7 +67,7 @@ public class BiddingStage extends _BidWhistStage {
             if (bidWinner == null) {
                 LoadBidNumberButtons();
             }
-            ShowPlayersHand(batch, biddingPlayer, 65f);
+            DrawPlayerHand(batch, bidWinner);
             ShowPlayersName(batch);
             }
         batch.end();

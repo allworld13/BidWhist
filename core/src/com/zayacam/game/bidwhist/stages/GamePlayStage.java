@@ -11,7 +11,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.zayacam.game.Assets;
 import com.zayacam.game.BidWhistGame;
 import com.zayacam.game.bidwhist.cards.Card;
-import com.zayacam.game.bidwhist.game.BidPlayer;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
@@ -42,7 +41,7 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         this.getBatch().draw(Assets.text_background, 0, 0, this.getWidth(), this.getHeight());
         ShowPlayersName(this.getBatch());
         DrawTableHand((SpriteBatch) this.getBatch());
-        DrawPlayerHand((SpriteBatch) this.getBatch());
+        ;
         this.getBatch().end();
     }
 
@@ -111,73 +110,6 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         grpTableHand.setPosition(this.getWidth() / 2, 0);
         grpTableHand.setBounds(this.getWidth() / 4, 0,
                 this.getWidth() / 6, this.getHeight() / 2);
-    }
-
-    void DrawPlayerHand(SpriteBatch batch) {
-        float EWMargin = .2F;
-        float P1Width = this.getWidth() / 8.5F;
-        float P1Height = this.getHeight() / 4.5F;
-
-        int cardIndex = 0;
-        for (BidPlayer bp : bidWhistGame.gamePlay.gamePlayers) {
-            switch (bp.getIndex()) {
-                //region South Player
-                case 1:
-                    //South Player
-                    XPos = 0;
-                    grpSouthPlayer.setPosition(this.getWidth() / 8 + 10, 0);
-                    for (Card c : bp.getHand()) {
-                        if (c.IsAvailable()) {
-                            c.setGrpIndexName(++cardIndex);
-                            c.PlayingCard().setPosition(XPos, c.PlayingCard().getY());
-                            c.PlayingCard().setSize(P1Width, P1Height);
-                            c.PlayingCard().setUserObject(c);
-                            grpSouthPlayer.addActor(c.PlayingCard());
-                            XPos += (int) (this.getWidth() * .055F);
-                        }
-                    }
-                    grpSouthPlayer.draw(batch, 1F);
-                    this.addActor(grpSouthPlayer);
-
-
-                    if (!hasStartedPlaying) {
-                        System.out.println(String.format("%1f %2f  %3f",
-                                this.getWidth(),
-                                grpSouthPlayer.getWidth(),
-                                (this.getWidth() / 2 - grpSouthPlayer.getWidth() / 2)));
-
-                        System.out.println(bp.getHand().GetCardsString());
-                    }
-                    break;
-                //endregion
-
-                //region West Player
-                case 2:
-                    Assets.gfxDeck.get(Assets.CardBack).getDrawable()
-                            .draw(batch,
-                                    (20 * EWMargin),
-                                    this.getHeight() / Assets.PlayerCard_Y_Ratio,
-                                    this.getWidth() / Assets.PlayerCardWidthRatio,
-                                    this.getHeight() * Assets.PlayerCardHeightRatio);
-                    break;
-
-                //endregion
-
-                //region East Player
-                case 4:
-                    Assets.gfxDeck.get(Assets.CardBack).getDrawable()
-                            .draw(batch,
-                                    this.getWidth() - (this.getWidth() * .120F),
-                                    this.getHeight() / Assets.PlayerCard_Y_Ratio,
-                                    this.getWidth() / Assets.PlayerCardWidthRatio,
-                                    this.getHeight() * Assets.PlayerCardHeightRatio);
-                    break;
-                //endregion
-            }
-
-            XPos += 120;
-            hasStartedPlaying = true;
-        }
     }
 
     boolean PlaySelectedCard(Actor hitActor) {

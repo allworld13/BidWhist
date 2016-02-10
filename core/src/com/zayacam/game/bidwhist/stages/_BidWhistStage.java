@@ -95,28 +95,73 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                 getHeight() * Assets.ScreenTitleYPos);
     }
 
-    protected void ShowPlayersHand(Batch batch, BidPlayer bidPlayer, float offSet) {
-        float P1Width = this.getWidth() * .17f;
-        float P1Height = this.getHeight() * .29f;
+    protected void DrawPlayerHand(SpriteBatch batch, BidPlayer bidPlayer) {
+        float EWMargin = .2F;
+        float P1Width = this.getWidth() * Assets.FirstPlayerCardWidth;
+        float P1Height = this.getHeight() * Assets.FirstPlayerCardHeight;
 
-        int XPos = 0;
         int cardIndex = 0;
-        if (bidPlayer == null) return;
+        for (BidPlayer bp : bidWhistGame.gamePlay.gamePlayers) {
+            switch (bp.getIndex()) {
+                //region South Player
+                case 1:
+                    //South Player
+                    XPos = 0;
+                    grpSouthPlayer.setPosition(this.getWidth() / 9.5f, 0);
+                    for (Card c : bp.getHand()) {
+                        if (c.IsAvailable()) {
+                            c.setGrpIndexName(++cardIndex);
+                            c.PlayingCard().setPosition(XPos, c.PlayingCard().getY());
+                            c.PlayingCard().setSize(P1Width, P1Height);
+                            c.PlayingCard().setUserObject(c);
+                            grpSouthPlayer.addActor(c.PlayingCard());
+                            XPos += (int) (this.getWidth() * .055F);
+                        }
+                    }
+                    grpSouthPlayer.draw(batch, 1F);
+                    this.addActor(grpSouthPlayer);
 
-        for (Card c : bidPlayer.getHand()) {
-            if (c.IsAvailable()) {
-                c.setGrpIndexName(++cardIndex);
-                c.PlayingCard().setPosition(XPos, c.PlayingCard().getY());
-                c.PlayingCard().setSize(P1Width, P1Height);
-                c.PlayingCard().setUserObject(c);
-                grpSouthPlayer.addActor(c.PlayingCard());
-                XPos += (int) (this.getWidth() * .055F);
+
+                    if (!hasStartedPlaying) {
+                        System.out.println(String.format("%1f %2f  %3f",
+                                this.getWidth(),
+                                grpSouthPlayer.getWidth(),
+                                (this.getWidth() / 2 - grpSouthPlayer.getWidth() / 2)));
+
+                        System.out.println(bp.getHand().GetCardsString());
+                    }
+                    break;
+                //endregion
+
+                //region West Player
+                case 2:
+                    Assets.gfxDeck.get(Assets.CardBack).getDrawable()
+                            .draw(batch,
+                                    (20 * EWMargin),
+                                    this.getHeight() / Assets.PlayerCard_Y_Ratio,
+                                    this.getWidth() / Assets.PlayerCardWidthRatio,
+                                    this.getHeight() * Assets.PlayerCardHeightRatio);
+                    break;
+
+                //endregion
+
+                //region East Player
+                case 4:
+                    Assets.gfxDeck.get(Assets.CardBack).getDrawable()
+                            .draw(batch,
+                                    this.getWidth() - (this.getWidth() * .120F),
+                                    this.getHeight() / Assets.PlayerCard_Y_Ratio,
+                                    this.getWidth() / Assets.PlayerCardWidthRatio,
+                                    this.getHeight() * Assets.PlayerCardHeightRatio);
+                    break;
+                //endregion
             }
+
+            XPos += 120;
+            hasStartedPlaying = true;
         }
-        grpSouthPlayer.setPosition(this.getWidth() / 8.5f, 2);
-        grpSouthPlayer.draw(batch, 1F);
-        this.addActor(grpSouthPlayer);
     }
+
 
     protected void ShowPlayersName(Batch batch) {
         String playerName = "";

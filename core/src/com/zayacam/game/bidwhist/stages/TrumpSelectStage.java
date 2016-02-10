@@ -102,7 +102,8 @@ public class TrumpSelectStage extends _BidWhistStage {
 
         ShowPlayersName(batch);
         ShowPickTrumpSelection();
-        ShowPlayersHand(batch, bidWinner, 65f);
+        DrawPlayerHand(batch, bidWinner);
+        //ShowPlayersHand(batch, bidWinner, 65f);
         if (ShowKitty)
             grpKitty.draw(batch, 1f);
 
