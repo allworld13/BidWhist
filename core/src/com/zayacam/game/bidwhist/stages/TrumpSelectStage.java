@@ -8,19 +8,23 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.zayacam.Utils;
 import com.zayacam.game.Assets;
 import com.zayacam.game.BidWhistGame;
+import com.zayacam.game.bidwhist.cards.Card;
 import com.zayacam.game.bidwhist.cards.CardSuit;
 import com.zayacam.game.bidwhist.game.BidPlayer;
 import com.zayacam.game.bidwhist.game.GamePlay;
+import com.zayacam.game.bidwhist.game.IKittyEvents;
 
-public class TrumpSelectStage extends _BidWhistStage {
+public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
     TextButton btnGoPlay;
     BidPlayer biddingPlayer;
     Group grpTrumps;
     Image imgTrump = null;
     float TrumpHeight;
     boolean showTrump = true;
+    int noDiscards = 0;
 
     //region ctors
     public TrumpSelectStage(BidWhistGame bidWhistGame, ScreenViewport sViewport) {
@@ -168,6 +172,12 @@ public class TrumpSelectStage extends _BidWhistStage {
 
             Gdx.app.log("Trump Selected", suitSelected.toString() + " - " + suitSelected.name());
         }
+    }
+
+    @Override
+    public void KittyCardPlayed(_BidWhistStage stage, Card selectedCard) {
+        noDiscards += selectedCard.IsRaised() ? 1 : -1;
+        Utils.log(stageName, "\t**Card selected**  : " + selectedCard.IsRaised() + " : " + noDiscards);
     }
 
 }

@@ -445,16 +445,19 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            ToggleRaiseOnCardsX(selectedCard, baseLine);
+            boolean isRaised = ToggleRaiseOnCardsX(selectedCard, baseLine);
+            if (stageName.equals("TrumpSelectStage")) {
+                ((TrumpSelectStage) (_BidWhistStage.this)).KittyCardPlayed(_BidWhistStage.this, selectedCard);
+            }
         }
     }
 
-    protected void ToggleRaiseOnCardsX(Card selectedCard, float baseLine) {
+    protected boolean ToggleRaiseOnCardsX(Card selectedCard, float baseLine) {
         boolean isRaised = !selectedCard.IsRaised();
         selectedCard.SetIsRaised(isRaised);
         selectedCard.SetReadyToPlay(isRaised);
         selectedCard.PlayingCard().setPosition(selectedCard.PlayingCard().getX(),
                 isRaised ? selectedCard.PlayingCard().getY() + Assets.P1CardYLevitate : baseLine);
+        return isRaised;
     }
-
 }

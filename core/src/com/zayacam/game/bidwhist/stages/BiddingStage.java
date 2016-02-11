@@ -73,4 +73,5 @@ public class BiddingStage extends _BidWhistStage {
             }
         batch.end();
     }
+
 }

@@ -1,6 +1,8 @@
 package com.zayacam.game.bidwhist.game;
 
-import com.zayacam.game.bidwhist.cards.*;
+import com.zayacam.game.bidwhist.cards.Card;
+import com.zayacam.game.bidwhist.cards.CardSuit;
+import com.zayacam.game.bidwhist.stages._BidWhistStage;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -42,4 +44,5 @@ public interface IGameEvents {
     void DeckCreated();
 
     void PlayerHasPassed(BidPlayer biddingPlayer);
+
 }

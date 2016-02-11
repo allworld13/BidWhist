@@ -1,5 +1,7 @@
 package com.zayacam;
 
+import com.badlogic.gdx.Gdx;
+
 import java.awt.*;
 
 /**
@@ -49,4 +51,7 @@ public class Utils {
         return result.trim();
     }
 
+    public static void log(String s, String s1) {
+        Gdx.app.log(s, s1);
+    }
 }
