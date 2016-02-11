@@ -113,7 +113,12 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
 
     protected void DrawPlayerHand(SpriteBatch batch, BidPlayer bidPlayer) {
         float EWMargin = .2F;
-        final float baseLine = bidPlayer.getHand().get(0).PlayingCard().getY();
+        float baseLine = 0;
+        try {
+            baseLine = bidPlayer.getHand().get(0).PlayingCard().getY();
+        } catch (Exception ex) {
+
+        }
         int cardIndex = 0;
 
         //region South Player
