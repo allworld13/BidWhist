@@ -306,28 +306,17 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
     }
 
     protected void ConfigureAndShowKitty() {
-        float baseLine = bidWhistGame.gamePlay.KittyHand.get(0).PlayingCard().getY();
+        float baseLine = Assets.P1YBaseLine;//bidWhistGame.gamePlay.KittyHand.get(0).PlayingCard().getY();
         grpKitty = new Group();
         grpKitty.setVisible(true);
         float XPos = 0;
         for (Card c : bidWhistGame.gamePlay.KittyHand) {
-            c.PlayingCard().setPosition(XPos, c.PlayingCard().getY());
+            c.PlayingCard().setPosition(XPos, Assets.P1YBaseLine);
+            c.SetIsRaised(false);
+            c.SetReadyToPlay(true);
             c.PlayingCard().setSize(Assets.FirstPlayerCardWidth, Assets.FirstPlayerCardHeight);
             c.PlayingCard().setUserObject(c);
-            c.PlayingCard().addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    selectedCard = (Card) event.getTarget().getUserObject();
-                    Gdx.app.log("Card Pressed", selectedCard.toString());
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    ToggleRaiseOnCardsX(selectedCard, baseLine);
-                    event.cancel();
-                }
-            });
+            c.PlayingCard().addListener(new CardClickListener(baseLine));
             grpKitty.addActor(c.PlayingCard());
             XPos += (int) (this.getWidth() * .048F);
         }
@@ -436,12 +425,36 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         return false;
     }
 
+
+    protected class CardClickListener extends ClickListener {
+        float baseLine = 0;
+
+        public CardClickListener(float baseLine) {
+            super();
+            this.baseLine = baseLine;
+        }
+
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+            event.cancel();
+            selectedCard = (Card) event.getTarget().getUserObject();
+            Gdx.app.log("Card Pressed", selectedCard.toString());
+
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            ToggleRaiseOnCardsX(selectedCard, baseLine);
+        }
+    }
+
     protected void ToggleRaiseOnCardsX(Card selectedCard, float baseLine) {
-        boolean isRaised = selectedCard.IsRaised();
-        selectedCard.SetIsRaised(!isRaised);
-        selectedCard.SetReadyToPlay(!isRaised);
+        boolean isRaised = !selectedCard.IsRaised();
+        selectedCard.SetIsRaised(isRaised);
+        selectedCard.SetReadyToPlay(isRaised);
         selectedCard.PlayingCard().setPosition(selectedCard.PlayingCard().getX(),
-                !isRaised ? selectedCard.PlayingCard().getY() + Assets.P1CardYLevitate : baseLine);
+                isRaised ? selectedCard.PlayingCard().getY() + Assets.P1CardYLevitate : baseLine);
     }
 
 }

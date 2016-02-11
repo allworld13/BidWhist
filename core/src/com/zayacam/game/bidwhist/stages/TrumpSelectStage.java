@@ -45,7 +45,6 @@ public class TrumpSelectStage extends _BidWhistStage {
         else {
             LoadDirection();
         }
-
         this.addActor(btnGoPlay);
     }
 
@@ -140,6 +139,7 @@ public class TrumpSelectStage extends _BidWhistStage {
             btnGoPlay.setText("Play");
             btnGoPlay.clearListeners();
             btnGoPlay.addListener(new PlayClickListener());
+            btnGoPlay.setVisible(false);
         }
     }
 
