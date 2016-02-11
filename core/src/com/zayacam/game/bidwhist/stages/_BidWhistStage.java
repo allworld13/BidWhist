@@ -5,12 +5,14 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.*;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -42,6 +44,9 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
     protected boolean hasStartedPlaying, finishedBidding = false;
     protected GamePlay.BidRule_Direction bidDirection = null;
     protected boolean ShowKitty = false;
+    protected int noDiscards = 0;
+    protected boolean CardSelectedAdded;
+
 
     Group grpKitty, grpSouthPlayer, grpTableHand, grpBiddingNumbers;
     Table tblBiddingNumbers;
@@ -54,7 +59,6 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         super(vPort);
         batch = new SpriteBatch();
         stageName = Utils.GetStageName(this.toString());
-
         screenTitle = new GlyphLayout();
 
         Assets.FirstPlayerCardWidth = this.getWidth() * .20f;
@@ -82,7 +86,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
     @Override
     public void draw() {
         super.draw();
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     }
 
     public String getStageName() {
@@ -99,7 +103,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
 
     protected void DrawPlayerHand(SpriteBatch batch, BidPlayer bidPlayer) {
         float EWMargin = .2F;
-
+        final float baseLine = bidPlayer.getHand().get(0).PlayingCard().getY();
         int cardIndex = 0;
 
         //region South Player
@@ -112,6 +116,10 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                 c.PlayingCard().setPosition(XPos, c.PlayingCard().getY());
                 c.PlayingCard().setSize(Assets.FirstPlayerCardWidth, Assets.FirstPlayerCardHeight);
                 c.PlayingCard().setUserObject(c);
+                if (stageName.equals("TrumpSelectStage") && !CardSelectedAdded) {
+                    c.PlayingCard().addListener(new CardClickListener());
+                }
+
                 grpSouthPlayer.addActor(c.PlayingCard());
                 XPos += (int) (this.getWidth() * .055F);
             }
@@ -305,31 +313,6 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         grpBiddingNumbers.draw(batch, 1f);
     }
 
-    protected void ConfigureAndShowKitty() {
-        float baseLine = Assets.P1YBaseLine;//bidWhistGame.gamePlay.KittyHand.get(0).PlayingCard().getY();
-        grpKitty = new Group();
-        grpKitty.setVisible(true);
-        float XPos = 0;
-        for (Card c : bidWhistGame.gamePlay.KittyHand) {
-            c.PlayingCard().setPosition(XPos, Assets.P1YBaseLine);
-            c.SetIsRaised(false);
-            c.SetReadyToPlay(true);
-            c.PlayingCard().setSize(Assets.FirstPlayerCardWidth, Assets.FirstPlayerCardHeight);
-            c.PlayingCard().setUserObject(c);
-            c.PlayingCard().addListener(new CardClickListener(baseLine));
-            grpKitty.addActor(c.PlayingCard());
-            XPos += (int) (this.getWidth() * .048F);
-        }
-        grpKitty.setBounds(this.getWidth() / 2 - XPos / 2,
-                this.getHeight() / 2,
-                XPos, Assets.FirstPlayerCardHeight);
-
-        grpKitty.setPosition((this.getWidth() / 2 - XPos / 2) - 70, this.getHeight() * 0.5f);
-        this.addActor(grpKitty);
-        grpKitty.setVisible(true);
-        grpKitty.setTouchable(Touchable.childrenOnly);
-    }
-
     private class BidDirectionClicked extends ClickListener {
         @Override
         public void clicked(InputEvent event, float x, float y) {
@@ -425,30 +408,37 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         return false;
     }
 
-
     protected class CardClickListener extends ClickListener {
-        float baseLine = 0;
+        float baseLine;
+
+        public CardClickListener() {
+            super();
+            baseLine = 0;
+        }
 
         public CardClickListener(float baseLine) {
-            super();
+            this();
             this.baseLine = baseLine;
         }
 
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            event.cancel();
             selectedCard = (Card) event.getTarget().getUserObject();
             Gdx.app.log("Card Pressed", selectedCard.toString());
+
+            boolean isRaised = ToggleRaiseOnCardsX(selectedCard, baseLine);
+            switch (stageName) {
+                case "TrumpSelectStage":
+                    ((TrumpSelectStage) (_BidWhistStage.this)).KittyCardPlayed(_BidWhistStage.this, selectedCard);
+                    break;
+            }
 
             try {
                 Thread.sleep(20);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            boolean isRaised = ToggleRaiseOnCardsX(selectedCard, baseLine);
-            if (stageName.equals("TrumpSelectStage")) {
-                ((TrumpSelectStage) (_BidWhistStage.this)).KittyCardPlayed(_BidWhistStage.this, selectedCard);
-            }
+            event.cancel();
         }
     }
 

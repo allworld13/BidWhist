@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -24,12 +25,13 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
     Image imgTrump = null;
     float TrumpHeight;
     boolean showTrump = true;
-    int noDiscards = 0;
+
 
     //region ctors
     public TrumpSelectStage(BidWhistGame bidWhistGame, ScreenViewport sViewport) {
         super(bidWhistGame, sViewport);
         ScreenTitleLabel = "Pick your trump";
+        CardSelectedAdded = false;
         if (GamePlay.GAME_DIRECTION == GamePlay.BidRule_Direction.NoTrump) {
             ScreenTitleLabel = "Select your direction";
             showTrump = false;
@@ -107,6 +109,7 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
         ShowPlayersName(batch);
         ShowPickTrumpSelection();
         DrawPlayerHand(batch, bidWinner);
+        CardSelectedAdded = true;
         if (ShowKitty)
             grpKitty.draw(batch, 1f);
 
@@ -145,6 +148,32 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
             btnGoPlay.addListener(new PlayClickListener());
             btnGoPlay.setVisible(false);
         }
+    }
+
+
+    void ConfigureAndShowKitty() {
+        float baseLine = Assets.P1YBaseLine;//bidWhistGame.gamePlay.KittyHand.get(0).PlayingCard().getY();
+        grpKitty = new Group();
+        grpKitty.setVisible(true);
+        float XPos = 0;
+        for (Card c : bidWhistGame.gamePlay.KittyHand) {
+            c.PlayingCard().setPosition(XPos, Assets.P1YBaseLine);
+            c.SetIsRaised(false);
+            c.SetReadyToPlay(true);
+            c.PlayingCard().setSize(Assets.FirstPlayerCardWidth, Assets.FirstPlayerCardHeight);
+            c.PlayingCard().setUserObject(c);
+            c.PlayingCard().addListener(new CardClickListener(baseLine));
+            grpKitty.addActor(c.PlayingCard());
+            XPos += (int) (this.getWidth() * .048F);
+        }
+        grpKitty.setBounds(this.getWidth() / 2 - XPos / 2,
+                this.getHeight() / 2,
+                XPos, Assets.FirstPlayerCardHeight);
+
+        grpKitty.setPosition((this.getWidth() / 2 - XPos / 2) - 70, this.getHeight() * 0.5f);
+        this.addActor(grpKitty);
+        grpKitty.setVisible(true);
+        grpKitty.setTouchable(Touchable.childrenOnly);
     }
 
     private class PlayClickListener extends ClickListener {
