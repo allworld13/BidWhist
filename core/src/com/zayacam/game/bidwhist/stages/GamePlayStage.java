@@ -19,6 +19,8 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
     public GamePlayStage(BidWhistGame bidWhistGame, ScreenViewport sViewport) throws InterruptedException {
         super(bidWhistGame, sViewport);
 
+        if (bidWinner == null)
+            bidWinner = bidWhistGame.gamePlay.bidWinner;
     }
 
     @Override

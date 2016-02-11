@@ -14,6 +14,7 @@ import com.zayacam.game.Assets;
 import com.zayacam.game.BidWhistGame;
 import com.zayacam.game.bidwhist.cards.Card;
 import com.zayacam.game.bidwhist.cards.CardSuit;
+import com.zayacam.game.bidwhist.cards.SortBy;
 import com.zayacam.game.bidwhist.game.BidPlayer;
 import com.zayacam.game.bidwhist.game.GamePlay;
 import com.zayacam.game.bidwhist.game.IKittyEvents;
@@ -25,12 +26,16 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
     Image imgTrump = null;
     float TrumpHeight;
     boolean showTrump = true;
+    private boolean CardsBaseLined;
 
 
     //region ctors
     public TrumpSelectStage(BidWhistGame bidWhistGame, ScreenViewport sViewport) {
         super(bidWhistGame, sViewport);
         ScreenTitleLabel = "Pick your trump";
+        CardsBaseLined = false;
+        noDiscards = 0;
+
         CardSelectedAdded = false;
         if (GamePlay.GAME_DIRECTION == GamePlay.BidRule_Direction.NoTrump) {
             ScreenTitleLabel = "Select your direction";
@@ -46,8 +51,9 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
         btnGoPlay.pad(13f, 0, 13f, 0);
         btnGoPlay.addListener(new OkClickListener());
         btnGoPlay.setVisible(false);
-        if (showTrump)
+        if (showTrump) {
             LoadTrumps();
+        }
         else {
             LoadDirection();
         }
@@ -97,12 +103,17 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
     @Override
     public void act(float delta) {
         super.act(delta);
+
     }
 
     @Override
     public void draw() {
         super.draw();
         batch.begin();
+        if (!CardsBaseLined)
+            BaseLineAllCards();
+        CardsBaseLined = true;
+
         batch.draw(Assets.sprite_background, 0, 0, this.getWidth(), this.getHeight());
         DrawTitle(batch);
 
@@ -156,6 +167,7 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
         grpKitty = new Group();
         grpKitty.setVisible(true);
         float XPos = 0;
+        bidWhistGame.gamePlay.KittyHand.SortCards(SortBy.DeckValue);
         for (Card c : bidWhistGame.gamePlay.KittyHand) {
             c.PlayingCard().setPosition(XPos, Assets.P1YBaseLine);
             c.SetIsRaised(false);
@@ -179,8 +191,16 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
     private class PlayClickListener extends ClickListener {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            Gdx.app.log("Trump Selected", "Ready to play");
+            Utils.log("Trump Selected", "Ready to play");
 
+            bidWhistGame.gamePlay.KittyHand.getCards().removeIf(c -> c.IsRaised());
+            Utils.log("Kitty Remains", Integer.toString(bidWhistGame.gamePlay.KittyHand.getCards().size()));
+            bidWinner.getHand().getCards().removeIf(c -> c.IsRaised());
+            Utils.log("BidWinner Remains", Integer.toString(bidWinner.getHand().getCards().size()));
+            bidWinner.getHand().getCards().addAll(bidWhistGame.gamePlay.KittyHand.getCards());
+            Utils.log("BidWinner Remains Final", Integer.toString(bidWinner.getHand().getCards().size()));
+
+            bidWinner.getHand().SortCards(SortBy.DeckValue);
             try {
                 bidWhistGame.ChangeScreenTo("GamePlayStage");
             } catch (InterruptedException e) {
@@ -207,6 +227,12 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
     public void KittyCardPlayed(_BidWhistStage stage, Card selectedCard) {
         noDiscards += selectedCard.IsRaised() ? 1 : -1;
         Utils.log(stageName, "\t**Card selected**  : " + selectedCard.IsRaised() + " : " + noDiscards);
+    }
+
+    @Override
+    public void ReadyToDiscard(boolean b) {
+        Utils.log(stageName, GamePlay.MAX_CARDS_TO_DISCARD + " selected, ready to discard!");
+        btnGoPlay.setVisible(b);
     }
 
 }

@@ -3,7 +3,6 @@ package com.zayacam.game.bidwhist.game;
 import com.zayacam.Utils;
 import com.zayacam.game.Assets;
 import com.zayacam.game.bidwhist.cards.*;
-import com.zayacam.game.bidwhist.stages._BidWhistStage;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -11,7 +10,6 @@ import java.util.stream.Collectors;
 public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard {
 
     public BidPlayer CurrentBidder;
-
     public enum BidRule_Number_Range {
         PASS(0),
         MIN_BID(3),
@@ -26,12 +24,12 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         public int getValue() {
             return id;
         }
+
     }
     public enum BidRule_Direction {
         Downtown(1),
         Uptown(2),
         NoTrump(3);
-
         final int id;
 
         BidRule_Direction(int id) {
@@ -54,10 +52,12 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     }
 
     public Deck deck;
+
     public static IGameEvents gameEvents;
     public boolean SportKitty;
     public boolean ShowKitty;
-    public final int MAX_PLAYER_HANDSIZE = 12;
+    public static final int MAX_CARDS_TO_DISCARD = 6;
+    public static final int MAX_PLAYER_HANDSIZE = 12;
     public final int MAX_NO_PLAYERS = 4;
     public ArrayList<BidPlayer> gamePlayers;
     public Hand KittyHand;

@@ -5,4 +5,6 @@ import com.zayacam.game.bidwhist.stages._BidWhistStage;
 
 public interface IKittyEvents {
     void KittyCardPlayed(_BidWhistStage stage, Card selectedCard);
+
+    void ReadyToDiscard(boolean b);
 }

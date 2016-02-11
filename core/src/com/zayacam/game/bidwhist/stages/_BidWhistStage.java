@@ -76,6 +76,16 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         grpBiddingNumbers = new Group();
     }
 
+    protected void BaseLineAllCards() {
+        for (BidPlayer p : bidWhistGame.gamePlay.gamePlayers) {
+            for (Card c : p.getHand().getCards()) {
+                c.PlayingCard().setPosition(c.PlayingCard().getX(), Assets.P1YBaseLine);
+                c.SetReadyToPlay(false);
+                c.SetAvailable(true);
+            }
+        }
+    }
+
     public _BidWhistStage(BidWhistGame bidWhistGame, ScreenViewport vPort) {
         this(vPort);
         this.bidWhistGame = bidWhistGame ;
@@ -425,11 +435,18 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         public void clicked(InputEvent event, float x, float y) {
             selectedCard = (Card) event.getTarget().getUserObject();
             Gdx.app.log("Card Pressed", selectedCard.toString());
-
-            boolean isRaised = ToggleRaiseOnCardsX(selectedCard, baseLine);
+            boolean isRaised;
             switch (stageName) {
                 case "TrumpSelectStage":
-                    ((TrumpSelectStage) (_BidWhistStage.this)).KittyCardPlayed(_BidWhistStage.this, selectedCard);
+                    if (noDiscards <= GamePlay.MAX_CARDS_TO_DISCARD) {
+                        isRaised = ToggleRaiseOnCardsX(selectedCard, baseLine);
+                        ((TrumpSelectStage) (_BidWhistStage.this)).KittyCardPlayed(_BidWhistStage.this, selectedCard);
+                    }
+                    if (noDiscards == GamePlay.MAX_CARDS_TO_DISCARD) {
+                        ((TrumpSelectStage) (_BidWhistStage.this)).ReadyToDiscard(true);
+                    } else {
+                        ((TrumpSelectStage) (_BidWhistStage.this)).ReadyToDiscard(false);
+                    }
                     break;
             }
 
