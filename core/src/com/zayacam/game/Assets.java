@@ -30,7 +30,7 @@ public class Assets {
     public static final int CardHeight = 343;
     public static final int CardBack = 54;
     public static final float P1YBaseLine = 5;
-    public static final float P1CardYLevitate = 20f;
+    public static final float P1CardYLevitate = 30f;
     public static final float MainMenuButton_Width = .20f;
     public static final float MainMenuButton_Height = .10f;
     public static final float PlayerCardHeightRatio = 0.25F;
@@ -64,8 +64,9 @@ public class Assets {
     }
 
     private static void initSprite() {
-        sprite_background = new Sprite(text_background, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         text_background.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        sprite_background = new Sprite(text_background, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        sprite_background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     public static void DrawDeckOfCards() {

@@ -22,6 +22,7 @@ public class TrumpSelectStage extends _BidWhistStage {
     float TrumpHeight;
     boolean showTrump = true;
 
+    //region ctors
     public TrumpSelectStage(BidWhistGame bidWhistGame, ScreenViewport sViewport) {
         super(bidWhistGame, sViewport);
         ScreenTitleLabel = "Pick your trump";
@@ -48,6 +49,7 @@ public class TrumpSelectStage extends _BidWhistStage {
         this.addActor(btnGoPlay);
     }
 
+    //endregion
     private void LoadDirection() {
     }
 

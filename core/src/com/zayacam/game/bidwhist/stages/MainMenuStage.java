@@ -38,6 +38,7 @@ public class MainMenuStage extends _BidWhistStage {
         tblMenuOptions.add(btnGameButton).align(Align.left);
 
         this.addActor(tblMenuOptions);
+        this.setKeyboardFocus(tblMenuOptions);
         //endregion
     }
 

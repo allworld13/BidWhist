@@ -24,6 +24,7 @@ public class BiddingStage extends _BidWhistStage {
 
     @Override
     public void act(float delta) {
+        Assets.ClearScreen();
         finishedBidding = bidWhistGame.gamePlay.gamePlayers
                 .stream().allMatch(p -> p.PlayerHasBidded());
 

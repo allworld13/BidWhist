@@ -67,7 +67,6 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
 
         Assets.sprite_background.setRegion(Assets.text_background);
         setKeyboardFocus(currentScreen);
-        im = new InputMultiplexer(this);
 
         grpSouthPlayer = new Group();
         grpBiddingNumbers = new Group();
@@ -237,6 +236,8 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
             if (GamePlay.GAME_BOOKS == 0 || i > GamePlay.GAME_BOOKS ||
                     i == GamePlay.GAME_BOOKS && GamePlay.GAME_DIRECTION != GamePlay.BidRule_Direction.NoTrump) {
                 tblNumbers.add(btnNumber);
+            } else {
+                btnNumber.remove();
             }
         }
         tblBiddingNumbers.add(tblNumbers);
@@ -305,7 +306,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
     }
 
     protected void ConfigureAndShowKitty() {
-
+        float baseLine = bidWhistGame.gamePlay.KittyHand.get(0).PlayingCard().getY();
         grpKitty = new Group();
         grpKitty.setVisible(true);
         float XPos = 0;
@@ -313,7 +314,20 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
             c.PlayingCard().setPosition(XPos, c.PlayingCard().getY());
             c.PlayingCard().setSize(Assets.FirstPlayerCardWidth, Assets.FirstPlayerCardHeight);
             c.PlayingCard().setUserObject(c);
-
+            c.PlayingCard().addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    selectedCard = (Card) event.getTarget().getUserObject();
+                    Gdx.app.log("Card Pressed", selectedCard.toString());
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    ToggleRaiseOnCardsX(selectedCard, baseLine);
+                    event.cancel();
+                }
+            });
             grpKitty.addActor(c.PlayingCard());
             XPos += (int) (this.getWidth() * .048F);
         }
@@ -324,7 +338,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         grpKitty.setPosition((this.getWidth() / 2 - XPos / 2) - 70, this.getHeight() * 0.5f);
         this.addActor(grpKitty);
         grpKitty.setVisible(true);
-        grpKitty.setTouchable(Touchable.disabled);
+        grpKitty.setTouchable(Touchable.childrenOnly);
     }
 
     private class BidDirectionClicked extends ClickListener {
@@ -377,7 +391,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
             //region move forward
             case Input.Keys.SPACE:
                 Gdx.app.log(fromStage, "Leaving");
-                Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+                Assets.ClearScreen();
                 switch (fromStage) {
                     case "MainMenuStage":
                         toStage = "BiddingStage";
@@ -421,4 +435,13 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         }
         return false;
     }
+
+    protected void ToggleRaiseOnCardsX(Card selectedCard, float baseLine) {
+        boolean isRaised = selectedCard.IsRaised();
+        selectedCard.SetIsRaised(!isRaised);
+        selectedCard.SetReadyToPlay(!isRaised);
+        selectedCard.PlayingCard().setPosition(selectedCard.PlayingCard().getX(),
+                !isRaised ? selectedCard.PlayingCard().getY() + Assets.P1CardYLevitate : baseLine);
+    }
+
 }

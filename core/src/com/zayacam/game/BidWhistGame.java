@@ -2,6 +2,7 @@ package com.zayacam.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -29,14 +30,12 @@ public class BidWhistGame extends Game implements InputProcessor {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		stage.im.addProcessor(stage);
 	}
 
 	@Override
 	public void render() {
-		super.render();
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+		//super.render();
+		Assets.ClearScreen();
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();
 	}
@@ -60,8 +59,7 @@ public class BidWhistGame extends Game implements InputProcessor {
 				LoadGamePlay();
 				break;
 		}
-		stage.im.addProcessor(0, stage);
-		stage.im.addProcessor(1, this);
+		stage.im = new InputMultiplexer(stage, this);
 		Gdx.input.setInputProcessor(stage.im);
 	}
 
@@ -176,5 +174,5 @@ public class BidWhistGame extends Game implements InputProcessor {
 	}
 
 
-	//endregion
+//endregion
 }
