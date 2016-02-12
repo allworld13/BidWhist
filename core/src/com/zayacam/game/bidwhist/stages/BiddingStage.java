@@ -70,8 +70,12 @@ public class BiddingStage extends _BidWhistStage {
             }
             DrawPlayerHand(batch, biddingPlayer);
             ShowPlayersName(batch);
-            }
+        }
+        if (bidWhistGame.gamePlay.BidAwarded()) {
+            ShowGameBid();
+        }
         batch.end();
     }
+
 
 }

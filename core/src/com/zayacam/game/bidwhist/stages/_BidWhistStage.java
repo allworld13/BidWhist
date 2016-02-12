@@ -76,16 +76,6 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         grpBiddingNumbers = new Group();
     }
 
-    protected void BaseLineAllCards() {
-        for (BidPlayer p : bidWhistGame.gamePlay.gamePlayers) {
-            for (Card c : p.getHand().getCards()) {
-                c.PlayingCard().setPosition(c.PlayingCard().getX(), Assets.P1YBaseLine);
-                c.SetReadyToPlay(false);
-                c.SetAvailable(true);
-            }
-        }
-    }
-
     public _BidWhistStage(BidWhistGame bidWhistGame, ScreenViewport vPort) {
         this(vPort);
         this.bidWhistGame = bidWhistGame ;
@@ -97,6 +87,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
     public void draw() {
         super.draw();
         //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
     }
 
     public String getStageName() {
@@ -163,7 +154,6 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                                     this.getWidth() / Assets.PlayerCardWidthRatio,
                                     this.getHeight() * Assets.PlayerCardHeightRatio);
                     break;
-
                 //endregion
 
                 //region East Player
@@ -472,4 +462,25 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                 isRaised ? selectedCard.PlayingCard().getY() + Assets.P1CardYLevitate : baseLine);
         return isRaised;
     }
+
+    protected void BaseLineAllCards() {
+        for (BidPlayer p : bidWhistGame.gamePlay.gamePlayers) {
+            for (Card c : p.getHand().getCards()) {
+                c.PlayingCard().setPosition(c.PlayingCard().getX(), Assets.P1YBaseLine);
+                c.SetReadyToPlay(false);
+                c.SetAvailable(true);
+            }
+        }
+    }
+
+
+    protected void ShowGameBid() {
+        Assets.textBounds = new GlyphLayout();
+        Assets.DefaultFont.setColor(Color.RED);
+        Assets.textBounds.setText(Assets.DefaultFont, bidWhistGame.gamePlay.GetGameBid());
+        Assets.DefaultFont.draw(batch, Assets.textBounds, this.getWidth() -
+                Assets.textBounds.width - 5f, getHeight() * 0.90f);
+
+    }
+
 }

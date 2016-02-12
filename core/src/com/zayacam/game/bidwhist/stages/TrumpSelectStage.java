@@ -126,6 +126,10 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
 
         if (btnGoPlay.isVisible())
             btnGoPlay.draw(batch, 1f);
+
+        if (bidWhistGame.gamePlay.BidAwarded()) {
+            ShowGameBid();
+        }
         batch.end();
     }
 

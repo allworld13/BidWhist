@@ -14,6 +14,8 @@ public class Assets {
     //public static final Dialog PopMessage = new Dialog("",Assets.Skins);
     public static final BitmapFont PlayerNameFont = new BitmapFont(Gdx.files.internal("fonts/DancingScript.fnt"));
     public static final BitmapFont ScreenTitleFont = new BitmapFont(Gdx.files.internal("fonts/ScreenTitle.fnt"));
+    public static final BitmapFont DefaultFont = new BitmapFont(Gdx.files.internal("fonts/roboto.fnt"));
+
     public static final Skin Skins = new Skin(Gdx.files.internal("uiskin.json"));
     public static Animation loading_animation;
     public static ArrayList<Image> gfxDeck;

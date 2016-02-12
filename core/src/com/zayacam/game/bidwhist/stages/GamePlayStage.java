@@ -44,6 +44,9 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         ShowPlayersName(batch);
         DrawTableHand(batch);
         DrawPlayerHand(batch, bidWinner);
+        if (bidWhistGame.gamePlay.BidAwarded()) {
+            ShowGameBid();
+        }
         batch.end();
     }
 

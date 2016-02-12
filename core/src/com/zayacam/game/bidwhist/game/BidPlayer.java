@@ -58,6 +58,8 @@ public class BidPlayer implements IBidPlayerEvents {
 
     public void setAwardedTheBid(boolean awardedTheBid) {
         this.awardedTheBid = awardedTheBid;
+        if (awardedTheBid)
+            gameEvents.BidAwarded();
     }
 
     private GamePlay.BidRule_Direction bidHand_Direction;

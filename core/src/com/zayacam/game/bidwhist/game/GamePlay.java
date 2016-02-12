@@ -65,7 +65,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     public static BidRule_Direction GAME_DIRECTION;
     public static CardSuit GAME_SUIT;
     public static int GAME_BOOKS;
-
+    public static boolean bidAwarded = false;
 
     private boolean gameStarted = false;
     private UUID id;
@@ -554,10 +554,12 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         StringBuilder sb = new StringBuilder();
         try {
 
-            sb.append(String.format("\t -=[ %1s %2s %3s ]=- ", Integer.toString(GAME_BOOKS),
-                    GAME_SUIT != null ? GAME_SUIT.name() : " ",
+            sb.append(String.format("%1s %2s\n",
+                    Integer.toString(GAME_BOOKS),
                     GAME_DIRECTION.name())
             );
+            sb.append(GAME_SUIT != null ? GAME_SUIT.name() : "");
+
         } catch (Exception ex) {
 
         }
@@ -656,8 +658,8 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     }
 
     @Override
-    public void BidAwarded() {
-        // TODO: 1/3/2016
+    public boolean BidAwarded() {
+        return GAME_BOOKS > 0 ? true : false;
     }
 
     private void AwardPlayerTheBid(BidPlayer p, boolean winnerResult) {

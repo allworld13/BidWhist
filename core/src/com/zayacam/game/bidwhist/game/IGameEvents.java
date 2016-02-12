@@ -2,7 +2,6 @@ package com.zayacam.game.bidwhist.game;
 
 import com.zayacam.game.bidwhist.cards.Card;
 import com.zayacam.game.bidwhist.cards.CardSuit;
-import com.zayacam.game.bidwhist.stages._BidWhistStage;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -23,7 +22,7 @@ public interface IGameEvents {
 
     void WonThisHand(BidPlayer bidPlayer);
 
-    void BidAwarded();
+    boolean BidAwarded();
     void EndGame(ArrayList<BidPlayer> gamePlayers);
     void TeamWonGameBid(int teamScore, BidPlayer winner);
 
