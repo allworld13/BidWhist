@@ -147,7 +147,10 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
             newPlayer.setTeamId(teamIndex);
             newPlayer.getHand().AddCard(deck.Deal(MAX_PLAYER_HANDSIZE));
             newPlayer.getHand().SortCards(SortBy.DeckValue);
-            if (i == 0) newPlayer.setHuman(true); else newPlayer.setHuman(false);
+            if (i == 0) {
+                newPlayer.setHuman(true);
+                newPlayer.setPlayerName("AllWorld");
+            } else newPlayer.setHuman(false);
 
             gamePlayers.add(newPlayer);
             newPlayer.setIndex(gamePlayers.size());
@@ -553,7 +556,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     public String GetGameBid() {
         StringBuilder sb = new StringBuilder();
         try {
-
+            sb.append(bidWinner.getPlayerName() + "\n");
             sb.append(String.format("%1s %2s\n",
                     Integer.toString(GAME_BOOKS),
                     GAME_DIRECTION.name())

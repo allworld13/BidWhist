@@ -476,7 +476,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
 
     protected void ShowGameBid() {
         Assets.textBounds = new GlyphLayout();
-        Assets.DefaultFont.setColor(Color.RED);
+        Assets.DefaultFont.setColor(Color.WHITE);
         Assets.textBounds.setText(Assets.DefaultFont, bidWhistGame.gamePlay.GetGameBid());
         Assets.DefaultFont.draw(batch, Assets.textBounds, this.getWidth() -
                 Assets.textBounds.width - 5f, getHeight() * 0.90f);

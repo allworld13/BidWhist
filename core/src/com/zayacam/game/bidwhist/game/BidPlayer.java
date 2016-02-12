@@ -161,6 +161,10 @@ public class BidPlayer implements IBidPlayerEvents {
         return playerName.trim();
     }
 
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName.trim();
+    }
+
     public Hand getHand() {
         return hand;
     }
