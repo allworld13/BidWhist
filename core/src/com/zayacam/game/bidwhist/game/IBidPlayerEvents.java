@@ -17,4 +17,7 @@ public interface IBidPlayerEvents {
 
     boolean PlayerHasBidded();
 
+    boolean HasPlayed();
+
+    void PlayerHasPlayed(boolean hasPlayed, Card selectedCard);
 }

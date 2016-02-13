@@ -9,7 +9,8 @@ import java.util.stream.Collectors;
 
 public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard {
 
-    public BidPlayer CurrentBidder;
+    private boolean gamePlayerOrderSet;
+
     public enum BidRule_Number_Range {
         PASS(0),
         MIN_BID(3),
@@ -100,6 +101,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     public void Init() {
         ShowKitty = false;
         SportKitty = false;
+        tableHand = new TableHand();
         InitializeDeck();
         InitializeKitty();
         InitializePlayers();
@@ -220,7 +222,8 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
 
     @Override
     public UUID StartingNewGame() {
-        System.out.println("\n*** Starting New Game");
+
+        Utils.log(getName(), "*** Starting New Game");
         return this.id;
     }
 
@@ -305,7 +308,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     /*
         Sets the order in which the players will play the game:
      */
-    private void setGamePlayerPlayOrder(BidPlayer bidWinner) {
+    public void setGamePlayerPlayOrder(BidPlayer bidWinner) {
         System.out.println("\n*** Setting Player's playing order");
         //System.out.println(" ***[ " + bidWinner.getPlayerName() + " ]***");
         int indexer = 0;
@@ -329,7 +332,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     private void ShowPlayersGamePlayOrder() {
         Collections.sort(gamePlayers, new ComparePlayerTo(SortBy.PlayerOrder));
         int indexer = 0;
-/*
+
         for (BidPlayer bp : gamePlayers) {
             indexer++;
             System.out.print(indexer == 1 ? "*" : " ");
@@ -338,7 +341,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
                     bp.getPlayOrder())
             );
         }
-*/
+
     }
 
     /*
@@ -370,17 +373,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     public boolean PlayerThrewOffSuit(CardPlay cardPlayed, CardSuit leadSuit) {
         cardPlayed.card.setBidDud(true);
         cardPlayed.player.SetHandWinner(false);
-        return true;
-    }
-
-    @Override
-    public boolean PlayerPlays(CardPlay play, CardSuit leadSuit) {
-        //add card to the table hand
-        tableHand.add(play);
-
-        System.out.println(String.format("%1s played  %2s",
-                play.player.getPlayerName(),
-                play.card.toStringBef()));
         return true;
     }
 
@@ -728,6 +720,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
             gameEvents.TeamLostGameBid(teamScore, bidWinner);
     }
 
+    /*
      public void PlayTheGame() throws InterruptedException {
 
         int inputStr;
@@ -841,6 +834,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         gameEvents.EndGame(gamePlayers);
         System.out.println("Done!");
     }
+*/
 
     private boolean BidWinnerHasMadeBidButNoBoston(BidPlayer bidWinner) {
         boolean result = false;
@@ -935,8 +929,28 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     }
 
     @Override
+    public boolean PlayerPlayed(CardPlay played) {
+        //add card to the table hand
+        tableHand.add(played);
+
+        System.out.println(String.format("%1s played  %2s",
+                played.player.getPlayerName(),
+                played.card.toStringBef()));
+        return true;    }
+
+    @Override
     public void PlayerHasPassed(BidPlayer biddingPlayer) {
         biddingPlayer.setPlayerHasBidded(true);
+    }
+
+    @Override
+    public void SetGamePlayerOrder(boolean playerOrderSet) {
+        this.gamePlayerOrderSet = playerOrderSet;
+    }
+
+    @Override
+    public boolean GamePlayerOrderSet() {
+        return gamePlayerOrderSet ;
     }
 
 

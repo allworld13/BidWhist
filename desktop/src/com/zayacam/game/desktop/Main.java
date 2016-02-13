@@ -50,6 +50,6 @@ public class Main {
     public static void RunNewGame() throws InterruptedException {
         GamePlay game = new GamePlay();
         game.Init();
-        game.PlayTheGame();
+        //game.PlayTheGame();
     }
 }

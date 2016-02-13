@@ -27,6 +27,7 @@ public class BidPlayer implements IBidPlayerEvents {
     private int bidHand_Books ;
     private boolean playerHasBidded = false;
     private CardSuit bidSuit;
+    private boolean playerHasPlayed = false;
 
     private BidPlayer() {
         id = UUID.randomUUID();
@@ -363,6 +364,20 @@ public class BidPlayer implements IBidPlayerEvents {
     @Override
     public boolean PlayerHasBidded() {
         return playerHasBidded;
+    }
+
+    @Override
+    public boolean HasPlayed() {
+        return playerHasPlayed;
+    }
+
+    @Override
+    public void PlayerHasPlayed(boolean hasPlayed, Card selectedCard) {
+        this.playerHasPlayed = hasPlayed;
+        if (playerHasPlayed) {
+            CardPlay cardPlayed = new CardPlay(this,selectedCard);
+            gameEvents.PlayerPlayed(cardPlayed);
+        }
     }
 
     public void setPlayerHasBidded(boolean playerHasBidded) {

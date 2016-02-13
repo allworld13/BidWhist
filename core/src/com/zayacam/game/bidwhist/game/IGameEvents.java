@@ -14,7 +14,8 @@ public interface IGameEvents {
     void AwardKittyToPlayer(BidPlayer bidWinner);
     String GetGameBid();
     void PlayerHasBidded(BidPlayer biddingPlayer);
-    boolean PlayerPlays(CardPlay played, CardSuit leadSuit);
+
+    boolean PlayerPlayed(CardPlay played);
     BidPlayer JudgeTable(int gameRound, CardSuit leadSuit);
     boolean PlayerHasRenege(CardPlay cardPlayed, CardSuit leadSuit) throws InterruptedException;
     boolean PlayerThrewOffSuit(CardPlay cardPlay, CardSuit leadSuit);
@@ -43,5 +44,9 @@ public interface IGameEvents {
     void DeckCreated();
 
     void PlayerHasPassed(BidPlayer biddingPlayer);
+
+    void SetGamePlayerOrder(boolean b);
+
+    boolean GamePlayerOrderSet();
 
 }

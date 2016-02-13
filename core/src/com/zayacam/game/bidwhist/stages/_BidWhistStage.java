@@ -30,6 +30,7 @@ import com.zayacam.game.bidwhist.game.GamePlay;
 public abstract class _BidWhistStage extends Stage implements InputProcessor {
 
     public InputMultiplexer im;
+    protected BidPlayer currentPlayer;
 
     protected String stageName;
     protected String ScreenTitleLabel = "";
@@ -205,11 +206,16 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                     break;
             }
             Assets.PlayerNameFont.setColor(Color.WHITE);
-            if (biddingPlayer == null && bidWinner != null && bidWinner.getPlayerName() == playerName)
-                Assets.PlayerNameFont.setColor(Color.GOLD);
-            else if (biddingPlayer == null) {
-            } else if (biddingPlayer.getPlayerName() == playerName)
-                Assets.PlayerNameFont.setColor(Color.GOLD);
+            if (stageName.equals("GamePlayStage")) {
+                if (currentPlayer == bp)
+                    Assets.PlayerNameFont.setColor(Color.GOLD);
+            } else {
+                if (biddingPlayer == null && bidWinner != null && bidWinner.getPlayerName() == playerName)
+                    Assets.PlayerNameFont.setColor(Color.GOLD);
+                else if (biddingPlayer == null) {
+                } else if (biddingPlayer.getPlayerName() == playerName)
+                    Assets.PlayerNameFont.setColor(Color.GOLD);
+            }
             Assets.PlayerNameFont.draw(batch, playerName, X, Y);
         }
     }

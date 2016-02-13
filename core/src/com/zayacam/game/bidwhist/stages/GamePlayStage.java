@@ -11,10 +11,12 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.zayacam.game.Assets;
 import com.zayacam.game.BidWhistGame;
 import com.zayacam.game.bidwhist.cards.Card;
+import com.zayacam.game.bidwhist.game.BidPlayer;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
 public class GamePlayStage extends _BidWhistStage implements InputProcessor {
+
 
     public GamePlayStage(BidWhistGame bidWhistGame, ScreenViewport sViewport) throws InterruptedException {
         super(bidWhistGame, sViewport);
@@ -26,6 +28,20 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
     @Override
     public void act(float delta) {
         super.act(delta);
+        if (!bidWhistGame.gamePlay.GamePlayerOrderSet()) {
+            bidWhistGame.gamePlay.setGamePlayerPlayOrder(bidWinner);
+            bidWhistGame.gamePlay.SetGamePlayerOrder(true);
+        }
+        for (BidPlayer bp : bidWhistGame.gamePlay.gamePlayers) {
+            if (!bp.HasPlayed()) {
+                currentPlayer = bp;
+                break;
+            }
+            else {
+                //bidWhistGame.gamePlay.ValidatePlayersPlay(bp);
+                bp.PlayerHasPlayed(true, selectedCard);
+            }
+        }
     }
 
     @Override
@@ -71,6 +87,8 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                 if (PlaySelectedCard(hitActor)) {
                     grpSouthPlayer.removeActor(hitActor);
                     AddToTableHand(hitActor);
+                    currentPlayer.PlayerHasPlayed(true, selectedCard);
+
                 }
             } else {
                 if (selectedCard != null) {
@@ -94,6 +112,9 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        } else {
+
+
         }
         return true;
     }
