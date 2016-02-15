@@ -1,16 +1,11 @@
 package com.zayacam.game.bidwhist.game;
 
 import com.zayacam.game.bidwhist.cards.Card;
-import com.zayacam.game.bidwhist.cards.CardSuit;
-import com.zayacam.game.bidwhist.cards.SortBy;
-
-import java.util.ArrayList;
-import java.util.Collections;
 
 public class CardPlay {
     private int playRound;
-    BidPlayer player;
-    Card card;
+    public BidPlayer player;
+    public Card card;
 
     public CardPlay(BidPlayer player, Card card) {
         this.player = player;

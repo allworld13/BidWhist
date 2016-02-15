@@ -373,12 +373,17 @@ public class BidPlayer implements IBidPlayerEvents {
 
     @Override
     public void PlayerHasPlayed(boolean hasPlayed, Card selectedCard) {
-        this.playerHasPlayed = hasPlayed;
+        SetPlayerHasPlayed(hasPlayed);
         if (playerHasPlayed) {
             CardPlay cardPlayed = new CardPlay(this,selectedCard);
-            gameEvents.PlayerPlayed(cardPlayed);
+            //gameEvents.PlayerPlayed(cardPlayed,null);
         }
     }
+
+    public void SetPlayerHasPlayed(boolean hasPlayed) {
+        this.playerHasPlayed = hasPlayed;
+    }
+
 
     public void setPlayerHasBidded(boolean playerHasBidded) {
         this.playerHasBidded = playerHasBidded;

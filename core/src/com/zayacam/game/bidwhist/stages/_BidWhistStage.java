@@ -24,6 +24,7 @@ import com.zayacam.Utils;
 import com.zayacam.game.Assets;
 import com.zayacam.game.BidWhistGame;
 import com.zayacam.game.bidwhist.cards.Card;
+import com.zayacam.game.bidwhist.cards.CardSuit;
 import com.zayacam.game.bidwhist.game.BidPlayer;
 import com.zayacam.game.bidwhist.game.GamePlay;
 
@@ -42,6 +43,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
     protected Vector2 touchCoord, touchedVector;
     protected Actor hitActor;
     protected Card selectedCard;
+    protected CardSuit cardPlayedSuit;
     protected boolean hasStartedPlaying, finishedBidding = false;
     protected GamePlay.BidRule_Direction bidDirection = null;
     protected boolean ShowKitty = false;

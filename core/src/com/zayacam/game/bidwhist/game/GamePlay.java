@@ -9,7 +9,14 @@ import java.util.stream.Collectors;
 
 public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard {
 
+    public static boolean PlayerOrderSet;
     private boolean gamePlayerOrderSet;
+
+    public boolean AllPlayersPlayedRound() {
+        boolean result = false;
+        result = gamePlayers.stream().allMatch(bp -> bp.HasPlayed());
+        return result;
+    }
 
     public enum BidRule_Number_Range {
         PASS(0),
@@ -67,8 +74,8 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     public static CardSuit GAME_SUIT;
     public static int GAME_BOOKS;
     public static boolean bidAwarded = false;
-
     private boolean gameStarted = false;
+
     private UUID id;
     private GameTable gameTable;
     private TableHand tableHand;
@@ -83,7 +90,8 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     private boolean hasGameCompleted;
     private int team1Score, team2Score;
     //private boolean downTownBeatsUpTown;
-
+    private CardSuit leadSuit = null;
+    private int playerPlayCount = 0;
 
     //region ctors
     public GamePlay() {
@@ -121,7 +129,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     void CreateDeck() {
         deck = null;
         deck = new Deck(this, false);
-
     }
 
     void ShuffleDeck() {
@@ -181,7 +188,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
             gameEvents.GetGameBid();
             gameEvents.AwardKittyToPlayer(bidWinner);
         }
-        setGamePlayerPlayOrder(bidWinner);
+        SetGamePlayerPlayOrder(bidWinner);
     }
 
     void collectPlayersBids() {
@@ -290,58 +297,54 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     }
 
     @Override
-    public boolean PlayThisCard(Card c) {
-        boolean result = false;
-        for (BidPlayer bp : gamePlayers) {
-            result =  bp.getHand().getCards().stream()
-                    .anyMatch(xx->xx.getDeckValue() == c.getDeckValue());
-            if (result) {
-                c.SetAvailable(false);
-                bp.getHand().remove(c);
-                result = true;
-                break;
-            }
+    public boolean PlaySelectedCard(CardPlay cardPlay) throws InterruptedException {
+        boolean validPlay = false;
+
+        if (cardPlay.player.getPlayOrder() == 1) {
+            leadSuit = cardPlay.card.getCardSuit();
         }
-        return result;
+        if (cardPlay.card.getCardSuit().equals(leadSuit))
+            validPlay = true;
+        else if (!cardPlay.player.HasSuit(cardPlay.card.getCardSuit())) {
+            if (GAME_SUIT.equals(cardPlay.card.getCardSuit()))
+                gameEvents.PlayerPlaysTrump(cardPlay);
+            else
+                gameEvents.PlayerThrewOffSuit(cardPlay, leadSuit);
+            validPlay = true;
+        } else {
+            gameEvents.PlayerHasRenege(cardPlay, leadSuit);
+        }
+
+        if (validPlay) {
+            cardPlay.card.SetAvailable(false);
+            cardPlay.player.getHand().remove(cardPlay);
+        }
+        return validPlay;
     }
 
     /*
         Sets the order in which the players will play the game:
      */
-    public void setGamePlayerPlayOrder(BidPlayer bidWinner) {
+    public void SetGamePlayerPlayOrder(BidPlayer roundWinner) {
         System.out.println("\n*** Setting Player's playing order");
         //System.out.println(" ***[ " + bidWinner.getPlayerName() + " ]***");
         int indexer = 0;
+        gamePlayers.parallelStream().forEach(x -> x.setPlayOrder(5));
+
 
         Collections.sort(gamePlayers, new ComparePlayerTo(SortBy.PlayerIndex));
         for (BidPlayer bp : gamePlayers.stream()
-                .filter(gp -> gp.getIndex() >= bidWinner.getIndex())
+                .filter(gp -> gp.getIndex() >= roundWinner.getIndex())
                 .collect(Collectors.toList())) {
             bp.setPlayOrder(++indexer);
         }
 
         for (BidPlayer bp : gamePlayers.stream()
-                .filter(gp -> gp.getIndex() < bidWinner.getIndex())
+                .filter(gp -> gp.getIndex() < roundWinner.getIndex())
                 .collect(Collectors.toList())) {
             bp.setPlayOrder(++indexer);
         }
-
-        ShowPlayersGamePlayOrder();
-    }
-
-    private void ShowPlayersGamePlayOrder() {
-        Collections.sort(gamePlayers, new ComparePlayerTo(SortBy.PlayerOrder));
-        int indexer = 0;
-
-        for (BidPlayer bp : gamePlayers) {
-            indexer++;
-            System.out.print(indexer == 1 ? "*" : " ");
-            System.out.println(String.format(" %1s  play order is  %2d",
-                    bp.getPlayerName(),
-                    bp.getPlayOrder())
-            );
-        }
-
+        PlayerOrderSet = true;
     }
 
     /*
@@ -369,12 +372,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         return true;
     }
 
-    @Override
-    public boolean PlayerThrewOffSuit(CardPlay cardPlayed, CardSuit leadSuit) {
-        cardPlayed.card.setBidDud(true);
-        cardPlayed.player.SetHandWinner(false);
-        return true;
-    }
 
     @Override
     public BidPlayer JudgeTable(int playRound, CardSuit leadSuit ) {
@@ -411,6 +408,13 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         bpWinner.SetHandWinner(true);
         tableHand.clear();
         return bpWinner;
+    }
+
+    @Override
+    public boolean PlayerThrewOffSuit(CardPlay cardPlayed, CardSuit leadSuit) {
+        cardPlayed.card.setBidDud(true);
+        cardPlayed.player.SetHandWinner(false);
+        return true;
     }
 
     @Override
@@ -929,10 +933,10 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     }
 
     @Override
-    public boolean PlayerPlayed(CardPlay played) {
+    public boolean PlayerPlayed(CardPlay played, CardSuit leadSuit) {
         //add card to the table hand
         tableHand.add(played);
-
+        played.player.PlayerHasPlayed(true, played.card);
         System.out.println(String.format("%1s played  %2s",
                 played.player.getPlayerName(),
                 played.card.toStringBef()));
@@ -943,14 +947,8 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         biddingPlayer.setPlayerHasBidded(true);
     }
 
-    @Override
-    public void SetGamePlayerOrder(boolean playerOrderSet) {
-        this.gamePlayerOrderSet = playerOrderSet;
-    }
-
-    @Override
-    public boolean GamePlayerOrderSet() {
-        return gamePlayerOrderSet ;
+    public CardSuit getLeadSuit() {
+        return leadSuit;
     }
 
 
