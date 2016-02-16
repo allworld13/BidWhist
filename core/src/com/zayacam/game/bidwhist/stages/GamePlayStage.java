@@ -75,7 +75,7 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
             bidWhistGame.gamePlay.AllPlayersPlayedReset();
             bidWhistGame.gamePlay.PlayerOrderSet = false;
             playRound++;
-            bidWhistGame.gamePlay.ShowTeamScore();
+            System.out.println(bidWhistGame.gamePlay.ShowTeamScore());
         }
     }
 

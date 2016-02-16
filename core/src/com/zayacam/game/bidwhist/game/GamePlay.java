@@ -624,12 +624,12 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         GAME_SUIT = gameSuit;
         System.out.println("\t*** Game Suit: " + gameSuit.toString());
         if (GAME_DIRECTION != BidRule_Direction.NoTrump) {
-            SetJokerSuit(gameSuit, GAME_DIRECTION);
+            SetJokerAndAcesSuit(gameSuit, GAME_DIRECTION);
         }
         System.out.println(GetGameBid());
     }
 
-    private void SetJokerSuit(CardSuit gameSuit, BidRule_Direction direction) {
+    private void SetJokerAndAcesSuit(CardSuit gameSuit, BidRule_Direction direction) {
         for (BidPlayer bp : gamePlayers) {
             bp.getHand().SetJokerSuit(gameSuit, direction);
         }
@@ -640,18 +640,15 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         System.out.println();
         GetGameBid();
 
-        bidWinner.getHand().AddCard(KittyHand.getCards());
-        SetJokerSuit(GAME_SUIT, GAME_DIRECTION);
-
         System.out.println(String.format("\t*** %1s's awarded the KittyHand\n",bidWinner.getPlayerName()));
         KittyHand.ShowCards();
         bidWinner.getHand().SortCards(SortBy.DeckValue);
         System.out.println("\n\t*** Hand:");
         System.out.println(bidWinner.getHand().GetCardsString());
 
-        bidWinner.DiscardKittyTrades(KittyHand.size());
+        //bidWinner.DiscardKittyTrades(KittyHand.size());
 
-        System.out.println(String.format("\n\t*** %1s's  new hand:  ", bidWinner.getPlayerName()));
+        //System.out.println(String.format("\n\t*** %1s's  new hand:  ", bidWinner.getPlayerName()));
     }
 
     @Override

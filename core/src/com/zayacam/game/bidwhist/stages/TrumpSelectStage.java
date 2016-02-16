@@ -190,6 +190,7 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
         this.addActor(grpKitty);
         grpKitty.setVisible(true);
         grpKitty.setTouchable(Touchable.childrenOnly);
+        bidWhistGame.gamePlay.AwardKittyToPlayer(bidWinner);
     }
 
     private class PlayClickListener extends ClickListener {
@@ -220,7 +221,7 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
         public void clicked(InputEvent event, float x, float y) {
             super.clicked(event, x, y);
             suitSelected = (CardSuit) event.getListenerActor().getUserObject();
-            GamePlay.GAME_SUIT = suitSelected;
+            bidWhistGame.gamePlay.SetGameSuit(suitSelected);
             btnGoPlay.setVisible(true);
 
             Gdx.app.log("Trump Selected", suitSelected.toString() + " - " + suitSelected.name());
