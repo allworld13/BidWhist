@@ -75,6 +75,7 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
             bidWhistGame.gamePlay.AllPlayersPlayedReset();
             bidWhistGame.gamePlay.PlayerOrderSet = false;
             playRound++;
+            bidWhistGame.gamePlay.ShowTeamScore();
         }
     }
 
@@ -109,7 +110,7 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         hitActor = this.hit(touchCoord.x, touchCoord.y, false);
         if (hitActor != null) {
             selectedCard = (Card) hitActor.getUserObject();
-            ResetRaiseOnAllCardsX(selectedCard);
+            ResetRaiseOnAllCardsX(selectedCard, false);
             int toRaised;
 
             if (selectedCard == null) return true;
@@ -118,7 +119,10 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                 try {
                     validCardPlayed = PlaySelectedCard(hitActor);
                     if (validCardPlayed) {
+                        AnimatePlayOfSelectedCard();
                         grpSouthPlayer.removeActor(hitActor);
+                    } else {
+                        ResetRaiseOnAllCardsX(selectedCard, true);
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -152,11 +156,27 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         return true;
     }
 
-    void ResetRaiseOnAllCardsX(Card selectedCard) {
+    private void AnimatePlayOfSelectedCard() {
+        if (validCardPlayed) {
+            float duration = 2.5f;
+            hitActor.addAction(
+                    parallel(
+                            moveTo(this.getWidth() / 2 - Assets.CardWidth / 2,
+                                    this.getHeight() / 2, duration),
+                            scaleTo(.75f, .9f, duration),
+                            rotateTo(360 * 3, .75f)
+                    )
+            );
+        }
+
+    }
+
+    void ResetRaiseOnAllCardsX(Card selectedCard, boolean includingThis) {
         Card c;
+
         for (Actor a : grpSouthPlayer.getChildren()) {
             c = ((Card) a.getUserObject());
-            if (selectedCard == c)
+            if (selectedCard == c && !includingThis)
                 continue;
             c.SetIsRaised(false);
             c.SetReadyToPlay(false);
@@ -177,18 +197,6 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
 
         if (c != null) {
             validCardPlayed = bidWhistGame.gamePlay.PlaySelectedCard(new CardPlay(currentPlayer, c));
-            if (validCardPlayed) {
-
-                float duration = 2.5f;
-                hitActor.addAction(
-                        parallel(
-                                moveTo(this.getWidth() / 2 - Assets.CardWidth / 2,
-                                        this.getHeight() / 2, duration),
-                                scaleTo(.75f, .9f, duration),
-                                rotateTo(360 * 3, .75f)
-                        )
-                );
-            }
         }
         return validCardPlayed;
     }

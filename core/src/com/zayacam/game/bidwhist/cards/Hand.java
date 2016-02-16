@@ -121,7 +121,7 @@ public class Hand extends ArrayList<Card> implements IHand{
 
 	@Override
 	public boolean HasSuit(CardSuit suit) {
-		return this.stream().anyMatch(c -> c.getCardSuit() == suit);
+		return this.stream().anyMatch(c -> c.getCardSuit().equals(suit));
 		/*
 		for (Card c : this) {
 			if (c.getCardSuit() == suit) return true;
@@ -149,13 +149,28 @@ public class Hand extends ArrayList<Card> implements IHand{
 					deckValue =(int)c.getDeckValue();
 					switch (deckValue) {
 						case 53:
-							c.setCardValue(-1);
+							c.setCardValue(-2);
 							break;
 						case 54:
-							c.setCardValue(-2);
+							c.setCardValue(-3);
 							break;
 						default:
 							c.setCardValue(0);
+							break;
+					}
+				} else if (direction == GamePlay.BidRule_Direction.Uptown) {
+					switch (deckValue) {
+						case 53:
+							c.setCardValue(99);
+							break;
+						case 54:
+							c.setCardValue(100);
+							break;
+						default:
+							if (c.getCardFace() == CardFace.Ace)
+								c.setCardValue(98);
+							else
+								c.setCardValue(0);
 							break;
 					}
 				}

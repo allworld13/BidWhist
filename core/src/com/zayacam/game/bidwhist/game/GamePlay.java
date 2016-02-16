@@ -18,6 +18,10 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         return result;
     }
 
+    public void SetAcesForUpTown() {
+
+    }
+
     public enum BidRule_Number_Range {
         PASS(0),
         MIN_BID(3),
@@ -172,25 +176,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
 
     //region all players bidding
 
-    public void GetPlayersBids() {
-        collectPlayersBids();
-        bidWinner = DetermineBidWinner();
-        if (bidWinner.getBidDirection() != BidRule_Direction.NoTrump) {
-            GamePlay.SetTrumpSuit(bidWinner);
-            if (gameEvents != null)
-                gameEvents.SetGameSuit(GAME_SUIT);
-        } else {
-            System.out.println();
-            GamePlay.setGameDirection(bidWinner);
-            GAME_SUIT = null;
-        }
-        if (gameEvents != null) {
-            gameEvents.GetGameBid();
-            gameEvents.AwardKittyToPlayer(bidWinner);
-        }
-        SetGamePlayerPlayOrder(bidWinner);
-    }
-
     void collectPlayersBids() {
         BidPlayer bp;
         System.out.println(
@@ -215,12 +200,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         if (gamePlayers.stream().anyMatch(bp -> bp.isAwardedTheBid()))
             bidWinner = gamePlayers.stream().filter(bp -> bp.isAwardedTheBid()).findFirst().get();
 
-        /*
-        while (!bp.isAwardedTheBid()) {
-            gamePlayers.get(MAX_NO_PLAYERS - 1).bidHand();
-            bp = DeclareBidWinner();
-        }
-        */
         return bidWinner;
     }
 
@@ -313,7 +292,8 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
                 gameEvents.PlayerThrewOffSuit(cardPlay, leadSuit);
             validPlay = true;
         } else {
-            gameEvents.PlayerHasRenege(cardPlay, leadSuit);
+            // have the suit, but misplayed
+            validPlay = gameEvents.PlayerHasRenege(cardPlay, leadSuit);
         }
 
         if (validPlay) {
@@ -457,7 +437,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     }
 
 
-    private String ShowTeamScore() {
+    public String ShowTeamScore() {
         String S1, S2, result;
 
         team1Score = 0;

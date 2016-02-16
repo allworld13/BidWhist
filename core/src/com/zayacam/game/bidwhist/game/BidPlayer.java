@@ -220,8 +220,8 @@ public class BidPlayer implements IBidPlayerEvents {
         return card;
     }
 
-    public boolean HasSuit(CardSuit leadSuit) {
-        return this.getHand().HasSuit(leadSuit);
+    public boolean HasSuit(CardSuit findSuit) {
+        return this.getHand().HasSuit(findSuit);
     }
 
     @Override
