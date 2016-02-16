@@ -296,6 +296,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         return finalScore;
     }
 
+
     @Override
     public boolean PlaySelectedCard(CardPlay cardPlay) throws InterruptedException {
         boolean validPlay = false;
@@ -305,7 +306,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         }
         if (cardPlay.card.getCardSuit().equals(leadSuit))
             validPlay = true;
-        else if (!cardPlay.player.HasSuit(cardPlay.card.getCardSuit())) {
+        else if (!cardPlay.player.HasSuit(leadSuit)) {
             if (GAME_SUIT.equals(cardPlay.card.getCardSuit()))
                 gameEvents.PlayerPlaysTrump(cardPlay);
             else
@@ -318,6 +319,12 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         if (validPlay) {
             cardPlay.card.SetAvailable(false);
             cardPlay.player.getHand().remove(cardPlay);
+            tableHand.add(cardPlay);
+            cardPlay.player.SetPlayerHasPlayed(true);
+            System.out.println(String.format("\t%1s played  %2s",
+                    cardPlay.player.getPlayerName(),
+                    cardPlay.card.toStringBef()));
+
         }
         return validPlay;
     }
@@ -327,10 +334,10 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
      */
     public void SetGamePlayerPlayOrder(BidPlayer roundWinner) {
         System.out.println("\n*** Setting Player's playing order");
-        //System.out.println(" ***[ " + bidWinner.getPlayerName() + " ]***");
-        int indexer = 0;
+        System.out.println("\t***[ " + roundWinner.getPlayerName() + " ]***");
         gamePlayers.parallelStream().forEach(x -> x.setPlayOrder(5));
 
+        int indexer = 0;
 
         Collections.sort(gamePlayers, new ComparePlayerTo(SortBy.PlayerIndex));
         for (BidPlayer bp : gamePlayers.stream()
@@ -345,6 +352,15 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
             bp.setPlayOrder(++indexer);
         }
         PlayerOrderSet = true;
+        Collections.sort(gamePlayers, new ComparePlayerTo(SortBy.PlayerOrder));
+        ShowPlayOrder();
+    }
+
+    private void ShowPlayOrder() {
+        Collections.sort(gamePlayers, new ComparePlayerTo(SortBy.PlayerOrder));
+        for (BidPlayer bp : gamePlayers) {
+            System.out.println(bp.toString());
+        }
     }
 
     /*
@@ -374,7 +390,9 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
 
 
     @Override
-    public BidPlayer JudgeTable(int playRound, CardSuit leadSuit ) {
+//    public BidPlayer JudgeTable(int playRound, CardSuit leadSuit ) {
+
+    public BidPlayer JudgeTable(int playRound) {
 
         //final CardSuit ls = leadSuit;
 
@@ -419,7 +437,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
 
     @Override
     public void WonThisHand(BidPlayer bidPlayer) {
-        System.out.println("\n\n\n\tYo, " + bidPlayer + " won the hand! " + GetGameBid());
+        System.out.println("\n\n\n\tYo, " + bidPlayer + " won the hand! ");
         for (BidPlayer player: gamePlayers) {
             if (player.getId() == bidPlayer.getId()) {
                 player.setPlayOrder(0);
@@ -933,16 +951,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     }
 
     @Override
-    public boolean PlayerPlayed(CardPlay played, CardSuit leadSuit) {
-        //add card to the table hand
-        tableHand.add(played);
-        played.player.PlayerHasPlayed(true, played.card);
-        System.out.println(String.format("%1s played  %2s",
-                played.player.getPlayerName(),
-                played.card.toStringBef()));
-        return true;    }
-
-    @Override
     public void PlayerHasPassed(BidPlayer biddingPlayer) {
         biddingPlayer.setPlayerHasBidded(true);
     }
@@ -951,5 +959,8 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         return leadSuit;
     }
 
+    public void AllPlayersPlayedReset() {
+        gamePlayers.stream().forEach(p -> p.SetPlayerHasPlayed(false));
+    }
 
 }

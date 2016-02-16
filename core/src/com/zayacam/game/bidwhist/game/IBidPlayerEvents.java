@@ -19,5 +19,5 @@ public interface IBidPlayerEvents {
 
     boolean HasPlayed();
 
-    void PlayerHasPlayed(boolean hasPlayed, Card selectedCard);
+
 }

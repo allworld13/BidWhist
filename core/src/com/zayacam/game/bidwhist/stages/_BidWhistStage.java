@@ -32,12 +32,12 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
 
     public InputMultiplexer im;
     protected BidPlayer currentPlayer;
+    protected BidPlayer bidWinner, biddingPlayer = null;
 
     protected String stageName;
     protected String ScreenTitleLabel = "";
     protected GlyphLayout screenTitle;
     protected SpriteBatch batch;
-    protected BidPlayer bidWinner, biddingPlayer = null;
     protected BidWhistGame bidWhistGame;
     protected Actor currentScreen;
     protected Vector2 touchCoord, touchedVector;
@@ -49,7 +49,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
     protected boolean ShowKitty = false;
     protected int noDiscards = 0;
     protected boolean CardSelectedAdded;
-
+    protected Button btnPass, btnBid;
 
     Group grpKitty, grpSouthPlayer, grpTableHand, grpBiddingNumbers;
     Table tblBiddingNumbers;
@@ -266,12 +266,12 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         //endregion
 
         //region bid or pass buttons
-        btnNumber = new TextButton("Pass", Assets.Skins);
-        btnNumber.setName("Pass");
-        btnNumber.pad(0f, 20f, 0f, 20f);
-        btnNumber.addListener(new PassOrBidPlayClickListener());
+        btnPass = new TextButton("Pass", Assets.Skins);
+        btnPass.setName("Pass");
+        btnPass.pad(0f, 20f, 0f, 20f);
+        btnPass.addListener(new PassOrBidPlayClickListener());
 
-        tblOutter.add(btnNumber);
+        tblOutter.add(btnPass);
 
         //region bid direction
         tblDirection = new Table();
@@ -303,12 +303,12 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
 
         //endregion
 
-        btnNumber = new TextButton("Bid", Assets.Skins);
-        btnNumber.setName("Bid");
-        btnNumber.pad(0f, 35f, 0f, 35f);
-        btnNumber.addListener(new PassOrBidPlayClickListener());
+        btnBid = new TextButton("Bid", Assets.Skins);
+        btnBid.setName("Bid");
+        btnBid.pad(0f, 35f, 0f, 35f);
+        btnBid.addListener(new PassOrBidPlayClickListener());
 
-        tblOutter.add(btnNumber);
+        tblOutter.add(btnBid);
 
         //endregion
 
@@ -337,7 +337,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         }
     }
 
-    private class PassOrBidPlayClickListener extends ClickListener {
+    protected class PassOrBidPlayClickListener extends ClickListener {
         @Override
         public void clicked(InputEvent event, float x, float y) {
             super.clicked(event, x, y);

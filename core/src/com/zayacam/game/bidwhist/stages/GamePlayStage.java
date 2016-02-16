@@ -6,8 +6,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.zayacam.Utils;
 import com.zayacam.game.Assets;
 import com.zayacam.game.BidWhistGame;
 import com.zayacam.game.bidwhist.cards.Card;
@@ -24,8 +24,8 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
 
     private CardSuit leadSuit = null;
     BidPlayer lastRoundWinner = null;
-    int playRound = 0;
-    private boolean cutCardPlayed;
+    int playRound = 1;
+    private boolean validCardPlayed, cutCardPlayed;
     CardPlay cardPlayed;
 
 
@@ -42,52 +42,40 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
     public void act(float delta) {
         super.act(delta);
 
-        boolean playerHasPlayed = false;
-        boolean onCurrentPlayerPlay = false;
-        //do {
-        if (!GamePlay.PlayerOrderSet)
+        if (!GamePlay.PlayerOrderSet) {
             bidWhistGame.gamePlay.SetGamePlayerPlayOrder(lastRoundWinner);
-        //GamePlay.PlayerOrderSet = true;
-        for (BidPlayer bp : bidWhistGame.gamePlay.gamePlayers.stream().filter(
-                xx -> !xx.HasPlayed()).collect(Collectors.toList())) {
+        }
+
+        if (!bidWhistGame.gamePlay.gamePlayers.stream().allMatch(bp -> bp.HasPlayed())) {
+            for (BidPlayer bp : bidWhistGame.gamePlay.gamePlayers.stream().filter(
+                    xx -> !xx.HasPlayed()).collect(Collectors.toList())) {
                 currentPlayer = bp;
-            onCurrentPlayerPlay = true;
 
-            if (!currentPlayer.isHuman()) {
-                int playIndex = currentPlayer.AutoPlayCard(bidWhistGame.gamePlay.getLeadSuit(), playRound);
-                selectedCard = currentPlayer.PlayCard(playIndex);
-                cardPlayed = new CardPlay(currentPlayer, selectedCard);
-
-                // 2.)   Check to see if the selected card is playable
-                if (currentPlayer.isHandWinner()) {
-                    leadSuit = cardPlayedSuit;
-                    playerHasPlayed = GamePlay.gameEvents.PlayerPlayed(cardPlayed, leadSuit);
-                } else if (selectedCard.getCardSuit() == leadSuit) {
-                    // 3.)   Place the selected/targeted card on the table. - following suit
-                    playerHasPlayed = GamePlay.gameEvents.PlayerPlayed(cardPlayed, leadSuit);
+                if (currentPlayer.isHuman()) {
+                    // get handled by the touched event
+                    break;
                 } else {
-                    // 4.) Not - following suit
-                    if (cardPlayed.player.HasSuit(leadSuit)) {
-                        // Player has renege, don't allow
-                        try {
-                            playerHasPlayed = GamePlay.gameEvents.PlayerHasRenege(cardPlayed, leadSuit);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        // Player is cutting
-                        if (cardPlayed.card.getCardSuit() == GamePlay.GAME_SUIT) {
-                            cutCardPlayed = GamePlay.gameEvents.PlayerPlaysTrump(cardPlayed);
-                        } else {
-                            // Player is simply throwing off
-                            GamePlay.gameEvents.PlayerThrewOffSuit(cardPlayed, leadSuit);
-                        }
-                        playerHasPlayed = GamePlay.gameEvents.PlayerPlayed(cardPlayed, leadSuit);
+                    System.out.println("\n" + currentPlayer.toString());
+                    currentPlayer.getHand().ShowCards();
+                    int playIndex = currentPlayer.AutoPlayCard(bidWhistGame.gamePlay.getLeadSuit(), playRound);
+                    selectedCard = currentPlayer.PlayCard(playIndex);
+                    cardPlayed = new CardPlay(currentPlayer, selectedCard);
+
+                    // 2.)   Check to see if the selected card is playable
+                    try {
+                        validCardPlayed = bidWhistGame.gamePlay.PlaySelectedCard(cardPlayed);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
             }
-            }
-        //} while (!bidWhistGame.gamePlay.AllPlayersPlayedRound() || onCurrentPlayerPlay);
+        } else {
+            Utils.log(stageName, "Time to judge the table hand.");
+            lastRoundWinner = bidWhistGame.gamePlay.JudgeTable(playRound);
+            bidWhistGame.gamePlay.AllPlayersPlayedReset();
+            bidWhistGame.gamePlay.PlayerOrderSet = false;
+            playRound++;
+        }
     }
 
     @Override
@@ -121,9 +109,6 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         hitActor = this.hit(touchCoord.x, touchCoord.y, false);
         if (hitActor != null) {
             selectedCard = (Card) hitActor.getUserObject();
-            if (selectedCard != null)
-                Gdx.app.log("Hit", hitActor.getName() + " - Raised: " + !selectedCard.IsRaised());
-
             ResetRaiseOnAllCardsX(selectedCard);
             int toRaised;
 
@@ -131,15 +116,13 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
 
             if (selectedCard.IsReadyToPlay() && selectedCard.IsRaised()) {
                 try {
-                    PlaySelectedCard(hitActor);
+                    validCardPlayed = PlaySelectedCard(hitActor);
+                    if (validCardPlayed) {
+                        grpSouthPlayer.removeActor(hitActor);
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                grpSouthPlayer.removeActor(hitActor);
-                AddToTableHand(hitActor);
-                currentPlayer.PlayerHasPlayed(true, selectedCard);
-                if (currentPlayer.isHandWinner())
-                    leadSuit = selectedCard.getCardSuit();
             } else {
                 if (selectedCard != null) {
                     toRaised = !selectedCard.IsRaised() ? 1 : -1;
@@ -188,26 +171,26 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                 this.getWidth() / 6, this.getHeight() / 2);
     }
 
-    void PlaySelectedCard(Actor hitActor) throws InterruptedException {
-        Gdx.app.log("Play", selectedCard.toStringBef());
+    boolean PlaySelectedCard(Actor hitActor) throws InterruptedException {
+        Gdx.app.log("Playing...", selectedCard.toStringBef());
         Card c = (Card) hitActor.getUserObject();
+
         if (c != null) {
-            bidWhistGame.gamePlay.PlaySelectedCard(new CardPlay(currentPlayer, c));
-            float duration = 2.5f;
-            hitActor.addAction(
-                    parallel(
-                            moveTo(this.getWidth() / 2 - Assets.CardWidth / 2,
-                                    this.getHeight() / 2, duration),
-                            scaleTo(.75f, .9f, duration),
-                            rotateTo(360 * 3, .75f)
-                    )
-            );
+            validCardPlayed = bidWhistGame.gamePlay.PlaySelectedCard(new CardPlay(currentPlayer, c));
+            if (validCardPlayed) {
+
+                float duration = 2.5f;
+                hitActor.addAction(
+                        parallel(
+                                moveTo(this.getWidth() / 2 - Assets.CardWidth / 2,
+                                        this.getHeight() / 2, duration),
+                                scaleTo(.75f, .9f, duration),
+                                rotateTo(360 * 3, .75f)
+                        )
+                );
+            }
         }
+        return validCardPlayed;
     }
 
-    void AddToTableHand(Actor hitActor) {
-        hitActor.setTouchable(Touchable.disabled);
-        grpTableHand.addActor(hitActor);
-        Gdx.app.log("toTable", hitActor.getName());
-    }
 }

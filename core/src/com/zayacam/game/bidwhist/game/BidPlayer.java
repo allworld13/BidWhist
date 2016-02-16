@@ -322,21 +322,23 @@ public class BidPlayer implements IBidPlayerEvents {
         int result;
         Random random = new Random();
         ArrayList<Card> cardsOfSuit = new ArrayList<>();
+
+        System.out.print("\n\tThinking .....");
+
         for (Card c: getHand().getCards()) {
-            if (c.getCardSuit() == leadSuit)
+            if (c.getCardSuit() == leadSuit) {
                 cardsOfSuit.add(c);
+            }
         }
-        if (cardsOfSuit.size() == 0)
+        if (cardsOfSuit.size() == 0) {
             result = random.nextInt(hand.getSize());
+        }
         else {
             int randIndex = random.nextInt(cardsOfSuit.size());
             Card c = cardsOfSuit.get(randIndex);
             result = getHand().indexOf(c);
         }
         try {
-
-            System.out.print("\n\tThinking .....");
-
             int index = 0;
             for (int i = 0; i < 2; i++) {
                 do {
@@ -369,15 +371,6 @@ public class BidPlayer implements IBidPlayerEvents {
     @Override
     public boolean HasPlayed() {
         return playerHasPlayed;
-    }
-
-    @Override
-    public void PlayerHasPlayed(boolean hasPlayed, Card selectedCard) {
-        SetPlayerHasPlayed(hasPlayed);
-        if (playerHasPlayed) {
-            CardPlay cardPlayed = new CardPlay(this,selectedCard);
-            //gameEvents.PlayerPlayed(cardPlayed,null);
-        }
     }
 
     public void SetPlayerHasPlayed(boolean hasPlayed) {

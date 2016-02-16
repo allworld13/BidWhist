@@ -14,11 +14,10 @@ public interface IGameEvents {
     String GetGameBid();
     void PlayerHasBidded(BidPlayer biddingPlayer);
 
-    BidPlayer JudgeTable(int gameRound, CardSuit leadSuit);
+    //BidPlayer JudgeTable(int gameRound, CardSuit leadSuit);
+    BidPlayer JudgeTable(int gameRound);
 
     void PlayerHasPassed(BidPlayer biddingPlayer);
-
-    boolean PlayerPlayed(CardPlay played, CardSuit leadSuit);
 
     boolean PlayerHasRenege(CardPlay cardPlayed, CardSuit leadSuit) throws InterruptedException;
     boolean PlayerThrewOffSuit(CardPlay cardPlay, CardSuit leadSuit);

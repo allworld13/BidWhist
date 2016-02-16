@@ -121,10 +121,13 @@ public class Hand extends ArrayList<Card> implements IHand{
 
 	@Override
 	public boolean HasSuit(CardSuit suit) {
+		return this.stream().anyMatch(c -> c.getCardSuit() == suit);
+		/*
 		for (Card c : this) {
 			if (c.getCardSuit() == suit) return true;
 		}
 		return false;
+	 */
 	}
 
 	public boolean HasSuit(Card cardPlayed) {

@@ -1,5 +1,6 @@
 package com.zayacam.game.bidwhist.stages;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.zayacam.game.Assets;
 import com.zayacam.game.BidWhistGame;
@@ -77,5 +78,50 @@ public class BiddingStage extends _BidWhistStage {
         batch.end();
     }
 
+    @Override
+    public boolean keyDown(int keyCode) {
+        super.keyDown(keyCode);
 
+        if (biddingPlayer.isHuman()) {
+            switch (keyCode) {
+                case Input.Keys.NUM_4:
+                case Input.Keys.NUMPAD_4:
+                    biddingBooks = 4;
+                    biddingPlayer.setBidHand_Books(4);
+                    break;
+                case Input.Keys.NUM_5:
+                case Input.Keys.NUMPAD_5:
+                    biddingBooks = 5;
+                    biddingPlayer.setBidHand_Books(5);
+                    break;
+                case Input.Keys.NUM_6:
+                case Input.Keys.NUMPAD_6:
+                    biddingBooks = 6;
+                    biddingPlayer.setBidHand_Books(6);
+                    break;
+                case Input.Keys.NUM_7:
+                case Input.Keys.NUMPAD_7:
+                    biddingBooks = 7;
+                    biddingPlayer.setBidHand_Books(7);
+                    break;
+                case Input.Keys.D:
+                    bidDirection = GamePlay.BidRule_Direction.Downtown;
+                    biddingPlayer.setBidHand_Direction(GamePlay.BidRule_Direction.Downtown);
+                    break;
+                case Input.Keys.U:
+                    bidDirection = GamePlay.BidRule_Direction.Uptown;
+                    biddingPlayer.setBidHand_Direction(GamePlay.BidRule_Direction.Uptown);
+                    break;
+                case Input.Keys.N:
+                    bidDirection = GamePlay.BidRule_Direction.NoTrump;
+                    biddingPlayer.setBidHand_Direction(GamePlay.BidRule_Direction.NoTrump);
+                    break;
+                case Input.Keys.P:
+                    btnPass.getClickListener().clicked(null, 0, 0);
+                    break;
+            }
+
+        }
+        return true;
+    }
 }
