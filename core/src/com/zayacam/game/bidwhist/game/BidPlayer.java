@@ -344,7 +344,7 @@ public class BidPlayer implements IBidPlayerEvents {
                 do {
                     System.out.print(".");
                     if (index++ > 8) break;
-                    Thread.sleep(150);
+                    Thread.sleep(100);
                 } while (true);
             }
         } catch (InterruptedException e) {

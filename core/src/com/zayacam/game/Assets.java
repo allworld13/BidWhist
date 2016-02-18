@@ -112,6 +112,16 @@ public class Assets {
         sound.play();
     }
 
+    public static void PlayCuttingCard() {
+        sound = Gdx.audio.newSound(Gdx.files.internal("sounds/whipCrack.wav"));
+        sound.play();
+    }
+
+    public static void PlayThrowOffCard() {
+        sound = Gdx.audio.newSound(Gdx.files.internal("sounds/dud.wav"));
+        sound.play();
+    }
+
     public static void ClearScreen() {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);

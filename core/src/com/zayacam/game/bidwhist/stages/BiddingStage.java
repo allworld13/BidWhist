@@ -73,8 +73,9 @@ public class BiddingStage extends _BidWhistStage {
             ShowPlayersName(batch);
         }
         if (bidWhistGame.gamePlay.BidAwarded()) {
-            ShowGameBid();
+            DrawGameBidLegend();
         }
+        DrawGameScore(batch);
         batch.end();
     }
 

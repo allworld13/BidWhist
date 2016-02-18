@@ -50,6 +50,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
     protected int noDiscards = 0;
     protected boolean CardSelectedAdded;
     protected Button btnPass, btnBid;
+    protected int playRound = 1;
 
     Group grpKitty, grpSouthPlayer, grpTableHand, grpBiddingNumbers;
     Table tblBiddingNumbers;
@@ -146,33 +147,35 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         }
         //endregion
 
-        for (BidPlayer bp : bidWhistGame.gamePlay.gamePlayers) {
-            switch (bp.getIndex()) {
-                //region West Player
-                case 2:
-                    Assets.gfxDeck.get(Assets.CardBack).getDrawable()
-                            .draw(batch,
-                                    (20 * EWMargin),
-                                    this.getHeight() / Assets.PlayerCard_Y_Ratio,
-                                    this.getWidth() / Assets.PlayerCardWidthRatio,
-                                    this.getHeight() * Assets.PlayerCardHeightRatio);
-                    break;
-                //endregion
+        if (playRound <= GamePlay.MAX_PLAYER_HANDSIZE) {
+            for (BidPlayer bp : bidWhistGame.gamePlay.gamePlayers) {
+                switch (bp.getIndex()) {
+                    //region West Player
+                    case 2:
+                        Assets.gfxDeck.get(Assets.CardBack).getDrawable()
+                                .draw(batch,
+                                        (20 * EWMargin),
+                                        this.getHeight() / Assets.PlayerCard_Y_Ratio,
+                                        this.getWidth() / Assets.PlayerCardWidthRatio,
+                                        this.getHeight() * Assets.PlayerCardHeightRatio);
+                        break;
+                    //endregion
 
-                //region East Player
-                case 4:
-                    Assets.gfxDeck.get(Assets.CardBack).getDrawable()
-                            .draw(batch,
-                                    this.getWidth() - (this.getWidth() * .120F),
-                                    this.getHeight() / Assets.PlayerCard_Y_Ratio,
-                                    this.getWidth() / Assets.PlayerCardWidthRatio,
-                                    this.getHeight() * Assets.PlayerCardHeightRatio);
-                    break;
-                //endregion
+                    //region East Player
+                    case 4:
+                        Assets.gfxDeck.get(Assets.CardBack).getDrawable()
+                                .draw(batch,
+                                        this.getWidth() - (this.getWidth() * .120F),
+                                        this.getHeight() / Assets.PlayerCard_Y_Ratio,
+                                        this.getWidth() / Assets.PlayerCardWidthRatio,
+                                        this.getHeight() * Assets.PlayerCardHeightRatio);
+                        break;
+                    //endregion
+                }
+
+                XPos += 120;
+                hasStartedPlaying = true;
             }
-
-            XPos += 120;
-            hasStartedPlaying = true;
         }
     }
 
@@ -453,11 +456,6 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                     break;
             }
 
-            try {
-                Thread.sleep(20);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             event.cancel();
         }
     }
@@ -482,13 +480,31 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
     }
 
 
-    protected void ShowGameBid() {
+    protected void DrawGameBidLegend() {
         Assets.textBounds = new GlyphLayout();
         Assets.DefaultFont.setColor(Color.WHITE);
+        Assets.textBounds.setText(Assets.DefaultFont, "( " + bidWhistGame.gamePlay.bidWinner.getPlayerName() + " )");
+        Assets.DefaultFont.draw(batch, Assets.textBounds, this.getWidth() * .85f, getHeight() * 0.98f);
         Assets.textBounds.setText(Assets.DefaultFont, bidWhistGame.gamePlay.GetGameBid());
-        Assets.DefaultFont.draw(batch, Assets.textBounds, this.getWidth() -
-                Assets.textBounds.width - 5f, getHeight() * 0.90f);
+        float XPos = this.getWidth() - Assets.textBounds.width - 8f;
+        Assets.DefaultFont.draw(batch, Assets.textBounds, XPos, getHeight() * 0.94f);
+        if (GamePlay.GAME_SUIT != null) {
+            Assets.textBounds.setText(Assets.DefaultFont, GamePlay.GAME_SUIT.name());
+            Assets.DefaultFont.draw(batch, Assets.textBounds, XPos, getHeight() * 0.905f);
+        }
+    }
+
+    public void DrawGameScore(SpriteBatch batch) {
+        Assets.textBounds = new GlyphLayout();
+        Assets.DefaultFont.setColor(Color.WHITE);
+        Assets.textBounds.setText(Assets.DefaultFont, "Us    Them");
+        Assets.DefaultFont.draw(batch, Assets.textBounds, this.getWidth() * .094f, getHeight() * 0.98f);
+        Assets.textBounds.setText(Assets.DefaultFont, "Score");
+        Assets.DefaultFont.draw(batch, Assets.textBounds, this.getWidth() * .012f, getHeight() * 0.93f);
+        Assets.textBounds.setText(Assets.DefaultFont, "Tricks" + bidWhistGame.gamePlay.ShowTeamTrickTakes());
+        Assets.DefaultFont.draw(batch, Assets.textBounds, this.getWidth() * .012f, getHeight() * 0.89f);
 
     }
+
 
 }

@@ -24,8 +24,7 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
 
     private CardSuit leadSuit = null;
     BidPlayer lastRoundWinner = null;
-    int playRound = 1;
-    private boolean validCardPlayed, cutCardPlayed;
+    private boolean willLose, validCardPlayed, cutCardPlayed;
     CardPlay cardPlayed;
 
 
@@ -64,6 +63,9 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                     // 2.)   Check to see if the selected card is playable
                     try {
                         validCardPlayed = bidWhistGame.gamePlay.PlaySelectedCard(cardPlayed);
+                        if (validCardPlayed) {
+                            AnimatePlayOfSelectedCard(currentPlayer);
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -72,6 +74,15 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         } else {
             Utils.log(stageName, "Time to judge the table hand.");
             lastRoundWinner = bidWhistGame.gamePlay.JudgeTable(playRound);
+            lastRoundWinner.AddToBidTaken();
+            bidWhistGame.gamePlay.CalculateTeamsScores();
+
+            willLose = bidWhistGame.gamePlay.WillBidWinnerActuallyLose();
+            if (willLose) {
+
+            }
+
+
             bidWhistGame.gamePlay.AllPlayersPlayedReset();
             bidWhistGame.gamePlay.PlayerOrderSet = false;
             playRound++;
@@ -92,14 +103,16 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
 
         batch.begin();
         batch.draw(Assets.text_background, 0, 0, this.getWidth(), this.getHeight());
+        DrawGameScore(batch);
         ShowPlayersName(batch);
         DrawTableHand(batch);
         DrawPlayerHand(batch, bidWinner);
         if (bidWhistGame.gamePlay.BidAwarded()) {
-            ShowGameBid();
+            DrawGameBidLegend();
         }
         batch.end();
     }
+
 
 
     @Override
@@ -144,11 +157,6 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                     hitActor.setPosition(hitActor.getX(), P1ActiveCardYPos);
                 }
             }
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         } else {
 
 
@@ -157,6 +165,10 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
     }
 
     private void AnimatePlayOfSelectedCard() {
+        AnimatePlayOfSelectedCard(null);
+    }
+
+    private void AnimatePlayOfSelectedCard(BidPlayer currentPlayer) {
         if (validCardPlayed) {
             float duration = 2.5f;
             hitActor.addAction(
@@ -168,7 +180,6 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                     )
             );
         }
-
     }
 
     void ResetRaiseOnAllCardsX(Card selectedCard, boolean includingThis) {
@@ -185,10 +196,11 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
     }
 
     void DrawTableHand(SpriteBatch batch) {
-        this.addActor(grpTableHand);
-        grpTableHand.setPosition(this.getWidth() / 2, 0);
+        grpTableHand.setPosition(this.getWidth() / 2, this.getHeight() / 2f);
         grpTableHand.setBounds(this.getWidth() / 4, 0,
                 this.getWidth() / 6, this.getHeight() / 2);
+        grpTableHand.draw(batch, 1f);
+        this.addActor(grpTableHand);
     }
 
     boolean PlaySelectedCard(Actor hitActor) throws InterruptedException {
