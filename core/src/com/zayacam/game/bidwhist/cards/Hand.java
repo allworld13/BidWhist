@@ -164,22 +164,6 @@ public class Hand extends ArrayList<Card> implements IHand{
 							break;
 					}
 				}
-				/*else if (direction == GamePlay.BidRule_Direction.Uptown) {
-					switch (deckValue) {
-						case 53:
-							c.setCardValue(99);
-							break;
-						case 54:
-							c.setCardValue(100);
-							break;
-						default:
-							if (c.getCardFace() == CardFace.Ace)
-								c.setCardValue(98);
-							else
-								c.setCardValue(0);
-							break;
-					}
-				}*/
 				if (c.IsAJoker())
 					c.setCardSuit(gameSuit);
 			}

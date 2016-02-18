@@ -77,16 +77,12 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     public static BidRule_Direction GAME_DIRECTION;
     public static CardSuit GAME_SUIT;
     public static int GAME_BOOKS;
+    public TableHand tableHand;
     public static int team1Score, team2Score;
 
-
-
     private boolean gameStarted = false;
-
-
     private UUID id;
     private GameTable gameTable;
-    private TableHand tableHand;
     private int minimalBid = 4;         // 3 or 4
     private boolean cutCardPlayed;
     private int noCardsInKitty = 6; // 4 to 6

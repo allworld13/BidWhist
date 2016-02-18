@@ -64,7 +64,7 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                     try {
                         validCardPlayed = bidWhistGame.gamePlay.PlaySelectedCard(cardPlayed);
                         if (validCardPlayed) {
-                            AnimatePlayOfSelectedCard(currentPlayer);
+                            AnimatePlayOfSelectedCard(cardPlayed);
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -92,7 +92,7 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
 
     @Override
     public void draw() {
-        super.draw();
+        //super.draw();
 
         //if (!gamePlay.isGameStarted() ) {
         grpSouthPlayer = new Group();
@@ -105,11 +105,11 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         batch.draw(Assets.text_background, 0, 0, this.getWidth(), this.getHeight());
         DrawGameScore(batch);
         ShowPlayersName(batch);
-        DrawTableHand(batch);
         DrawPlayerHand(batch, bidWinner);
         if (bidWhistGame.gamePlay.BidAwarded()) {
             DrawGameBidLegend();
         }
+        DrawTableHand(batch);
         batch.end();
     }
 
@@ -132,7 +132,9 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                 try {
                     validCardPlayed = PlaySelectedCard(hitActor);
                     if (validCardPlayed) {
-                        AnimatePlayOfSelectedCard();
+                        CardPlay cp = new CardPlay(currentPlayer, selectedCard);
+                        AnimatePlayOfSelectedCard(cardPlayed);
+                        grpTableHand.addActor(selectedCard.PlayingCard());
                         grpSouthPlayer.removeActor(hitActor);
                     } else {
                         ResetRaiseOnAllCardsX(selectedCard, true);
@@ -164,14 +166,11 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         return true;
     }
 
-    private void AnimatePlayOfSelectedCard() {
-        AnimatePlayOfSelectedCard(null);
-    }
-
-    private void AnimatePlayOfSelectedCard(BidPlayer currentPlayer) {
+    private void AnimatePlayOfSelectedCard(CardPlay cardPlayed) {
         if (validCardPlayed) {
             float duration = 2.5f;
-            hitActor.addAction(
+            if (cardPlayed == null) return;
+            cardPlayed.card.PlayingCard().addAction(
                     parallel(
                             moveTo(this.getWidth() / 2 - Assets.CardWidth / 2,
                                     this.getHeight() / 2, duration),
@@ -197,10 +196,15 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
 
     void DrawTableHand(SpriteBatch batch) {
         grpTableHand.setPosition(this.getWidth() / 2, this.getHeight() / 2f);
-        grpTableHand.setBounds(this.getWidth() / 4, 0,
-                this.getWidth() / 6, this.getHeight() / 2);
+        grpTableHand.setBounds(this.getWidth() / 4, 400f, this.getWidth() / 6, this.getHeight() / 2);
         grpTableHand.draw(batch, 1f);
+        grpTableHand.setVisible(true);
+        grpTableHand.clear();
+        for (CardPlay cp : bidWhistGame.gamePlay.tableHand) {
+            grpTableHand.addActor(cp.card.PlayingCard());
+        }
         this.addActor(grpTableHand);
+
     }
 
     boolean PlaySelectedCard(Actor hitActor) throws InterruptedException {

@@ -48,7 +48,7 @@ public class BiddingStage extends _BidWhistStage {
             } else {
                 biddingPlayer = bidWinner;
                 try {
-                    bidWhistGame.ChangeScreenTo("DetermineTrumpStage");
+                    bidWhistGame.ChangeScreenTo("TrumpSelectStage");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

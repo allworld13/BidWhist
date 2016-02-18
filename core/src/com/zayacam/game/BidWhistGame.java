@@ -52,7 +52,7 @@ public class BidWhistGame extends Game implements InputProcessor {
 			case "BiddingStage":
 				LoadBiddingMenu();
 				break;
-			case "DetermineTrumpStage":
+			case "TrumpSelectStage":
 				LoadDetermineTrumpStage();
 				break;
 			case "GamePlayStage":
