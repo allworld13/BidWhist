@@ -149,8 +149,8 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                     validCardPlayed = PlaySelectedCard(hitActor);
                     if (validCardPlayed) {
                         cardPlayed = new CardPlay(currentPlayer, selectedCard);
-                        grpSouthPlayer.removeActor(hitActor);
                         AnimatePlayOfSelectedCard(cardPlayed);
+                        grpSouthPlayer.removeActor(hitActor);
                         grpTableHand.addActor(selectedCard.PlayingCard());
                     } else {
                         ResetRaiseOnAllCardsX(selectedCard, true);
@@ -176,8 +176,6 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                 }
             }
         } else {
-
-
         }
         return true;
     }
@@ -185,9 +183,10 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
     private void AnimatePlayOfSelectedCard(CardPlay cardPlayed) {
         if (validCardPlayed) {
             float duration = 2.5f;
-            if (cardPlayed == null) return;
-            cardPlayed.card.PlayingCard().setPosition(hw, hh);
+            float xOffSet = 0, yOffSet = 0;
 
+            if (cardPlayed == null) return;
+            cardPlayed.card.PlayingCard().setPosition(hw + xOffSet, hh + yOffSet);
         }
     }
 
@@ -211,12 +210,16 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
             //grpTableHand.setBounds(this.getWidth() / 4, 400f, this.getWidth() / 6, this.getHeight() / 2);
         }
         newTableHand = false;
-        float XPos = 0;
+        int idx;
+        float YPos = 0, XPos = 0;
         for (CardPlay cp : bidWhistGame.gamePlay.tableHand) {
             float cardW, cardH;
             cardW = Assets.CardWidth;
             cardH = Assets.CardHeight;
-            cp.card.PlayingCard().setBounds(XPos, 0, cardW * .5f, cardH * .5f);
+            idx = currentPlayer.getIndex();
+
+            cp.card.PlayingCard().setBounds(XPos, YPos, cardW * .5f, cardH * .5f);
+
             grpTableHand.addActor(cp.card.PlayingCard());
             XPos += 70;
         }
