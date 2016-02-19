@@ -2,6 +2,7 @@ package com.zayacam.game.bidwhist.stages;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -15,10 +16,6 @@ import com.zayacam.game.bidwhist.cards.CardSuit;
 import com.zayacam.game.bidwhist.game.BidPlayer;
 import com.zayacam.game.bidwhist.game.CardPlay;
 import com.zayacam.game.bidwhist.game.GamePlay;
-
-import java.util.stream.Collectors;
-
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
 public class GamePlayStage extends _BidWhistStage implements InputProcessor {
 
@@ -41,34 +38,27 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
     public void act(float delta) {
         super.act(delta);
 
-        if (!GamePlay.PlayerOrderSet) {
-            bidWhistGame.gamePlay.SetGamePlayerPlayOrder(lastRoundWinner);
-        }
-
         if (!bidWhistGame.gamePlay.gamePlayers.stream().allMatch(bp -> bp.HasPlayed())) {
-            for (BidPlayer bp : bidWhistGame.gamePlay.gamePlayers.stream().filter(
-                    xx -> !xx.HasPlayed()).collect(Collectors.toList())) {
-                currentPlayer = bp;
+            currentPlayer = GetNextPlayersPlay();
 
-                if (currentPlayer.isHuman()) {
-                    // get handled by the touched event
-                    break;
-                } else {
-                    System.out.println("\n" + currentPlayer.toString());
-                    currentPlayer.getHand().ShowCards();
-                    int playIndex = currentPlayer.AutoPlayCard(bidWhistGame.gamePlay.getLeadSuit(), playRound);
-                    selectedCard = currentPlayer.PlayCard(playIndex);
-                    cardPlayed = new CardPlay(currentPlayer, selectedCard);
+            if (currentPlayer.isHuman()) {
+                // get handled by the touched event
 
-                    // 2.)   Check to see if the selected card is playable
-                    try {
-                        validCardPlayed = bidWhistGame.gamePlay.PlaySelectedCard(cardPlayed);
-                        if (validCardPlayed) {
-                            AnimatePlayOfSelectedCard(cardPlayed);
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+            } else {
+                System.out.println("\n" + currentPlayer.toString());
+                currentPlayer.getHand().ShowCards();
+                int playIndex = currentPlayer.AutoPlayCard(bidWhistGame.gamePlay.getLeadSuit(), playRound);
+                selectedCard = currentPlayer.PlayCard(playIndex);
+                cardPlayed = new CardPlay(currentPlayer, selectedCard);
+
+                // 2.)   Check to see if the selected card is playable
+                try {
+                    validCardPlayed = bidWhistGame.gamePlay.PlaySelectedCard(cardPlayed);
+                    if (validCardPlayed) {
+                        AnimatePlayOfSelectedCard(cardPlayed);
                     }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         } else {
@@ -90,6 +80,14 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         }
     }
 
+    private BidPlayer GetNextPlayersPlay() {
+        if (!GamePlay.PlayerOrderSet) {
+            bidWhistGame.gamePlay.SetGamePlayerPlayOrder(lastRoundWinner);
+        }
+        currentPlayer = bidWhistGame.gamePlay.gamePlayers.stream().filter(p -> !p.HasPlayed()).findFirst().get();
+        return currentPlayer;
+    }
+
     @Override
     public void draw() {
         //super.draw();
@@ -109,10 +107,17 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         if (bidWhistGame.gamePlay.BidAwarded()) {
             DrawGameBidLegend();
         }
+        DrawRoundCount(batch);
         DrawTableHand(batch);
         batch.end();
     }
 
+    private void DrawRoundCount(SpriteBatch batch) {
+        Assets.textBounds.setText(Assets.DefaultFont, "Round: " + playRound);
+        Assets.DefaultFont.setColor(Color.PURPLE);
+        Assets.DefaultFont.draw(batch, Assets.textBounds, (getWidth() - Assets.textBounds.width) / 2f,
+                getHeight() * .7f);
+    }
 
 
     @Override
@@ -169,7 +174,7 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
     private void AnimatePlayOfSelectedCard(CardPlay cardPlayed) {
         if (validCardPlayed) {
             float duration = 2.5f;
-            if (cardPlayed == null) return;
+            if (cardPlayed == null) return; /*
             cardPlayed.card.PlayingCard().addAction(
                     parallel(
                             moveTo(this.getWidth() / 2 - Assets.CardWidth / 2,
@@ -178,6 +183,7 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                             rotateTo(360 * 3, .75f)
                     )
             );
+            */
         }
     }
 
@@ -197,13 +203,17 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
     void DrawTableHand(SpriteBatch batch) {
         grpTableHand.setPosition(this.getWidth() / 2, this.getHeight() / 2f);
         grpTableHand.setBounds(this.getWidth() / 4, 400f, this.getWidth() / 6, this.getHeight() / 2);
-        grpTableHand.draw(batch, 1f);
         grpTableHand.setVisible(true);
-        grpTableHand.clear();
+        float XPos = 200;
         for (CardPlay cp : bidWhistGame.gamePlay.tableHand) {
-            grpTableHand.addActor(cp.card.PlayingCard());
+            cp.card.PlayingCard().setPosition(XPos, this.getHeight() / 2f);
+            cp.card.PlayingCard().setBounds(0, 0, 60, 90);
+            this.addActor(cp.card.PlayingCard());
+            XPos += 10;
         }
+
         this.addActor(grpTableHand);
+        grpTableHand.draw(batch, 1f);
 
     }
 

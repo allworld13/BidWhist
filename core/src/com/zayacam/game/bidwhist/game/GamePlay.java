@@ -78,7 +78,9 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     public static CardSuit GAME_SUIT;
     public static int GAME_BOOKS;
     public TableHand tableHand;
+
     public static int team1Score, team2Score;
+
 
     private boolean gameStarted = false;
     private UUID id;
@@ -187,7 +189,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
             gamePlayers.get(i).bidHand();
         }
     }
-
 
     /*
         Declares the bid winner after all bids are accepted, and then declares the winner
@@ -440,7 +441,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     public String ShowTeamTrickTakes() {
         String S1, S2, result;
 
-        GamePlay.team1Score = 0;
+        team1Score = 0;
         team2Score = 0;
 
         CalculateTeamsScores();
