@@ -365,6 +365,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     public boolean PlayerPlaysTrump(CardPlay cardPlayed) {
         Assets.PlayCuttingCard();
         cardPlayed.player.PlayedTrumpCard(cardPlayed.card);
+        cardPlayed.card.setTrumpCard(true);
         return true;
     }
 
@@ -388,9 +389,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         tableHand.Sort(SortBy.CardValue);
         List<CardPlay> filteredTableHand = tableHand.stream()
                 .filter(cp -> !cp.card.isBidDud()).collect(Collectors.toList());
-
-        if (cutCardPlayed)
-            filteredTableHand.removeIf(x->!x.card.IsTrumpCard());
 
         int winner = 0;
         switch (GAME_DIRECTION) {
