@@ -28,6 +28,7 @@ import com.zayacam.game.bidwhist.cards.CardSuit;
 import com.zayacam.game.bidwhist.game.BidPlayer;
 import com.zayacam.game.bidwhist.game.GamePlay;
 
+
 public abstract class _BidWhistStage extends Stage implements InputProcessor {
 
     public InputMultiplexer im;
@@ -376,6 +377,12 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         String fromStage, toStage = "";
         fromStage = this.getStageName();
         switch (keyCode) {
+            case Input.Keys.ESCAPE:
+                Gdx.app.log(fromStage, "Leaving");
+                toStage = "MainMenuStage";
+                MainMenuStage.MainMenuReset = false;
+                break;
+
             //region move forward
             case Input.Keys.SPACE:
                 Gdx.app.log(fromStage, "Leaving");
@@ -402,6 +409,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                 switch (fromStage) {
                     case "MainMenuStage":
                         toStage = "";
+                        MainMenuStage.MainMenuReset = false;
                         break;
                     case "BiddingStage":
                         toStage = "MainMenuStage";

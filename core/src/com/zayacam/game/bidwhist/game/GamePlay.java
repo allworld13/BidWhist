@@ -437,13 +437,16 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         System.out.println("You lost!");
     }
 
+    public void ResetTeamTricksScore() {
+        team1Score = 0;
+        team2Score = 0;
+    }
 
     public String ShowTeamTrickTakes() {
         String S1, S2, result;
 
-        team1Score = 0;
-        team2Score = 0;
-
+        ResetTeamTricksScore();
+        ;
         CalculateTeamsScores();
 
         S1 = "";

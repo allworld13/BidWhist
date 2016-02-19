@@ -118,7 +118,7 @@ public class Assets {
     }
 
     public static void PlayThrowOffCard() {
-        sound = Gdx.audio.newSound(Gdx.files.internal("sounds/dud.wav"));
+        sound = Gdx.audio.newSound(Gdx.files.internal("sounds/whipCrack.wav"));
         sound.play();
     }
 

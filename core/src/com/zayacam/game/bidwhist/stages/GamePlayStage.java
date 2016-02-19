@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.zayacam.Utils;
 import com.zayacam.game.Assets;
@@ -23,6 +24,8 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
     BidPlayer lastRoundWinner = null;
     private boolean willLose, validCardPlayed, cutCardPlayed;
     CardPlay cardPlayed;
+    private boolean newTableHand = true;
+    float hw, hh;
 
 
     public GamePlayStage(BidWhistGame bidWhistGame, ScreenViewport sViewport) throws InterruptedException {
@@ -30,21 +33,26 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
 
         if (bidWinner == null)
             lastRoundWinner = bidWinner = bidWhistGame.gamePlay.bidWinner;
-
         bidWinner.SetHandWinner(true);
+        bidWhistGame.gamePlay.ResetTeamTricksScore();
     }
 
     @Override
     public void act(float delta) {
         super.act(delta);
 
+        hw = this.getWidth() / 2f;
+        hh = this.getHeight() / 2f;
+
         if (!bidWhistGame.gamePlay.gamePlayers.stream().allMatch(bp -> bp.HasPlayed())) {
             currentPlayer = GetNextPlayersPlay();
 
             if (currentPlayer.isHuman()) {
                 // get handled by the touched event
+                grpSouthPlayer.setTouchable(Touchable.enabled);
 
             } else {
+                grpSouthPlayer.setTouchable(Touchable.disabled);
                 System.out.println("\n" + currentPlayer.toString());
                 currentPlayer.getHand().ShowCards();
                 int playIndex = currentPlayer.AutoPlayCard(bidWhistGame.gamePlay.getLeadSuit(), playRound);
@@ -62,11 +70,16 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                 }
             }
         } else {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            newTableHand = true;
             Utils.log(stageName, "Time to judge the table hand.");
             lastRoundWinner = bidWhistGame.gamePlay.JudgeTable(playRound);
             lastRoundWinner.AddToBidTaken();
             bidWhistGame.gamePlay.CalculateTeamsScores();
-
             willLose = bidWhistGame.gamePlay.WillBidWinnerActuallyLose();
             if (willLose) {
 
@@ -80,22 +93,12 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         }
     }
 
-    private BidPlayer GetNextPlayersPlay() {
-        if (!GamePlay.PlayerOrderSet) {
-            bidWhistGame.gamePlay.SetGamePlayerPlayOrder(lastRoundWinner);
-        }
-        currentPlayer = bidWhistGame.gamePlay.gamePlayers.stream().filter(p -> !p.HasPlayed()).findFirst().get();
-        return currentPlayer;
-    }
-
     @Override
     public void draw() {
         //super.draw();
 
         //if (!gamePlay.isGameStarted() ) {
         grpSouthPlayer = new Group();
-        grpTableHand = new Group();
-        grpTableHand.setPosition(this.getWidth() / 2 - Assets.CardWidth / 2, this.getHeight() / 2);
         bidWhistGame.gamePlay.setGameStarted(true);
         //}
 
@@ -110,6 +113,14 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         DrawRoundCount(batch);
         DrawTableHand(batch);
         batch.end();
+    }
+
+    private BidPlayer GetNextPlayersPlay() {
+        if (!GamePlay.PlayerOrderSet) {
+            bidWhistGame.gamePlay.SetGamePlayerPlayOrder(lastRoundWinner);
+        }
+        currentPlayer = bidWhistGame.gamePlay.gamePlayers.stream().filter(p -> !p.HasPlayed()).findFirst().get();
+        return currentPlayer;
     }
 
     private void DrawRoundCount(SpriteBatch batch) {
@@ -137,10 +148,10 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                 try {
                     validCardPlayed = PlaySelectedCard(hitActor);
                     if (validCardPlayed) {
-                        CardPlay cp = new CardPlay(currentPlayer, selectedCard);
+                        cardPlayed = new CardPlay(currentPlayer, selectedCard);
+                        grpSouthPlayer.removeActor(hitActor);
                         AnimatePlayOfSelectedCard(cardPlayed);
                         grpTableHand.addActor(selectedCard.PlayingCard());
-                        grpSouthPlayer.removeActor(hitActor);
                     } else {
                         ResetRaiseOnAllCardsX(selectedCard, true);
                     }
@@ -174,16 +185,9 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
     private void AnimatePlayOfSelectedCard(CardPlay cardPlayed) {
         if (validCardPlayed) {
             float duration = 2.5f;
-            if (cardPlayed == null) return; /*
-            cardPlayed.card.PlayingCard().addAction(
-                    parallel(
-                            moveTo(this.getWidth() / 2 - Assets.CardWidth / 2,
-                                    this.getHeight() / 2, duration),
-                            scaleTo(.75f, .9f, duration),
-                            rotateTo(360 * 3, .75f)
-                    )
-            );
-            */
+            if (cardPlayed == null) return;
+            cardPlayed.card.PlayingCard().setPosition(hw, hh);
+
         }
     }
 
@@ -201,20 +205,24 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
     }
 
     void DrawTableHand(SpriteBatch batch) {
-        grpTableHand.setPosition(this.getWidth() / 2, this.getHeight() / 2f);
-        grpTableHand.setBounds(this.getWidth() / 4, 400f, this.getWidth() / 6, this.getHeight() / 2);
-        grpTableHand.setVisible(true);
-        float XPos = 200;
+        if (newTableHand) {
+            grpTableHand = new Group();
+            grpTableHand.setPosition((hw - Assets.CardWidth / 2) - 50f, hh);
+            //grpTableHand.setBounds(this.getWidth() / 4, 400f, this.getWidth() / 6, this.getHeight() / 2);
+        }
+        newTableHand = false;
+        float XPos = 0;
         for (CardPlay cp : bidWhistGame.gamePlay.tableHand) {
-            cp.card.PlayingCard().setPosition(XPos, this.getHeight() / 2f);
-            cp.card.PlayingCard().setBounds(0, 0, 60, 90);
-            this.addActor(cp.card.PlayingCard());
-            XPos += 10;
+            float cardW, cardH;
+            cardW = Assets.CardWidth;
+            cardH = Assets.CardHeight;
+            cp.card.PlayingCard().setBounds(XPos, 0, cardW * .5f, cardH * .5f);
+            grpTableHand.addActor(cp.card.PlayingCard());
+            XPos += 70;
         }
 
         this.addActor(grpTableHand);
         grpTableHand.draw(batch, 1f);
-
     }
 
     boolean PlaySelectedCard(Actor hitActor) throws InterruptedException {

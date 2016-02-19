@@ -12,6 +12,7 @@ import com.zayacam.game.BidWhistGame;
 
 public class MainMenuStage extends _BidWhistStage {
 
+    public static boolean MainMenuReset = false;
     final Table tblMenuOptions = new Table();
     TextButton btnGameButton;
 
@@ -40,6 +41,13 @@ public class MainMenuStage extends _BidWhistStage {
         this.addActor(tblMenuOptions);
         this.setKeyboardFocus(tblMenuOptions);
         //endregion
+    }
+
+    @Override
+    public void act() {
+        if (!MainMenuStage.MainMenuReset)
+            bidWhistGame.gamePlay.Init();
+        MainMenuStage.MainMenuReset = true;
     }
 
     @Override
