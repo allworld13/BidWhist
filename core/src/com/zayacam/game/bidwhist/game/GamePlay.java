@@ -284,7 +284,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         }
         if (cardPlay.card.getCardSuit().equals(leadSuit))
             validPlay = true;
-        else if (!cardPlay.player.HasSuit(leadSuit)) {
+        else if (!cardPlay.player.getHand().HasSuit(leadSuit)) {
             if (GAME_SUIT.equals(cardPlay.card.getCardSuit()))
                 gameEvents.PlayerPlaysTrump(cardPlay);
             else
@@ -297,7 +297,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
 
         if (validPlay) {
             cardPlay.card.SetAvailable(false);
-            cardPlay.player.getHand().remove(cardPlay);
+            cardPlay.player.getHand().remove(cardPlay.card);
             tableHand.add(cardPlay);
             cardPlay.player.SetPlayerHasPlayed(true);
             System.out.println(String.format("\t%1s played  %2s",
@@ -371,8 +371,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
 
 
     @Override
-//    public BidPlayer JudgeTable(int playRound, CardSuit leadSuit ) {
-
     public BidPlayer JudgeTable(int playRound) {
 
         //final CardSuit ls = leadSuit;
@@ -387,8 +385,15 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         ShowTableCards(leadSuit);
 
         tableHand.Sort(SortBy.CardValue);
-        List<CardPlay> filteredTableHand = tableHand.stream()
-                .filter(cp -> !cp.card.isBidDud()).collect(Collectors.toList());
+        List<CardPlay> filteredTableHand = null;
+        boolean cutCardPlayed = false;
+        cutCardPlayed = tableHand.stream().anyMatch(cp -> cp.card.IsTrumpCard());
+        if (!cutCardPlayed)
+            filteredTableHand = tableHand.stream()
+                    .filter(cp -> !cp.card.isBidDud()).collect(Collectors.toList());
+        else
+            filteredTableHand = tableHand.stream()
+                    .filter(cp -> cp.card.IsTrumpCard()).collect(Collectors.toList());
 
         int winner = 0;
         switch (GAME_DIRECTION) {
@@ -400,10 +405,10 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
                 break;
         }
 
-        BidPlayer bpWinner = filteredTableHand.get(winner).player;
-        bpWinner.SetHandWinner(true);
+        BidPlayer bidplayer = filteredTableHand.get(winner).player;
+        bidplayer.SetHandWinner(true);
         tableHand.clear();
-        return bpWinner;
+        return bidplayer;
     }
 
     @Override
@@ -417,12 +422,16 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     @Override
     public void WonThisHand(BidPlayer bidPlayer) {
         System.out.println("\n\n\n\tYo, " + bidPlayer + " won the hand! ");
+        gamePlayers.stream().filter(gp -> gp.equals(bidPlayer)).findFirst().get().setPlayOrder(0);
+        bidPlayer.AddToBidTaken();
+        /*
         for (BidPlayer player: gamePlayers) {
             if (player.getId() == bidPlayer.getId()) {
                 player.setPlayOrder(0);
                 break;
             }
         }
+        */
     }
 
     @Override

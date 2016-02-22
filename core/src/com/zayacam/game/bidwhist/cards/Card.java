@@ -101,6 +101,7 @@ public class Card  {
 
         switch (cardValue) {
             case 1:
+            case 14:
                 result = "Ace";
                 this.cardFace = CardFace.Ace;
                 break;

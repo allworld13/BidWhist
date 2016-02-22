@@ -24,11 +24,6 @@ public class CardPlay {
         this.playRound = playRound;
     }
 
-    public void Sort(int playRound, GamePlay.BidRule_Direction direction) {
-        //Collections.sort(this, new CompareCardPlayTo(SortBy.FaceValue
-        //        , direction == GamePlay.BidRule_Direction.Uptown ? false: true));
-    }
-
     @Override
     public String toString() {
         return String.format("%1s - %2s ", this.player.getPlayerName(),

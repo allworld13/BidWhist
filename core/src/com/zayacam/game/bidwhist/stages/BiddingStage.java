@@ -113,6 +113,7 @@ public class BiddingStage extends _BidWhistStage {
                     bidDirection = GamePlay.BidRule_Direction.Uptown;
                     biddingPlayer.setBidHand_Direction(GamePlay.BidRule_Direction.Uptown);
                     break;
+                case Input.Keys.X:
                 case Input.Keys.N:
                     bidDirection = GamePlay.BidRule_Direction.NoTrump;
                     biddingPlayer.setBidHand_Direction(GamePlay.BidRule_Direction.NoTrump);

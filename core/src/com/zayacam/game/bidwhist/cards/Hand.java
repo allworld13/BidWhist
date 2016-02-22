@@ -147,7 +147,7 @@ public class Hand extends ArrayList<Card> implements IHand{
 		for (Card c: this) {
 			if (c.getDeckValue() > 52 || c.getCardFace() == CardFace.Ace  ) {
 				if (direction == GamePlay.BidRule_Direction.Uptown && c.getFaceValue().equals("Ace")) {
-					c.setCardValue(c.getCardValue() + 12);
+					c.setCardValue(c.getCardValue() + 13);
 				}
 
 				if (direction == GamePlay.BidRule_Direction.Downtown ) {

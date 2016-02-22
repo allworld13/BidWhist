@@ -70,15 +70,10 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                 }
             }
         } else {
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             newTableHand = true;
             Utils.log(stageName, "Time to judge the table hand.");
             lastRoundWinner = bidWhistGame.gamePlay.JudgeTable(playRound);
-            lastRoundWinner.AddToBidTaken();
+
             bidWhistGame.gamePlay.CalculateTeamsScores();
             willLose = bidWhistGame.gamePlay.WillBidWinnerActuallyLose();
             if (willLose) {
@@ -90,6 +85,11 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
             bidWhistGame.gamePlay.PlayerOrderSet = false;
             playRound++;
             System.out.println(bidWhistGame.gamePlay.ShowTeamScore());
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -176,6 +176,7 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                 }
             }
         } else {
+            ResetRaiseOnAllCardsX(null, false);
         }
         return true;
     }
