@@ -326,7 +326,7 @@ public class BidPlayer implements IBidPlayerEvents {
                 cardsOfSuit.add(c);
             }
         }
-        if (cardsOfSuit.size() == 0) {
+        if (cardsOfSuit.size() == 0 && hand.getSize() >= 0) {
             result = random.nextInt(hand.getSize());
         }
         else {
