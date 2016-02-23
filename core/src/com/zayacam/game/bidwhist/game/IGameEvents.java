@@ -2,7 +2,6 @@ package com.zayacam.game.bidwhist.game;
 
 import com.zayacam.game.bidwhist.cards.CardSuit;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 public interface IGameEvents {
@@ -24,7 +23,8 @@ public interface IGameEvents {
     boolean PlayerPlaysTrump(CardPlay cardPlayed);
     void WonThisHand(BidPlayer bidPlayer);
     boolean BidAwarded();
-    void EndGame(ArrayList<BidPlayer> gamePlayers);
+
+    void EndGame();
     void TeamWonGameBid(int teamScore, BidPlayer winner);
     void TeamLostGameBid(int teamScore, BidPlayer winner);
     boolean ValidatePlayersBid(BidPlayer bidPlayer) throws InterruptedException;

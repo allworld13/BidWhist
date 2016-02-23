@@ -734,7 +734,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     }
 
     @Override
-    public void EndGame(ArrayList<BidPlayer> gamePlayers) {
+    public void EndGame() {
         int teamScore;
         BidPlayer bidWinner = gamePlayers.stream()
                 .filter(b -> b.isAwardedTheBid())

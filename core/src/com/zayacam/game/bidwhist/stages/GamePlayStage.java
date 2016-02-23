@@ -91,6 +91,11 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                 e.printStackTrace();
             }
         }
+        // check to see if the game is actually over
+        if (playRound > GamePlay.MAX_PLAYER_HANDSIZE) {
+            System.out.println("Game Done!!");
+            bidWhistGame.gamePlay.EndGame();
+        }
     }
 
     @Override
