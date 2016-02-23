@@ -220,10 +220,6 @@ public class BidPlayer implements IBidPlayerEvents {
         return card;
     }
 
-    public boolean HasSuit(CardSuit findSuit) {
-        return this.getHand().HasSuit(findSuit);
-    }
-
     @Override
     public String toString() {
         return String.format("%1s", playerName);

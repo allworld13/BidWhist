@@ -79,7 +79,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     public static int GAME_BOOKS;
     public TableHand tableHand;
 
-    public static int team1Score, team2Score;
+    public static int team1GameScore, team2GameScore, team1FinalScore, team2FinalScore;
 
 
     private boolean gameStarted = false;
@@ -105,6 +105,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         gameEvents.StartingNewGame();
         hasGameCompleted = false;
         GAME_BOOKS = 0;
+        team1FinalScore = team2FinalScore = 0;
         isNewGame = true;
     }
     //endregion
@@ -118,6 +119,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         InitializeKitty();
         InitializePlayers();
 
+        ResetTeamTricksScore();
         bidWinner = gamePlayers.get(0);
         //bidWinner.setAwardedTheBid(true);
     }
@@ -175,20 +177,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     //endregion
 
     //region all players bidding
-
-    void collectPlayersBids() {
-        BidPlayer bp;
-        System.out.println(
-                String.format("\nStart Bidding between %1d and %2d, or press %3d to pass your bid.",
-                        BidRule_Number_Range.MIN_BID.getValue(),
-                        BidRule_Number_Range.MAX_BID.getValue(),
-                        BidRule_Number_Range.PASS.getValue())
-        );
-
-        for (int i = 0; i < MAX_NO_PLAYERS; i++) {
-            gamePlayers.get(i).bidHand();
-        }
-    }
 
     /*
         Declares the bid winner after all bids are accepted, and then declares the winner
@@ -437,66 +425,35 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     @Override
     public void TeamWonGameBid(int teamScore, BidPlayer winner) {
         System.out.println("Team "+ winner.getTeamId() +  ", you won!");
+        if (winner.getTeamId() == 1)
+            team1FinalScore += 1;
+        else
+            team2FinalScore += 1;
     }
 
     @Override
     public void TeamLostGameBid(int teamScore, BidPlayer winner) {
         System.out.println("You lost!");
+        if (winner.getTeamId() == 1)
+            team1FinalScore += 1;
+        else
+            team2FinalScore += 1;
     }
 
     public void ResetTeamTricksScore() {
-        team1Score = 0;
-        team2Score = 0;
+        team1GameScore = 0;
+        team2GameScore = 0;
     }
 
     public String ShowTeamTrickTakes() {
-        String S1, S2, result;
-
-        ResetTeamTricksScore();
-        ;
-        CalculateTeamsScores();
-
-        S1 = "";
-        S2 = "";
+        String result;
 
         StringBuilder sb = new StringBuilder();
         sb.append("    %1d         %2d");
 
         result = String.format(sb.toString(),
-                team1Score,
-                team2Score);
-        return result;
-    }
-
-
-    public String ShowTeamScore() {
-        String S1, S2, result;
-
-        team1Score = 0;
-        team2Score = 0;
-
-        BidPlayer wbp = gamePlayers.stream()
-                .filter(gp -> gp.isAwardedTheBid()).findFirst().get();
-
-        CalculateTeamsScores();
-
-        S1 = "";
-        S2 = "";
-
-        if (wbp.getTeamId() == 1)
-            S1 = "*";
-        else S2 = "*";
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("\n\t\t   ");
-        sb.append(GetGameBid() + "\n");
-        sb.append("\t\t\t\t" + S1 + "Team 1\t\t\t" + S2 + "Team 2\n");
-        sb.append("\t\t--------------------------------------\n");
-        sb.append("\t\tTake(s)\t  %1d\t\t\t\t  %2s\n");
-
-        result = String.format(sb.toString(),
-                team1Score,
-                team2Score);
+                team1GameScore,
+                team2GameScore);
         return result;
     }
 
@@ -620,32 +577,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     @Override
     public void PlayersInitialized() {
         System.out.println("\n*** Players Initialized");
-    }
-
-    private static void SetTrumpSuit(BidPlayer bidWinner) {
-        bidWinner.getHand().ShowCards();
-        System.out.println(String.format("\nOk %1s, select the game suit: 1=%2s, 2=%3s, 3=%4s, or 4=%5s ",
-                bidWinner.getPlayerName(),
-                CardSuit.Heart.toString().trim(),
-                CardSuit.Diamond.toString().trim(),
-                CardSuit.Spade.toString().trim(),
-                CardSuit.Club.toString().trim()));
-
-        boolean gameSuitSet = false;
-        do {
-            Scanner sc = new Scanner(System.in);
-            int suitId = sc.nextInt();
-            GAME_SUIT = CardSuit.fromValue(suitId);
-            switch (GAME_SUIT) {
-                case Heart:
-                case Diamond:
-                case Spade:
-                case Club:
-                    gameSuitSet = true;
-                    break;
-            }
-            System.out.println();
-        } while (!gameSuitSet);
     }
 
     @Override
@@ -866,7 +797,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
 
     private boolean BidWinnerHasMadeBidButNoBoston(BidPlayer bidWinner) {
         boolean result = false;
-        int otherTeamScore =  (bidWinner.getTeamId() == 1 ? team2Score : team1Score);
+        int otherTeamScore = (bidWinner.getTeamId() == 1 ? team2GameScore : team1GameScore);
         if (otherTeamScore > 0 & GetTeamScore(bidWinner.getTeamId()) >= 6 + GAME_BOOKS) {
             Scanner sc  = new Scanner(System.in);
             char choice = sc.next(".").charAt(0);
@@ -893,9 +824,9 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         // [7] : 13 -> 1
 
         if (bidWinner.getTeamId() == 1)
-            result = team2Score >= (8 - GAME_BOOKS);
+            result = team2GameScore >= (8 - GAME_BOOKS);
         else
-            result = team1Score >= (8 - GAME_BOOKS);
+            result = team1GameScore >= (8 - GAME_BOOKS);
 
         return result;
     }
@@ -939,8 +870,8 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
 
     // Tallies both team's final score
     public void CalculateTeamsScores() {
-        team1Score = GetTeamScore(1);
-        team2Score = GetTeamScore(2);
+        team1GameScore = GetTeamScore(1);
+        team2GameScore = GetTeamScore(2);
     }
 
     public void setGameStarted(boolean gameStarted) {
@@ -967,6 +898,18 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
 
     public void AllPlayersPlayedReset() {
         gamePlayers.stream().forEach(p -> p.SetPlayerHasPlayed(false));
+    }
+
+    public String ShowTeamGameScore() {
+        String result;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("     %1d         %2d");
+
+        result = String.format(sb.toString(),
+                team1FinalScore,
+                team2FinalScore);
+        return result;
     }
 
 }

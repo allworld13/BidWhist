@@ -125,14 +125,6 @@ public class Hand extends ArrayList<Card> implements IHand{
 		return hasThisSuit;
 	}
 
-	public boolean HasSuit(Card cardPlayed) {
-        return HasSuit(cardPlayed.getCardSuit());
-    }
-
-	protected void Initialize() {
-		// nothing to do there
-	}
-
 	public void SetJokerSuit(CardSuit gameSuit, GamePlay.BidRule_Direction direction) {
 		if (gameSuit == null)
 			return;

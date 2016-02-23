@@ -44,57 +44,60 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         hw = this.getWidth() / 2f;
         hh = this.getHeight() / 2f;
 
-        if (!bidWhistGame.gamePlay.gamePlayers.stream().allMatch(bp -> bp.HasPlayed())) {
-            currentPlayer = GetNextPlayersPlay();
+        if (playRound > GamePlay.MAX_PLAYER_HANDSIZE) {
+            // current game over
+        } else {
 
-            if (currentPlayer.isHuman()) {
-                // get handled by the touched event
-                grpSouthPlayer.setTouchable(Touchable.enabled);
+            if (!bidWhistGame.gamePlay.gamePlayers.stream().allMatch(bp -> bp.HasPlayed())) {
+                currentPlayer = GetNextPlayersPlay();
 
-            } else {
-                grpSouthPlayer.setTouchable(Touchable.disabled);
-                System.out.println("\n" + currentPlayer.toString());
-                currentPlayer.getHand().ShowCards();
-                int playIndex = currentPlayer.AutoPlayCard(bidWhistGame.gamePlay.getLeadSuit(), playRound);
-                selectedCard = currentPlayer.PlayCard(playIndex);
-                cardPlayed = new CardPlay(currentPlayer, selectedCard);
+                if (currentPlayer.isHuman()) {
+                    // get handled by the touched event
+                    grpSouthPlayer.setTouchable(Touchable.enabled);
 
-                // 2.)   Check to see if the selected card is playable
-                try {
-                    validCardPlayed = bidWhistGame.gamePlay.PlaySelectedCard(cardPlayed);
-                    if (validCardPlayed) {
-                        AnimatePlayOfSelectedCard(cardPlayed);
+                } else {
+                    grpSouthPlayer.setTouchable(Touchable.disabled);
+                    System.out.println("\n" + currentPlayer.toString());
+                    currentPlayer.getHand().ShowCards();
+                    int playIndex = currentPlayer.AutoPlayCard(bidWhistGame.gamePlay.getLeadSuit(), playRound);
+                    selectedCard = currentPlayer.PlayCard(playIndex);
+                    cardPlayed = new CardPlay(currentPlayer, selectedCard);
+
+                    // 2.)   Check to see if the selected card is playable
+                    try {
+                        validCardPlayed = bidWhistGame.gamePlay.PlaySelectedCard(cardPlayed);
+                        if (validCardPlayed) {
+                            AnimatePlayOfSelectedCard(cardPlayed);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
+                }
+            } else {
+                newTableHand = true;
+                Utils.log(stageName, "Time to judge the table hand.");
+                lastRoundWinner = bidWhistGame.gamePlay.JudgeTable(playRound);
+
+                bidWhistGame.gamePlay.CalculateTeamsScores();
+                willLose = bidWhistGame.gamePlay.WillBidWinnerActuallyLose();
+                if (willLose) {
+                    System.out.println("Here");
+                }
+
+                bidWhistGame.gamePlay.AllPlayersPlayedReset();
+                bidWhistGame.gamePlay.PlayerOrderSet = false;
+                playRound++;
+                try {
+                    Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-        } else {
-            newTableHand = true;
-            Utils.log(stageName, "Time to judge the table hand.");
-            lastRoundWinner = bidWhistGame.gamePlay.JudgeTable(playRound);
-
-            bidWhistGame.gamePlay.CalculateTeamsScores();
-            willLose = bidWhistGame.gamePlay.WillBidWinnerActuallyLose();
-            if (willLose) {
-
+            // check to see if the game is actually over
+            if (playRound > GamePlay.MAX_PLAYER_HANDSIZE) {
+                System.out.println("Game Done!!");
+                bidWhistGame.gamePlay.EndGame();
             }
-
-
-            bidWhistGame.gamePlay.AllPlayersPlayedReset();
-            bidWhistGame.gamePlay.PlayerOrderSet = false;
-            playRound++;
-            System.out.println(bidWhistGame.gamePlay.ShowTeamScore());
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        // check to see if the game is actually over
-        if (playRound > GamePlay.MAX_PLAYER_HANDSIZE) {
-            System.out.println("Game Done!!");
-            bidWhistGame.gamePlay.EndGame();
         }
     }
 

@@ -505,10 +505,13 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
     public void DrawGameScore(SpriteBatch batch) {
         Assets.textBounds = new GlyphLayout();
         Assets.DefaultFont.setColor(Color.WHITE);
+
         Assets.textBounds.setText(Assets.DefaultFont, "Us    Them");
         Assets.DefaultFont.draw(batch, Assets.textBounds, this.getWidth() * .094f, getHeight() * 0.98f);
-        Assets.textBounds.setText(Assets.DefaultFont, "Score");
+
+        Assets.textBounds.setText(Assets.DefaultFont, "Score" + bidWhistGame.gamePlay.ShowTeamGameScore());
         Assets.DefaultFont.draw(batch, Assets.textBounds, this.getWidth() * .012f, getHeight() * 0.93f);
+
         Assets.textBounds.setText(Assets.DefaultFont, "Tricks" + bidWhistGame.gamePlay.ShowTeamTrickTakes());
         Assets.DefaultFont.draw(batch, Assets.textBounds, this.getWidth() * .012f, getHeight() * 0.89f);
 

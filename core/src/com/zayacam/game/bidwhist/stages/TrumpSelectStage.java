@@ -35,7 +35,7 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
         ScreenTitleLabel = "Pick your trump";
         CardsBaseLined = false;
         noDiscards = 0;
-        GamePlay.team1Score = GamePlay.team2Score = 0;
+        GamePlay.team1GameScore = GamePlay.team2GameScore = 0;
 
         CardSelectedAdded = false;
         if (GamePlay.GAME_DIRECTION == GamePlay.BidRule_Direction.NoTrump) {
@@ -152,6 +152,7 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
         @Override
         public void clicked(InputEvent event, float x, float y) {
             Gdx.app.log("Trump/Direction selected", "Ok");
+            bidWhistGame.gamePlay.SetGameSuit(GamePlay.GAME_SUIT);
             if (showTrump) {
                 ConfigureAndShowKitty();
                 ShowKitty = true;
