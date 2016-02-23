@@ -120,15 +120,9 @@ public class Hand extends ArrayList<Card> implements IHand{
 	}
 
 	@Override
-	public boolean HasSuit(CardSuit suit) {
-		boolean hasThisSuit = false;
-		for (Card c : this) {
-			if (c.getCardSuit() == suit) {
-				hasThisSuit = true;
-				break;
-			}
-		}
-		return false;
+	public boolean HasSuit(CardSuit lookfor) {
+		boolean hasThisSuit = this.stream().anyMatch(c -> c.getCardSuit().equals(lookfor));
+		return hasThisSuit;
 	}
 
 	public boolean HasSuit(Card cardPlayed) {

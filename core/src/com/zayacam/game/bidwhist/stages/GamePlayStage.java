@@ -106,7 +106,10 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         batch.draw(Assets.text_background, 0, 0, this.getWidth(), this.getHeight());
         DrawGameScore(batch);
         ShowPlayersName(batch);
-        DrawPlayerHand(batch, bidWinner);
+        BidPlayer allworld = bidWhistGame.gamePlay.gamePlayers.stream().filter(gp -> gp.getIndex() == 1).findFirst().get();
+
+        DrawPlayerHand(batch, allworld);
+
         if (bidWhistGame.gamePlay.BidAwarded()) {
             DrawGameBidLegend();
         }

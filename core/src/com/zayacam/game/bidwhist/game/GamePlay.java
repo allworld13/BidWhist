@@ -265,9 +265,9 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     }
 
     @Override
-    public int GetTeamScore(BidPlayer bidPlayer) {
+    public int GetTeamScore(int teamId) {
         int finalScore = 0;
-        for (BidPlayer bp : gamePlayers.stream().filter(fbp -> fbp.getTeamId() == bidPlayer.getTeamId())
+        for (BidPlayer bp : gamePlayers.stream().filter(fbp -> fbp.getTeamId() == teamId)
                 .collect(Collectors.toList())) {
             finalScore += bp.getBidsTaken();
         }
@@ -349,10 +349,10 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     public boolean PlayerHasRenege(CardPlay cardPlayed, CardSuit leadSuit) throws InterruptedException {
         StringBuilder sb = new StringBuilder();
 
-        Utils.Beep(2);
+        Utils.Beep();
         // insert the card played back into the player's hand
 
-        cardPlayed.player.getHand().AddCard(cardPlayed.card);
+        //cardPlayed.player.getHand().AddCard(cardPlayed.card);
         sb.append("\n***** Listen here hommie, you can't renege!  Play a "
                 + leadSuit.name() + " *****");
         System.out.println(sb.toString() + "\n");
@@ -740,7 +740,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
                 .filter(b -> b.isAwardedTheBid())
                 .findFirst().get();
 
-        teamScore = GetTeamScore(bidWinner);
+        teamScore = GetTeamScore(bidWinner.getTeamId());
 
         if (teamScore >= GAME_BOOKS + 6 )
             gameEvents.TeamWonGameBid(teamScore, bidWinner);
@@ -867,7 +867,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     private boolean BidWinnerHasMadeBidButNoBoston(BidPlayer bidWinner) {
         boolean result = false;
         int otherTeamScore =  (bidWinner.getTeamId() == 1 ? team2Score : team1Score);
-        if (otherTeamScore > 0 & GetTeamScore(bidWinner) >= 6 + GAME_BOOKS  ) {
+        if (otherTeamScore > 0 & GetTeamScore(bidWinner.getTeamId()) >= 6 + GAME_BOOKS) {
             Scanner sc  = new Scanner(System.in);
             char choice = sc.next(".").charAt(0);
             System.out.println("\t\t ((( You've won this game, next hand? <y/N>");
@@ -939,8 +939,8 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
 
     // Tallies both team's final score
     public void CalculateTeamsScores() {
-        team1Score = GetTeamScore(gamePlayers.get(0));
-        team2Score = GetTeamScore(gamePlayers.get(1));
+        team1Score = GetTeamScore(1);
+        team2Score = GetTeamScore(2);
     }
 
     public void setGameStarted(boolean gameStarted) {

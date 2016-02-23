@@ -30,7 +30,8 @@ public interface IGameEvents {
     boolean ValidatePlayersBid(BidPlayer bidPlayer) throws InterruptedException;
     void ResetAllOtherBidAwards(BidPlayer bidPlayer);
     void ValidBid_BidNotExceedLeader(BidPlayer bidPlayer) throws InterruptedException;
-    int GetTeamScore(BidPlayer bidPlayer);
+
+    int GetTeamScore(int teamId);
 
     boolean PlaySelectedCard(CardPlay cardPlay) throws InterruptedException;
     void DeckShuffled();
