@@ -42,8 +42,12 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         hw = this.getWidth() / 2f;
         hh = this.getHeight() / 2f;
 
-        if (playRound > GamePlay.MAX_PLAYER_HANDSIZE) {
+        if (playRound >= GamePlay.MAX_PLAYER_HANDSIZE) {
             // current game over
+            grpTableHand = null;
+            bidWhistGame.gamePlay.tableHand.clear();
+
+            return;
         } else {
 
             if (!bidWhistGame.gamePlay.gamePlayers.stream().allMatch(bp -> bp.HasPlayed())) {
@@ -81,7 +85,7 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                 if (willLose) {
                     System.out.println("Here");
                 }
-
+                grpTableHand.clearChildren();
                 bidWhistGame.gamePlay.AllPlayersPlayedReset();
                 bidWhistGame.gamePlay.PlayerOrderSet = false;
                 playRound++;

@@ -52,13 +52,17 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
         btnGoPlay.pad(13f, 0, 13f, 0);
         btnGoPlay.addListener(new OkClickListener());
         btnGoPlay.setVisible(false);
-        if (showTrump) {
+        grpTrumps = new Group();
+        grpTrumps.setName("grpTrumps");
+        if (!showTrump) {
+            LoadDirection();
+        } else {
             LoadTrumps();
         }
-        else {
-            LoadDirection();
-        }
         this.addActor(btnGoPlay);
+        grpTrumps.setBounds(0, 0, (getWidth() / 2) + 125f, TrumpHeight + 500);
+        grpTrumps.setPosition(getWidth() / 2f - grpTrumps.getWidth() / 2f, 100f);
+
     }
 
     //endregion
@@ -66,8 +70,6 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
     }
 
     private void LoadTrumps() {
-        grpTrumps = new Group();
-        grpTrumps.setName("grpTrumps");
         int XPos = 0, counter = 0;
         for (TextureRegion tr :
                 Assets.cardSuits) {
@@ -97,8 +99,6 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
             XPos += 150;
         }
 
-        grpTrumps.setBounds(0, 0, (getWidth() / 2) + 125f, TrumpHeight + 500);
-        grpTrumps.setPosition(getWidth() / 2f - grpTrumps.getWidth() / 2f, 100f);
     }
 
     @Override

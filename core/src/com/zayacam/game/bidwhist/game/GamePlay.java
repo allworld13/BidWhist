@@ -395,6 +395,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
 
         BidPlayer bidplayer = filteredTableHand.get(winner).player;
         bidplayer.SetHandWinner(true);
+
         tableHand.clear();
         return bidplayer;
     }

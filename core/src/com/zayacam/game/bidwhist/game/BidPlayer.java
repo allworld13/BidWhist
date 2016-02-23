@@ -315,6 +315,7 @@ public class BidPlayer implements IBidPlayerEvents {
 
     @Override
     public int AutoPlayCard(CardSuit leadSuit, int handRound) {
+
         int result;
         Random random = new Random();
         ArrayList<Card> cardsOfSuit = new ArrayList<>();
