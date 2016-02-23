@@ -152,7 +152,6 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
         @Override
         public void clicked(InputEvent event, float x, float y) {
             Gdx.app.log("Trump/Direction selected", "Ok");
-            bidWhistGame.gamePlay.SetGameSuit(GamePlay.GAME_SUIT);
             if (showTrump) {
                 ConfigureAndShowKitty();
                 ShowKitty = true;
@@ -210,6 +209,7 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
 
             bidWinner.getHand().SortCards(SortBy.DeckValue);
             try {
+                bidWhistGame.gamePlay.SetGameSuit(GamePlay.GAME_SUIT);
                 bidWhistGame.ChangeScreenTo("GamePlayStage");
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -224,9 +224,8 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
         public void clicked(InputEvent event, float x, float y) {
             super.clicked(event, x, y);
             suitSelected = (CardSuit) event.getListenerActor().getUserObject();
-            bidWhistGame.gamePlay.SetGameSuit(suitSelected);
             btnGoPlay.setVisible(true);
-
+            GamePlay.GAME_SUIT = suitSelected;
             Gdx.app.log("Trump Selected", suitSelected.toString() + " - " + suitSelected.name());
         }
     }

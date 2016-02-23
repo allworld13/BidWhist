@@ -13,14 +13,12 @@ import com.zayacam.Utils;
 import com.zayacam.game.Assets;
 import com.zayacam.game.BidWhistGame;
 import com.zayacam.game.bidwhist.cards.Card;
-import com.zayacam.game.bidwhist.cards.CardSuit;
 import com.zayacam.game.bidwhist.game.BidPlayer;
 import com.zayacam.game.bidwhist.game.CardPlay;
 import com.zayacam.game.bidwhist.game.GamePlay;
 
 public class GamePlayStage extends _BidWhistStage implements InputProcessor {
 
-    private CardSuit leadSuit = null;
     BidPlayer lastRoundWinner = null;
     private boolean willLose, validCardPlayed, cutCardPlayed;
     CardPlay cardPlayed;

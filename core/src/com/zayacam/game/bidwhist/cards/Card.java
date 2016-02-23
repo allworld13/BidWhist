@@ -43,6 +43,7 @@ public class Card  {
         this();
         this.gamePlay = gamePlay;
         this.cardEvents = gamePlay;
+        this.bidDud = false;
     }
 
     public Card(GamePlay gamePlay, CardSuit cs, int cardValue, float deckValue ) {
