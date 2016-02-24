@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.zayacam.Utils;
 import com.zayacam.game.Assets;
@@ -24,7 +25,7 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
     CardPlay cardPlayed;
     private boolean newTableHand = true;
     float hw, hh;
-
+    Dialog dialog = null;
 
     public GamePlayStage(BidWhistGame bidWhistGame, ScreenViewport sViewport) throws InterruptedException {
         super(bidWhistGame, sViewport);
@@ -164,7 +165,8 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                         cardPlayed = new CardPlay(currentPlayer, selectedCard);
                         AnimatePlayOfSelectedCard(cardPlayed);
                         grpSouthPlayer.removeActor(hitActor);
-                        grpTableHand.addActor(selectedCard.PlayingCard());
+                        if (grpTableHand != null)
+                            grpTableHand.addActor(selectedCard.PlayingCard());
                     } else {
                         ResetRaiseOnAllCardsX(selectedCard, true);
                     }
@@ -237,9 +239,10 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
             grpTableHand.addActor(cp.card.PlayingCard());
             XPos += 70;
         }
-
-        this.addActor(grpTableHand);
-        grpTableHand.draw(batch, 1f);
+        if (grpTableHand != null) {
+            this.addActor(grpTableHand);
+            grpTableHand.draw(batch, 1f);
+        }
     }
 
     boolean PlaySelectedCard(Actor hitActor) throws InterruptedException {

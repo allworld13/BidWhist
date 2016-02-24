@@ -1,6 +1,7 @@
 package com.zayacam.game.bidwhist.stages;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -45,13 +46,6 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
         GamePlay.GAME_SUIT = null;
         biddingPlayer = bidWinner = bidWhistGame.gamePlay.bidWinner;
 
-        btnGoPlay = new TextButton("Ok", Assets.Skins);
-        btnGoPlay.setName("Ok");
-        btnGoPlay.setSize(150, 46);
-        btnGoPlay.setPosition(getWidth() / 2 - btnGoPlay.getWidth() / 2f, getHeight() * .38f);
-        btnGoPlay.pad(13f, 0, 13f, 0);
-        btnGoPlay.addListener(new OkClickListener());
-        btnGoPlay.setVisible(false);
         grpTrumps = new Group();
         grpTrumps.setName("grpTrumps");
         if (!showTrump) {
@@ -59,52 +53,15 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
         } else {
             LoadTrumps();
         }
-        this.addActor(btnGoPlay);
         grpTrumps.setBounds(0, 0, (getWidth() / 2) + 125f, TrumpHeight + 500);
         grpTrumps.setPosition(getWidth() / 2f - grpTrumps.getWidth() / 2f, 100f);
-
+        this.addActor(grpTrumps);
     }
-
     //endregion
-    private void LoadDirection() {
-    }
-
-    private void LoadTrumps() {
-        int XPos = 0, counter = 0;
-        for (TextureRegion tr :
-                Assets.cardSuits) {
-            imgTrump = new Image(tr);
-            imgTrump.addListener(new TrumpClickListener());
-            switch (counter) {
-                case 0:
-                    imgTrump.setUserObject(CardSuit.Heart);
-                    break;
-                case 1:
-                    imgTrump.setUserObject(CardSuit.Spade);
-                    break;
-                case 2:
-                    imgTrump.setUserObject(CardSuit.Diamond);
-                    break;
-                case 3:
-                    imgTrump.setUserObject(CardSuit.Club);
-                    break;
-            }
-            grpTrumps.addActor(imgTrump);//.padRight(counter==0?0:30f);
-            this.addActor(grpTrumps);
-            imgTrump.setPosition(XPos, 200f);
-            TrumpHeight = getHeight() * .20f;
-            imgTrump.setSize(getWidth() * .13f, TrumpHeight);
-            imgTrump.setName(((CardSuit) imgTrump.getUserObject()).name());
-            counter++;
-            XPos += 150;
-        }
-
-    }
 
     @Override
     public void act(float delta) {
         super.act(delta);
-
     }
 
     @Override
@@ -125,7 +82,7 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
         if (ShowKitty)
             grpKitty.draw(batch, 1f);
 
-        if (btnGoPlay.isVisible())
+        if (btnGoPlay != null && btnGoPlay.isVisible())
             btnGoPlay.draw(batch, 1f);
 
         if (bidWhistGame.gamePlay.BidAwarded()) {
@@ -135,38 +92,15 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
         batch.end();
     }
 
+
     /*
         Gives the bid winner an opportunity to select a trump.
      */
     private void ShowPickTrumpSelection() {
         //System.out.println();
-        if (GamePlay.GAME_DIRECTION != GamePlay.BidRule_Direction.NoTrump) {
-            if (grpTrumps != null)
-                grpTrumps.draw(batch, 1f);
-        }
-        else
-            grpBiddingNumbers.draw(batch, 1f);
+        if (grpTrumps != null)
+            grpTrumps.draw(batch, 1f);
     }
-
-    private class OkClickListener extends ClickListener {
-        @Override
-        public void clicked(InputEvent event, float x, float y) {
-            Gdx.app.log("Trump/Direction selected", "Ok");
-            if (showTrump) {
-                ConfigureAndShowKitty();
-                ShowKitty = true;
-                ScreenTitleLabel = "Discard  6  Cards";
-                grpTrumps.clear();
-                grpTrumps.remove();
-            }
-            grpTrumps = null;
-            btnGoPlay.setText("Play");
-            btnGoPlay.clearListeners();
-            btnGoPlay.addListener(new PlayClickListener());
-            btnGoPlay.setVisible(false);
-        }
-    }
-
 
     void ConfigureAndShowKitty() {
         float baseLine = Assets.P1YBaseLine;//bidWhistGame.gamePlay.KittyHand.get(0).PlayingCard().getY();
@@ -195,10 +129,119 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
         bidWhistGame.gamePlay.AwardKittyToPlayer(bidWinner);
     }
 
+    @Override
+    public void KittyCardPlayed(_BidWhistStage stage, Card selectedCard) {
+        noDiscards += selectedCard.IsRaised() ? 1 : -1;
+        Utils.log(stageName, "\t**Card selected**  : " + selectedCard.IsRaised() + " : " + noDiscards);
+    }
+
+    @Override
+    public void ReadyToDiscard(boolean b) {
+        Utils.log(stageName, GamePlay.MAX_CARDS_TO_DISCARD + " selected, ready to discard!");
+        if (btnGoPlay != null)
+            btnGoPlay.setVisible(b);
+    }
+
+    private void LoadDirection() {
+        Image j, i = new Image(new Texture(Gdx.files.internal("downArrow.png")));
+        i.setBounds(0, 0, 75, 75);
+        i.setSize(75, 75);
+        i.setPosition(getWidth() * .18f, getHeight() * .48f);
+        i.addListener(new TrumpClickListener());
+        i.setUserObject(GamePlay.BidRule_Direction.Downtown);
+        grpTrumps.addActor(i);
+
+        j = new Image(new Texture(Gdx.files.internal("downArrow.png")));
+        j.setBounds(0, 0, getWidth() * .04f, getHeight() * .75f);
+        j.setSize(75, 75);
+        j.setPosition(getWidth() * .44f, getHeight() * .61f);
+        j.setRotation(180f);
+        j.addListener(new TrumpClickListener());
+        j.setUserObject(GamePlay.BidRule_Direction.Uptown);
+        grpTrumps.addActor(j);
+    }
+
+    private void LoadTrumps() {
+        int XPos = 0, counter = 0;
+        for (TextureRegion tr :
+                Assets.cardSuits) {
+            imgTrump = new Image(tr);
+            imgTrump.addListener(new TrumpClickListener());
+            switch (counter) {
+                case 0:
+                    imgTrump.setUserObject(CardSuit.Heart);
+                    break;
+                case 1:
+                    imgTrump.setUserObject(CardSuit.Spade);
+                    break;
+                case 2:
+                    imgTrump.setUserObject(CardSuit.Diamond);
+                    break;
+                case 3:
+                    imgTrump.setUserObject(CardSuit.Club);
+                    break;
+            }
+            grpTrumps.addActor(imgTrump);//.padRight(counter==0?0:30f);
+            imgTrump.setPosition(XPos, 200f);
+            TrumpHeight = getHeight() * .20f;
+            imgTrump.setSize(getWidth() * .13f, TrumpHeight);
+            imgTrump.setName(((CardSuit) imgTrump.getUserObject()).name());
+            counter++;
+            XPos += 150;
+        }
+    }
+
+    private class OkClickListener extends ClickListener {
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+            Gdx.app.log("Trump/Direction selected", "Ok");
+            //if (showTrump) {
+            ConfigureAndShowKitty();
+            ShowKitty = true;
+            ScreenTitleLabel = "Discard  6  Cards";
+            grpTrumps.clear();
+            grpTrumps.remove();
+            //}
+            grpTrumps = null;
+            btnGoPlay.setText("Play");
+            btnGoPlay.clearListeners();
+            btnGoPlay.addListener(new PlayClickListener());
+            btnGoPlay.setVisible(false);
+        }
+    }
+
+    private class TrumpClickListener extends ClickListener {
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+            super.clicked(event, x, y);
+
+            btnGoPlay = new TextButton("Ok", Assets.Skins);
+            btnGoPlay.setName("Ok");
+            btnGoPlay.setSize(150, 46);
+            btnGoPlay.setPosition(getWidth() / 2 - btnGoPlay.getWidth() / 2f, getHeight() * .38f);
+            btnGoPlay.pad(13f, 0, 13f, 0);
+            btnGoPlay.addListener(new OkClickListener());
+            btnGoPlay.setVisible(false);
+            TrumpSelectStage.this.addActor(btnGoPlay);
+
+
+            switch (GamePlay.GAME_DIRECTION) {
+                case NoTrump:
+                    GamePlay.GAME_DIRECTION = (GamePlay.BidRule_Direction) event.getListenerActor().getUserObject();
+                    break;
+                default:
+                    GamePlay.GAME_SUIT = (CardSuit) event.getListenerActor().getUserObject();
+                    break;
+            }
+            btnGoPlay.setVisible(true);
+        }
+    }
+
     private class PlayClickListener extends ClickListener {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            Utils.log("Trump Selected", "Ready to play");
+            boolean f = GamePlay.GAME_SUIT == null;
+            Utils.log(!f ? "\nTrump" : "\nDirection" + " Selected", "Ready to play, " + GamePlay.GAME_DIRECTION.toString());
 
             bidWhistGame.gamePlay.KittyHand.getCards().removeIf(c -> c.IsRaised());
             Utils.log("Kitty Remains", Integer.toString(bidWhistGame.gamePlay.KittyHand.getCards().size()));
@@ -215,31 +258,6 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
                 e.printStackTrace();
             }
         }
-    }
-
-    private class TrumpClickListener extends ClickListener {
-        CardSuit suitSelected = null;
-
-        @Override
-        public void clicked(InputEvent event, float x, float y) {
-            super.clicked(event, x, y);
-            suitSelected = (CardSuit) event.getListenerActor().getUserObject();
-            btnGoPlay.setVisible(true);
-            GamePlay.GAME_SUIT = suitSelected;
-            Gdx.app.log("Trump Selected", suitSelected.toString() + " - " + suitSelected.name());
-        }
-    }
-
-    @Override
-    public void KittyCardPlayed(_BidWhistStage stage, Card selectedCard) {
-        noDiscards += selectedCard.IsRaised() ? 1 : -1;
-        Utils.log(stageName, "\t**Card selected**  : " + selectedCard.IsRaised() + " : " + noDiscards);
-    }
-
-    @Override
-    public void ReadyToDiscard(boolean b) {
-        Utils.log(stageName, GamePlay.MAX_CARDS_TO_DISCARD + " selected, ready to discard!");
-        btnGoPlay.setVisible(b);
     }
 
 }

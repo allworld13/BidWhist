@@ -150,7 +150,7 @@ public class Hand extends ArrayList<Card> implements IHand{
 							break;
 					}
 				}
-				if (c.IsAJoker())
+				if (c.IsAJoker() && gameSuit != null)
 					c.setCardSuit(gameSuit);
 			}
 		}

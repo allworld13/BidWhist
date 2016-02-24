@@ -273,7 +273,13 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         if (cardPlay.card.getCardSuit().equals(leadSuit))
             validPlay = true;
         else if (!cardPlay.player.getHand().HasSuit(leadSuit)) {
-            if (GAME_SUIT.equals(cardPlay.card.getCardSuit()))
+            if (GAME_SUIT == null && GAME_DIRECTION.equals(BidRule_Direction.NoTrump))
+                if (leadSuit.equals(cardPlay)) {
+                    gameEvents.PlayerPlaysTrump(cardPlay);
+                } else {
+                    gameEvents.PlayerThrewOffSuit(cardPlay, leadSuit);
+                }
+            else if (GAME_SUIT != null && GAME_SUIT.equals(cardPlay.card.getCardSuit()))
                 gameEvents.PlayerPlaysTrump(cardPlay);
             else
                 gameEvents.PlayerThrewOffSuit(cardPlay, leadSuit);
@@ -583,10 +589,13 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     @Override
     public void SetGameSuit(CardSuit gameSuit) {
         GAME_SUIT = gameSuit;
-        System.out.println("\t*** Game Suit: " + gameSuit.toString());
-        if (GAME_DIRECTION != BidRule_Direction.NoTrump) {
-            SetJokerAndAcesSuit(gameSuit, GAME_DIRECTION);
-        }
+        if (GAME_SUIT != null)
+            System.out.println("\t*** Game Suit: " + gameSuit.toString());
+        else
+            System.out.println("\t*** Game Direction: " + GAME_DIRECTION.toString());
+
+        SetJokerAndAcesSuit(gameSuit, GAME_DIRECTION);
+
         System.out.println(GetGameBid());
     }
 
