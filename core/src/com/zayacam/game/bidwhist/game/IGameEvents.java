@@ -24,7 +24,7 @@ public interface IGameEvents {
     void WonThisHand(BidPlayer bidPlayer);
     boolean BidAwarded();
 
-    void EndGame();
+    boolean EndGame();
     void TeamWonGameBid(int teamScore, BidPlayer winner);
     void TeamLostGameBid(int teamScore, BidPlayer winner);
     boolean ValidatePlayersBid(BidPlayer bidPlayer) throws InterruptedException;

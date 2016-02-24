@@ -439,9 +439,9 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     }
 
     @Override
-    public void TeamLostGameBid(int teamScore, BidPlayer winner) {
-        System.out.println("You lost!");
-        if (winner.getTeamId() == 1)
+    public void TeamLostGameBid(int teamScore, BidPlayer bidWinner) {
+        System.out.println("Team " + bidWinner.getTeamId() + ",you lost!");
+        if (bidWinner.getTeamId() == 1)
             team1FinalScore += 1;
         else
             team2FinalScore += 1;
@@ -675,7 +675,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     }
 
     @Override
-    public void EndGame() {
+    public boolean EndGame() {
         int teamScore;
         BidPlayer bidWinner = gamePlayers.stream()
                 .filter(b -> b.isAwardedTheBid())
@@ -687,6 +687,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
             gameEvents.TeamWonGameBid(teamScore, bidWinner);
         else
             gameEvents.TeamLostGameBid(teamScore, bidWinner);
+        return true;
     }
 
     /*

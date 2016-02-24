@@ -20,6 +20,7 @@ import com.zayacam.game.bidwhist.game.GamePlay;
 
 public class GamePlayStage extends _BidWhistStage implements InputProcessor {
 
+    private static boolean SHOWGAMEOVERPROMPT, GAMEOVER = false;
     BidPlayer lastRoundWinner = null;
     private boolean willLose, validCardPlayed, cutCardPlayed;
     CardPlay cardPlayed;
@@ -29,54 +30,62 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
 
     public GamePlayStage(BidWhistGame bidWhistGame, ScreenViewport sViewport) throws InterruptedException {
         super(bidWhistGame, sViewport);
-
+        GAMEOVER = false;
         if (bidWinner == null)
             lastRoundWinner = bidWinner = bidWhistGame.gamePlay.bidWinner;
         bidWinner.SetHandWinner(true);
         bidWhistGame.gamePlay.ResetTeamTricksScore();
+
+        hw = this.getWidth() / 2f;
+        hh = this.getHeight() / 2f;
+
     }
 
     @Override
     public void act(float delta) {
         super.act(delta);
 
-        hw = this.getWidth() / 2f;
-        hh = this.getHeight() / 2f;
-
-        if (playRound >= GamePlay.MAX_PLAYER_HANDSIZE) {
+        //region Game Over Routine
+        if (GAMEOVER && !SHOWGAMEOVERPROMPT) {
             // current game over
             grpTableHand = null;
             bidWhistGame.gamePlay.tableHand.clear();
 
+            // check to see if the game is actually over
+            System.out.println("Game Done!!");
+            SHOWGAMEOVERPROMPT = bidWhistGame.gamePlay.EndGame();
             return;
-        } else {
+        }
+        //endregion
 
-            if (!bidWhistGame.gamePlay.gamePlayers.stream().allMatch(bp -> bp.HasPlayed())) {
-                currentPlayer = GetNextPlayersPlay();
+        if (GAMEOVER)
+            return;
 
-                if (currentPlayer.isHuman()) {
-                    // get handled by the touched event
-                    grpSouthPlayer.setTouchable(Touchable.enabled);
-
-                } else {
-                    grpSouthPlayer.setTouchable(Touchable.disabled);
-                    System.out.println("\n" + currentPlayer.toString());
-                    currentPlayer.getHand().ShowCards();
-                    int playIndex = currentPlayer.AutoPlayCard(bidWhistGame.gamePlay.getLeadSuit(), playRound);
-                    selectedCard = currentPlayer.PlayCard(playIndex);
-                    cardPlayed = new CardPlay(currentPlayer, selectedCard);
-
-                    // 2.)   Check to see if the selected card is playable
-                    try {
-                        validCardPlayed = bidWhistGame.gamePlay.PlaySelectedCard(cardPlayed);
-                        if (validCardPlayed) {
-                            AnimatePlayOfSelectedCard(cardPlayed);
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+        //region game play
+        if (!bidWhistGame.gamePlay.gamePlayers.stream().allMatch(bp -> bp.HasPlayed())) {
+            currentPlayer = GetNextPlayersPlay();
+            if (currentPlayer.isHuman()) {
+                // get handled by the touched event
+                grpSouthPlayer.setTouchable(Touchable.enabled);
             } else {
+                grpSouthPlayer.setTouchable(Touchable.disabled);
+                System.out.println("\n" + currentPlayer.toString());
+                currentPlayer.getHand().ShowCards();
+                int playIndex = currentPlayer.AutoPlayCard(bidWhistGame.gamePlay.getLeadSuit(), playRound);
+                selectedCard = currentPlayer.PlayCard(playIndex);
+                cardPlayed = new CardPlay(currentPlayer, selectedCard);
+
+                // 2.)   Check to see if the selected card is playable
+                try {
+                    validCardPlayed = bidWhistGame.gamePlay.PlaySelectedCard(cardPlayed);
+                    if (validCardPlayed) {
+                        AnimatePlayOfSelectedCard(cardPlayed);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
                 newTableHand = true;
                 Utils.log(stageName, "Time to judge the table hand.");
                 lastRoundWinner = bidWhistGame.gamePlay.JudgeTable(playRound);
@@ -90,18 +99,17 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                 bidWhistGame.gamePlay.AllPlayersPlayedReset();
                 bidWhistGame.gamePlay.PlayerOrderSet = false;
                 playRound++;
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            // check to see if the game is actually over
-            if (playRound > GamePlay.MAX_PLAYER_HANDSIZE) {
-                System.out.println("Game Done!!");
-                bidWhistGame.gamePlay.EndGame();
-            }
         }
+        //region pause
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            }
+        //endregion
+        //endregion
+
+        GAMEOVER = playRound > GamePlay.MAX_PLAYER_HANDSIZE;
     }
 
     @Override
@@ -115,8 +123,8 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
 
         batch.begin();
         batch.draw(Assets.text_background, 0, 0, this.getWidth(), this.getHeight());
-        DrawGameScore(batch);
         ShowPlayersName(batch);
+        DrawGameScore(batch);
         BidPlayer allworld = bidWhistGame.gamePlay.gamePlayers.stream().filter(gp -> gp.getIndex() == 1).findFirst().get();
 
         DrawPlayerHand(batch, allworld);
