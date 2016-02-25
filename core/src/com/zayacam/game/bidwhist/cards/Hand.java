@@ -126,9 +126,10 @@ public class Hand extends ArrayList<Card> implements IHand{
 	}
 
 	public void SetJokerSuit(CardSuit gameSuit, GamePlay.BidRule_Direction direction) {
+		/*
 		if (gameSuit == null)
 			return;
-
+		*/
 		int deckValue = 0;
 		for (Card c: this) {
 			if (c.getDeckValue() > 52 || c.getCardFace() == CardFace.Ace  ) {
@@ -150,8 +151,11 @@ public class Hand extends ArrayList<Card> implements IHand{
 							break;
 					}
 				}
-				if (c.IsAJoker() && gameSuit != null)
+				if (c.IsAJoker()) {
 					c.setCardSuit(gameSuit);
+					if (gameSuit != null)
+						c.setBidDud(true);
+				}
 			}
 		}
 	}
