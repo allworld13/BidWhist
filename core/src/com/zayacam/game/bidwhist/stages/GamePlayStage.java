@@ -134,6 +134,9 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         }
         DrawRoundCount(batch);
         DrawTableHand(batch);
+
+        if (GAMEOVER)
+            DrawGameOverPrompt(batch);
         batch.end();
     }
 
@@ -143,6 +146,16 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         }
         currentPlayer = bidWhistGame.gamePlay.gamePlayers.stream().filter(p -> !p.HasPlayed()).findFirst().get();
         return currentPlayer;
+    }
+
+    private void DrawGameOverPrompt(SpriteBatch batch) {
+        Assets.PlayerNameFont.setColor(Color.GOLD);
+        Assets.textBounds.setText(Assets.PlayerNameFont, "Game Over");
+        Assets.PlayerNameFont.draw(batch, Assets.textBounds, (getWidth() - Assets.textBounds.width) / 2f, getHeight() * .78f);
+
+        Assets.PlayerNameFont.setColor(Color.PURPLE);
+        Assets.textBounds.setText(Assets.PlayerNameFont, "Game Over");
+        Assets.PlayerNameFont.draw(batch, Assets.textBounds, ((getWidth() - Assets.textBounds.width) / 2f) + 3f, (getHeight() * .78f) + 3f);
     }
 
     private void DrawRoundCount(SpriteBatch batch) {
