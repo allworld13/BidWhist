@@ -23,18 +23,17 @@ public class MainMenuStage extends _BidWhistStage {
 
         //region load main menu buttons
         tblMenuOptions.align(Align.center | Align.topLeft);
-        tblMenuOptions.setPosition(this.getWidth() * .68f,
-                (this.getHeight() + 6f) * .80f);
+        tblMenuOptions.setPosition(getWidth() * .68f, (getHeight() + 6f) * .80f);
 
         btnGameButton = new TextButton("New Game  ", Assets.Skins);
         btnGameButton.setName("btnNewGame");
-        btnGameButton.setSize(this.getWidth() * Assets.MainMenuButton_Width, this.getWidth() * Assets.MainMenuButton_Height);
+        btnGameButton.setSize(getWidth() * Assets.MainMenuButton_Width, getWidth() * Assets.MainMenuButton_Height);
         btnGameButton.addListener(new MainMenuButtonClickListener());
         tblMenuOptions.add(btnGameButton);
         tblMenuOptions.row();
         btnGameButton = new TextButton("Options", Assets.Skins);
         btnGameButton.setName("btnOptions");
-        btnGameButton.setSize(this.getWidth() * Assets.MainMenuButton_Width, this.getWidth() * Assets.MainMenuButton_Height);
+        btnGameButton.setSize(getWidth() * Assets.MainMenuButton_Width, getWidth() * Assets.MainMenuButton_Height);
         btnGameButton.addListener(new MainMenuButtonClickListener());
         tblMenuOptions.add(btnGameButton).align(Align.left);
 
