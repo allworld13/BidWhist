@@ -160,5 +160,4 @@ public class Hand extends ArrayList<Card> implements IHand{
 		}
 	}
 
-
 }
