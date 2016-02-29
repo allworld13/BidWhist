@@ -120,7 +120,7 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
 
     @Override
     public void draw() {
-        //super.draw();
+        super.draw();
 
         //if (!gamePlay.isGameStarted() ) {
         grpSouthPlayer = new Group();

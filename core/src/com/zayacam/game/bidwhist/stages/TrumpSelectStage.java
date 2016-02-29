@@ -67,6 +67,7 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
     @Override
     public void draw() {
         super.draw();
+
         batch.begin();
         if (!CardsBaseLined)
             BaseLineAllCards();

@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.zayacam.Utils;
@@ -49,8 +50,8 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
     protected Button btnPass, btnBid;
     protected int playRound = 1;
 
-    Group grpKitty, grpSouthPlayer, grpTableHand;
-    protected Group grpBiddingNumbers;
+    Group grpKitty, grpSouthPlayer, grpTableHand, grpBiddingNumbers;
+    Table tblBiddingNumbers, tblNumbers;
 
     Button btnNumber;
 
@@ -75,7 +76,6 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         setKeyboardFocus(currentScreen);
 
         grpSouthPlayer = new Group();
-        grpBiddingNumbers = new Group();
     }
 
     public _BidWhistStage(BidWhistGame bidWhistGame, ScreenViewport vPort) {
@@ -87,8 +87,8 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
 
     @Override
     public void draw() {
+        Assets.ClearScreen();
         super.draw();
-        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
     }
 
@@ -225,6 +225,12 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
 
 
     protected class BidDirectionClicked extends ClickListener {
+        Table parentTable;
+
+        public BidDirectionClicked(Table tblDirection) {
+            parentTable = tblDirection;
+        }
+
         @Override
         public void clicked(InputEvent event, float x, float y) {
             super.clicked(event, x, y);
@@ -232,39 +238,10 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
             String btnName = event.getListenerActor().getName();
 
             bidDirection = GamePlay.BidRule_Direction.valueOf(btnName);
+            HilightPressedButton(event, parentTable);
         }
     }
 
-    protected class PassOrBidPlayClickListener extends ClickListener {
-        @Override
-        public void clicked(InputEvent event, float x, float y) {
-            super.clicked(event, x, y);
-            boolean validBid = false;
-
-            String btnName = event.getListenerActor().getName();
-            Gdx.app.log(getStageName() + " -> Play", " - " + btnName);
-
-            switch (btnName) {
-                case "Bid":
-                    biddingPlayer.setBidHand_Direction(bidDirection);
-                    biddingPlayer.setBidHand_Books(biddingBooks);
-                    try {
-                        validBid = bidWhistGame.PlayerHasBidded(biddingPlayer);
-                        if (validBid) {
-                            minBid = biddingPlayer.getBidHand_Books();
-                        } else {
-                            biddingPlayer.setPlayerHasBidded(false);
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                case "Pass":
-                    bidWhistGame.PlayerPassed(biddingPlayer);
-                    break;
-            }
-        }
-    }
 
     @Override
     public boolean keyDown(int keyCode) {
@@ -408,8 +385,13 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
 
         Assets.textBounds.setText(Assets.DefaultFont, "Tricks" + bidWhistGame.gamePlay.ShowTeamTrickTakes());
         Assets.DefaultFont.draw(batch, Assets.textBounds, this.getWidth() * .012f, getHeight() * 0.89f);
-
     }
 
 
+    protected void HilightPressedButton(InputEvent event, Table tblInput) {
+        for (Actor a : tblInput.getChildren()) {
+            a.setColor(1, 1, 1, 1);
+        }
+        event.getListenerActor().setColor(Color.GOLD);
+    }
 }
