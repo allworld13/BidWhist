@@ -2,7 +2,6 @@ package com.zayacam.game.bidwhist.stages;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
 public class BiddingStage extends _BidWhistStage {
 
     Table tblBiddingNumbers;
-    boolean bidNumberActorCreated = false;
+    boolean createNewBidNumberActor = true;
 
     //region ctors
     public BiddingStage(BidWhistGame bidWhistGame, ScreenViewport sViewport) {
@@ -33,7 +32,7 @@ public class BiddingStage extends _BidWhistStage {
 
         tblBiddingNumbers = new Table();
         tblBiddingNumbers.setName("tblBiddingNumbers");
-        minBid = bidWhistGame.gamePlay.getMinimalBid();
+        CreateBidNumberActor();
     }
     //endregion
 
@@ -141,28 +140,13 @@ public class BiddingStage extends _BidWhistStage {
         return true;
     }
 
-    private void DrawBidNumberButtons(SpriteBatch batch) {
-        if (!bidNumberActorCreated) {
-            CreateBidNumberActor();
-            grpBiddingNumbers.addActor(tblBiddingNumbers);
-            this.addActor(grpBiddingNumbers);
-            bidNumberActorCreated = true;
-        }
-
-        grpBiddingNumbers.setPosition(getWidth() / 2 - tblBiddingNumbers.getWidth() / 2, getHeight() * .465f);
-        grpBiddingNumbers.setBounds(grpBiddingNumbers.getX(), grpBiddingNumbers.getY(),
-                grpBiddingNumbers.getWidth(), grpBiddingNumbers.getHeight());
-        grpBiddingNumbers.draw(batch, 1f);
-
-
+    private void CreateBidNumberActor() {
+        minBid = bidWhistGame.gamePlay.getMinimalBid();
+        CreateBidNumberActor(minBid);
     }
 
-    private void CreateBidNumberActor() {
-        if (finishedBidding) {
-            return;
-        }
+    private void CreateBidNumberActor(int minBid) {
         Table tblNumbers, tblDirection, tblOutter;
-
         tblOutter = new Table();
 
         //region main table layout
@@ -171,7 +155,7 @@ public class BiddingStage extends _BidWhistStage {
         tblNumbers = new Table();
         tblNumbers.setName("tblBidNumbers");
 
-        for (int i = minBid; i < 8; i++) {
+        for (int i = this.minBid; i < 8; i++) {
             btnNumber = new TextButton(Integer.toString(i), Assets.Skins);
             btnNumber.setName(Integer.toString(i));
             btnNumber.setUserObject(Integer.toString(i));
@@ -242,8 +226,21 @@ public class BiddingStage extends _BidWhistStage {
         //endregion
 
         tblBiddingNumbers.pad(Value.percentWidth(.20f));
+    }
 
+    private void DrawBidNumberButtons(SpriteBatch batch) {
+        if (createNewBidNumberActor) {
+            grpBiddingNumbers.addActor(tblBiddingNumbers);
+            this.addActor(grpBiddingNumbers);
+            createNewBidNumberActor = false;
+        }
+
+        grpBiddingNumbers.setPosition(getWidth() / 2 - tblBiddingNumbers.getWidth() / 2, getHeight() * .55f);
+        grpBiddingNumbers.setBounds(grpBiddingNumbers.getX(), grpBiddingNumbers.getY(),
+                grpBiddingNumbers.getWidth(), grpBiddingNumbers.getHeight());
+        grpBiddingNumbers.draw(batch, 1f);
 
     }
+
 
 }
