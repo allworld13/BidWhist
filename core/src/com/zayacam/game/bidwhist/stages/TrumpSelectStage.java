@@ -1,6 +1,7 @@
 package com.zayacam.game.bidwhist.stages;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -92,7 +93,6 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
         DrawGameScore(batch);
         batch.end();
     }
-
 
     /*
         Gives the bid winner an opportunity to select a trump.
@@ -215,6 +215,7 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
         @Override
         public void clicked(InputEvent event, float x, float y) {
             super.clicked(event, x, y);
+            HilightPressedButton(event, grpTrumps);
 
             btnGoPlay = new TextButton("Ok", Assets.Skins);
             btnGoPlay.setName("Ok");
@@ -225,7 +226,6 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
             btnGoPlay.setVisible(false);
             TrumpSelectStage.this.addActor(btnGoPlay);
 
-
             switch (GamePlay.GAME_DIRECTION) {
                 case NoTrump:
                     GamePlay.GAME_DIRECTION = (GamePlay.BidRule_Direction) event.getListenerActor().getUserObject();
@@ -233,6 +233,7 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
                     break;
                 default:
                     GamePlay.GAME_SUIT = (CardSuit) event.getListenerActor().getUserObject();
+                    event.getListenerActor().setColor(Color.PURPLE);
                     break;
             }
             btnGoPlay.setVisible(true);

@@ -388,8 +388,8 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
     }
 
 
-    protected void HilightPressedButton(InputEvent event, Table tblInput) {
-        for (Actor a : tblInput.getChildren()) {
+    protected void HilightPressedButton(InputEvent event, Group grpParent) {
+        for (Actor a : grpParent.getChildren()) {
             a.setColor(1, 1, 1, 1);
         }
         event.getListenerActor().setColor(Color.GOLD);
