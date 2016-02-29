@@ -14,11 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.zayacam.Utils;
 import com.zayacam.game.Assets;
@@ -53,8 +49,9 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
     protected Button btnPass, btnBid;
     protected int playRound = 1;
 
-    Group grpKitty, grpSouthPlayer, grpTableHand, grpBiddingNumbers;
-    Table tblBiddingNumbers;
+    Group grpKitty, grpSouthPlayer, grpTableHand;
+    protected Group grpBiddingNumbers;
+
     Button btnNumber;
 
     int biddingBooks = 0, minBid, XPos;
@@ -226,111 +223,8 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         }
     }
 
-    protected void LoadBidNumberButtons() {
-        if (finishedBidding) {
-            return;
-        }
-        Table tblNumbers, tblDirection, tblOutter;
 
-        tblOutter = new Table();
-        tblBiddingNumbers = new Table();
-        tblBiddingNumbers.setName("tblBiddingNumbers");
-
-        //region main table layout
-
-        //region bidding numbers
-        tblNumbers = new Table();
-        tblNumbers.setName("tblBidNumbers");
-
-        for (int i = minBid; i < 8; i++) {
-            btnNumber = new TextButton(Integer.toString(i), Assets.Skins);
-            btnNumber.setName(Integer.toString(i));
-            btnNumber.setUserObject(Integer.toString(i));
-            btnNumber.setSize(Gdx.graphics.getWidth() / 4, Gdx.graphics.getWidth() / 10);
-            btnNumber.setBounds(0, 0, btnNumber.getWidth(), btnNumber.getHeight());
-            btnNumber.align(Align.center | Align.center);
-            btnNumber.pad(0f, 30f, 0f, 30f);
-            btnNumber.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    super.clicked(event, x, y);
-                    Gdx.app.log(getStageName(), " - " + event.getListenerActor().getName());
-                    biddingBooks = Integer.parseInt(event.getListenerActor().getUserObject().toString());
-                }
-            });
-            if (GamePlay.GAME_BOOKS == 0 || i > GamePlay.GAME_BOOKS ||
-                    i == GamePlay.GAME_BOOKS && GamePlay.GAME_DIRECTION != GamePlay.BidRule_Direction.NoTrump) {
-                tblNumbers.add(btnNumber);
-            } else {
-                btnNumber.remove();
-            }
-        }
-        tblBiddingNumbers.add(tblNumbers);
-        tblBiddingNumbers.row();
-        //endregion
-
-        //region bid or pass buttons
-        btnPass = new TextButton("Pass", Assets.Skins);
-        btnPass.setName("Pass");
-        btnPass.pad(0f, 20f, 0f, 20f);
-        btnPass.addListener(new PassOrBidPlayClickListener());
-
-        tblOutter.add(btnPass);
-
-        //region bid direction
-        tblDirection = new Table();
-
-        tblDirection.setName("tblDirection");
-        tblDirection.pad(0f, 20f, 0f, 20f);
-
-        btnNumber = new TextButton("Dn", Assets.Skins);
-        btnNumber.setName("Downtown");
-        btnNumber.pad(0f, 10f, 0f, 10f);
-        btnNumber.addListener(new BidDirectionClicked());
-
-        tblDirection.add(btnNumber);
-
-        btnNumber = new TextButton("Up", Assets.Skins);
-        btnNumber.setName("Uptown");
-        btnNumber.pad(0f, 10f, 0f, 10f);
-        tblDirection.add(btnNumber);
-        btnNumber.addListener(new BidDirectionClicked());
-
-        tblOutter.add(tblDirection);
-
-        btnNumber = new TextButton(" X ", Assets.Skins);
-        btnNumber.setName("NoTrump");
-        btnNumber.pad(0f, 10f, 0f, 10f);
-        btnNumber.addListener(new BidDirectionClicked());
-
-        tblDirection.add(btnNumber);
-
-        //endregion
-
-        btnBid = new TextButton("Bid", Assets.Skins);
-        btnBid.setName("Bid");
-        btnBid.pad(0f, 35f, 0f, 35f);
-        btnBid.addListener(new PassOrBidPlayClickListener());
-
-        tblOutter.add(btnBid);
-
-        //endregion
-
-        tblBiddingNumbers.add(tblOutter);
-        //endregion
-
-        tblBiddingNumbers.pad(Value.percentWidth(.20f));
-
-        grpBiddingNumbers.setPosition(Gdx.graphics.getWidth() / 2 - tblBiddingNumbers.getWidth() / 2,
-                Gdx.graphics.getHeight() * .465f);
-        grpBiddingNumbers.setBounds(grpBiddingNumbers.getX(), grpBiddingNumbers.getY(),
-                grpBiddingNumbers.getWidth(), grpBiddingNumbers.getHeight());
-        grpBiddingNumbers.addActor(tblBiddingNumbers);
-        this.addActor(grpBiddingNumbers);
-        grpBiddingNumbers.draw(batch, 1f);
-    }
-
-    private class BidDirectionClicked extends ClickListener {
+    protected class BidDirectionClicked extends ClickListener {
         @Override
         public void clicked(InputEvent event, float x, float y) {
             super.clicked(event, x, y);

@@ -1,9 +1,6 @@
 package com.zayacam.game;
 
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -78,7 +75,6 @@ public class BidWhistGame extends Game implements InputProcessor {
 
 	private void LoadGamePlay() throws InterruptedException {
 		stage = new GamePlayStage(this, sViewport);
-
 	}
 	//endregion
 
