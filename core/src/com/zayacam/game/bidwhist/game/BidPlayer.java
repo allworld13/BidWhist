@@ -335,19 +335,6 @@ public class BidPlayer implements IBidPlayerEvents {
             Card c = cardsOfSuit.get(randIndex);
             result = getHand().indexOf(c);
         }
-        try {
-            int index = 0;
-            for (int i = 0; i < 2; i++) {
-                do {
-                    System.out.print(".");
-                    if (index++ > 8) break;
-                    Thread.sleep(100);
-                } while (true);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         return result;
     }
 

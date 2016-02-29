@@ -267,18 +267,23 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     public boolean PlaySelectedCard(CardPlay cardPlay) throws InterruptedException {
         boolean validPlay = false;
 
-        if (cardPlay.player.getPlayOrder() == 1) {
+        if (leadSuit == null && cardPlay.card.getCardSuit() != null)
             leadSuit = cardPlay.card.getCardSuit();
-        }
-        if (cardPlay.card.getCardSuit().equals(leadSuit))
+
+        /*
+        //Jokers are duds in no trump
+        if (cardPlay.card.IsAJoker() && GAME_DIRECTION.equals(BidRule_Direction.NoTrump) ) {
+            cardPlay.card.setBidDud(true);
             validPlay = true;
-        else if (!cardPlay.player.getHand().HasSuit(leadSuit)) {
+        }
+        */
+
+        if (cardPlay.card.getCardSuit().equals(leadSuit)) {
+            validPlay = true;
+        } else if (!cardPlay.player.getHand().HasSuit(leadSuit)) {
+            // the card played doesn't match the lead suit
             if (GAME_SUIT == null && GAME_DIRECTION.equals(BidRule_Direction.NoTrump))
-                if (leadSuit.equals(cardPlay)) {
-                    gameEvents.PlayerPlaysTrump(cardPlay);
-                } else {
-                    gameEvents.PlayerThrewOffSuit(cardPlay, leadSuit);
-                }
+                gameEvents.PlayerThrewOffSuit(cardPlay, leadSuit);
             else if (GAME_SUIT != null && GAME_SUIT.equals(cardPlay.card.getCardSuit()))
                 gameEvents.PlayerPlaysTrump(cardPlay);
             else
@@ -367,8 +372,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     @Override
     public BidPlayer JudgeTable(int playRound) {
 
-        //final CardSuit ls = leadSuit;
-
         System.out.println("\nJudging the cards on the table\n");
         gamePlayers.stream().forEach(bidPlayer -> bidPlayer.SetHandWinner(false));
 
@@ -402,6 +405,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         BidPlayer bidplayer = filteredTableHand.get(winner).player;
         bidplayer.SetHandWinner(true);
 
+        leadSuit = null;
         tableHand.clear();
         return bidplayer;
     }
@@ -419,14 +423,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         System.out.println("\n\n\n\tYo, " + bidPlayer + " won the hand! ");
         gamePlayers.stream().filter(gp -> gp.equals(bidPlayer)).findFirst().get().setPlayOrder(0);
         bidPlayer.AddToBidTaken();
-        /*
-        for (BidPlayer player: gamePlayers) {
-            if (player.getId() == bidPlayer.getId()) {
-                player.setPlayOrder(0);
-                break;
-            }
-        }
-        */
     }
 
     @Override
@@ -592,7 +588,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         if (GAME_SUIT != null)
             System.out.println("\t*** Game Suit: " + gameSuit.toString());
         else
-            System.out.println("\t*** Game Direction: " + GAME_DIRECTION.toString());
+            System.out.println("\t*** NoTrump, Game Direction: " + GAME_DIRECTION.toString());
 
         SetJokerAndAcesSuit(gameSuit, GAME_DIRECTION);
 
@@ -689,122 +685,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
             gameEvents.TeamLostGameBid(teamScore, bidWinner);
         return true;
     }
-
-    /*
-     public void PlayTheGame() throws InterruptedException {
-
-        int inputStr;
-        Card cardSelected;
-        CardSuit leadSuit = null;
-        CardPlay cardPlayed;
-        boolean playerHasPlayed;
-        hasGameCompleted = true;
-        gameTable = new GameTable();
-        tableHand = new TableHand();
-
-        System.out.println("Go\n\n");
-        Scanner sc = new Scanner(System.in);
-
-        int handRound = 1;
-        boolean willLose = false;
-        do {
-            tableHand.clear();
-            // play all cards
-            for (int playerPlayCount = 0; playerPlayCount < MAX_PLAYER_HANDSIZE; playerPlayCount++) {
-                System.out.println(ShowTeamScore());
-                System.out.println("\nRound " + (playerPlayCount + 1));
-                cutCardPlayed = false;
-                for (BidPlayer currentPlayer : gamePlayers) {
-                    currentPlayer.getHand().SortCards(SortBy.DeckValue);
-                    playerHasPlayed = false;
-
-                    do {
-                        ShowPlayersGreeting(currentPlayer, leadSuit);
-                        cardPlayed = null;
-                        if (currentPlayer.getHand().getSize() > 0) {
-                            System.out.println();
-                            currentPlayer.getHand().ShowCards(SortBy.DeckValue);
-                        }
-
-                        if (handRound > 0)
-                            ShowTableCards(leadSuit);
-                        // 1.)   Pick a card by index value
-                        System.out.print("\n\tselect card index:>   ");
-
-                        if (currentPlayer.isHuman())
-                            inputStr = sc.nextInt();
-                        else
-                            inputStr = currentPlayer.AutoPlayCard(leadSuit, handRound);
-
-                        // force the selected card to be w/ in the hand range for selection
-                        if (inputStr > currentPlayer.getHand().size() || inputStr < 0) continue;
-                        if (inputStr <= MAX_PLAYER_HANDSIZE - handRound) {
-                            cardSelected = currentPlayer.PlayCard(inputStr);
-                            cardPlayed = new CardPlay(currentPlayer, cardSelected);
-                        } else
-                            continue;
-
-                        CardSuit cardPlayedSuit = cardPlayed.card.getCardSuit();
-
-                        // 2.)   Check to see if the selected card is playable
-                        if (currentPlayer.isHandWinner()) {
-                            leadSuit = cardPlayedSuit;
-                            playerHasPlayed = gameEvents.PlayerPlays(cardPlayed, leadSuit);
-                        } else if (cardPlayedSuit == leadSuit ) {
-                            // 3.)   Place the selected/targeted card on the table. - following suit
-                            playerHasPlayed = gameEvents.PlayerPlays(cardPlayed, leadSuit);
-                        } else {
-                            // 4.) Not - following suit
-                            if (cardPlayed.player.HasSuit(leadSuit)){
-                                // Player has renege, don't allow
-                                playerHasPlayed = gameEvents.PlayerHasRenege(cardPlayed, leadSuit);
-                            } else {
-                                // Player is cutting
-                                if (cardPlayed.card.getCardSuit() == GAME_SUIT) {
-                                    cutCardPlayed = gameEvents.PlayerPlaysTrump(cardPlayed);
-                                } else {
-                                    // Player is simply throwing off
-                                    gameEvents.PlayerThrewOffSuit(cardPlayed,leadSuit);
-                                }
-                                playerHasPlayed = gameEvents.PlayerPlays(cardPlayed, leadSuit);
-                            }
-                        }
-                    } while (!playerHasPlayed);  // keep selecting a card until valid card selection.
-                    if (playerHasPlayed & cardPlayed != null)
-                        CardSelectedAndPlayed(cardPlayed);
-
-                    System.out.println("");
-                }  // next player takes a turn
-
-                BidPlayer tableWinner = gameEvents.JudgeTable(playerPlayCount, leadSuit);
-                tableWinner.AddToBidTaken();
-
-                CalculateTeamsScores();
-
-                willLose = WillBidWinnerActuallyLose();
-                if (willLose) {
-                    hasGameCompleted = ThrowInCardsForNextGame(bidWinner);
-                    if (hasGameCompleted)
-                        break;
-                } else {
-                    // player can win
-                    hasGameCompleted = BidWinnerHasMadeBidButNoBoston(bidWinner);
-                }
-
-                setGamePlayerPlayOrder(tableWinner);
-                leadSuit = null;
-                handRound++;
-            } // play the next card round
-
-            System.out.println(ShowTeamScore());
-            if (!hasGameCompleted)
-                hasGameCompleted = handRound > MAX_PLAYER_HANDSIZE;
-        } while (!hasGameCompleted);
-
-        gameEvents.EndGame(gamePlayers);
-        System.out.println("Done!");
-    }
-*/
 
     private boolean BidWinnerHasMadeBidButNoBoston(BidPlayer bidWinner) {
         boolean result = false;
