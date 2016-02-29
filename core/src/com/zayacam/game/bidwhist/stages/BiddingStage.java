@@ -2,6 +2,7 @@ package com.zayacam.game.bidwhist.stages;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -65,6 +66,9 @@ public class BiddingStage extends _BidWhistStage {
                 biddingPlayer = bidWhistGame.gamePlay.gamePlayers.get(bidWhistGame.gamePlay.MAX_NO_PLAYERS - 1);
                 biddingPlayer.setPlayerHasBidded(false);
                 bidWhistGame.YouMustBid(biddingPlayer);
+                btnPass.setColor(Color.DARK_GRAY);
+                btnPass.setDisabled(true);
+                btnPass.clearListeners();
                 finishedBidding = false;
             } else {
                 biddingPlayer = bidWinner;

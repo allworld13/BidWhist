@@ -132,28 +132,38 @@ public class Hand extends ArrayList<Card> implements IHand{
 		*/
 		int deckValue = 0;
 		for (Card c: this) {
-			if (c.getDeckValue() > 52 || c.getCardFace() == CardFace.Ace  ) {
-				if (direction == GamePlay.BidRule_Direction.Uptown && c.getFaceValue().equals("Ace")) {
+			c.setBidDud(false);
+
+			if (c.getDeckValue() > 52) {
+				if (direction.equals(GamePlay.BidRule_Direction.Uptown) && c.IsAnAce()) {
+					//region uptown play
 					c.setCardValue(c.getCardValue() + 13);
+					//endregion
+				} else {
+					//region downtown play
+					if (direction.equals(GamePlay.BidRule_Direction.Downtown)) {
+						deckValue = (int) c.getDeckValue();
+						switch (deckValue) {
+							case 53:
+								c.setCardValue(-2);
+								break;
+							case 54:
+								c.setCardValue(-3);
+								break;
+							default:
+								if (c.IsAnAce())
+									c.setCardValue(-1);
+								else
+									c.setCardValue(0);
+								break;
+						}
+					}
+					//endregion
 				}
 
-				if (direction == GamePlay.BidRule_Direction.Downtown ) {
-					deckValue = (int) c.getDeckValue();
-					switch (deckValue) {
-						case 53:
-							c.setCardValue(-2);
-							break;
-						case 54:
-							c.setCardValue(-3);
-							break;
-						default:
-							c.setCardValue(0);
-							break;
-					}
-				}
 				if (c.IsAJoker()) {
 					c.setCardSuit(gameSuit);
-					if (gameSuit != null)
+					if (gameSuit != null && direction.equals(GamePlay.BidRule_Direction.NoTrump))
 						c.setBidDud(true);
 				}
 			}

@@ -241,4 +241,8 @@ public class Card  {
     public void SetAvailable(boolean available) {
         this.available = available;
     }
+
+    public boolean IsAnAce() {
+        return this.cardFace == CardFace.Ace;
+    }
 }
