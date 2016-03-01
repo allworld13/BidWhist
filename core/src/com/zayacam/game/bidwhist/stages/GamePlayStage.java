@@ -73,8 +73,8 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                 // get handled by the touched event
                 if (!grpSouthPlayer.isTouchable()) grpSouthPlayer.setTouchable(Touchable.enabled);
             } else {
-                System.out.println("\n" + currentPlayer.toString());
-                currentPlayer.getHand().ShowCards();
+                System.out.println("\n Round: " + playRound + "    " + currentPlayer.toString());
+                //currentPlayer.getHand().ShowCards();
                 int playIndex = currentPlayer.AutoPlayCard(bidWhistGame.gamePlay.getLeadSuit(), playRound);
                 selectedCard = currentPlayer.PlayCard(playIndex);
                 cardPlayed = new CardPlay(currentPlayer, selectedCard);

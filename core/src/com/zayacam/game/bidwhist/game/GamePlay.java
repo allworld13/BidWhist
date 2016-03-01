@@ -270,14 +270,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         if (leadSuit == null && cardPlay.card.getCardSuit() != null)
             leadSuit = cardPlay.card.getCardSuit();
 
-        /*
-        //Jokers are duds in no trump
-        if (cardPlay.card.IsAJoker() && GAME_DIRECTION.equals(BidRule_Direction.NoTrump) ) {
-            cardPlay.card.setBidDud(true);
-            validPlay = true;
-        }
-        */
-
         if (cardPlay.card.getCardSuit().equals(leadSuit)) {
             validPlay = true;
         } else if (!cardPlay.player.getHand().HasSuit(leadSuit)) {

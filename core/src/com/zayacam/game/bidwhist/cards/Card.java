@@ -127,7 +127,7 @@ public class Card  {
                 this.cardFace = CardFace.Joker;
             	break;
             default:
-                result = Integer.toString(cardValue);
+                result = Float.toString(cardValue);
         }
         return result;
 

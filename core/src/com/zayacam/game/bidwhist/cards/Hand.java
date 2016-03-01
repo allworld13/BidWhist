@@ -126,46 +126,38 @@ public class Hand extends ArrayList<Card> implements IHand{
 	}
 
 	public void SetJokerSuit(CardSuit gameSuit, GamePlay.BidRule_Direction direction) {
-		/*
-		if (gameSuit == null)
-			return;
-		*/
-		int deckValue = 0;
+		float deckValue, cardValue;
+		String faceValue;
 		for (Card c: this) {
 			c.setBidDud(false);
-
-			if (c.getDeckValue() > 52) {
-				if (direction.equals(GamePlay.BidRule_Direction.Uptown) && c.IsAnAce()) {
-					//region uptown play
-					c.setCardValue(c.getCardValue() + 13);
-					//endregion
-				} else {
-					//region downtown play
-					if (direction.equals(GamePlay.BidRule_Direction.Downtown)) {
-						deckValue = (int) c.getDeckValue();
-						switch (deckValue) {
-							case 53:
-								c.setCardValue(-2);
-								break;
-							case 54:
-								c.setCardValue(-3);
-								break;
-							default:
-								if (c.IsAnAce())
-									c.setCardValue(-1);
-								else
-									c.setCardValue(0);
-								break;
-						}
+			if (c.IsAJoker())
+				c.setCardSuit(gameSuit);
+			deckValue = c.getDeckValue();
+			faceValue = c.getFaceValue();
+			cardValue = c.getCardValue();
+			switch (direction) {
+				case Uptown:
+					if (c.IsAnAce())
+						c.setCardValue(c.getCardValue() + 13);
+					break;
+				case Downtown:
+					if (c.IsAJoker()) {
+						if ((int) c.getDeckValue() == 53)
+							c.setCardValue(-2);
+						else
+							c.setCardValue(-3);
+					} else if (c.IsAnAce()) {
+						c.setCardValue(-1);
+					} else {
+						//c.setCardValue(0);
 					}
-					//endregion
-				}
-
-				if (c.IsAJoker()) {
-					c.setCardSuit(gameSuit);
-					if (gameSuit != null && direction.equals(GamePlay.BidRule_Direction.NoTrump))
+					break;
+				case NoTrump:
+					if (c.IsAJoker()) {
+						c.setCardSuit(gameSuit);
 						c.setBidDud(true);
-				}
+					}
+					break;
 			}
 		}
 	}
