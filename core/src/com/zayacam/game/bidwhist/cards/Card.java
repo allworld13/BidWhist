@@ -1,6 +1,7 @@
 package com.zayacam.game.bidwhist.cards;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.zayacam.game.Assets;
 import com.zayacam.game.bidwhist.game.CardPlay;
@@ -17,7 +18,7 @@ public class Card  {
     private CardFace cardFace ;
     private ICard cardEvents;
     private int grpIndexName;
-    private int cardValue;
+    private float cardValue;
     private String cardFaceValue;
     private float deckValue;
     private boolean bidDud;
@@ -46,7 +47,7 @@ public class Card  {
         this.bidDud = false;
     }
 
-    public Card(GamePlay gamePlay, CardSuit cs, int cardValue, float deckValue ) {
+    public Card(GamePlay gamePlay, CardSuit cs, float cardValue, float deckValue) {
         this(gamePlay);
         this.cardSuit = cs;
         this.cardValue = cardValue;
@@ -66,6 +67,7 @@ public class Card  {
         this.playingCard.setPosition(0, Assets.P1YBaseLine);
         this.playingCard.setName(this.toStringBef());
         this.playingCard.setBounds(0, 0, Assets.CardWidth, Assets.CardHeight);
+        this.playingCard.setTouchable(Touchable.enabled);
     }
 
     public Image PlayingCard() {
@@ -76,11 +78,11 @@ public class Card  {
         return this.cardSuit;
     }
 
-    public int getCardValue() {
+    public float getCardValue() {
         return this.cardValue;
     }
 
-    public int setCardValue(int cardValue) {
+    public float setCardValue(float cardValue) {
         ConvertToFaceValue(cardValue);
         return this.cardValue = cardValue;
     }
@@ -97,10 +99,10 @@ public class Card  {
         return this.cardFaceDisplay == CardFacePosition.FaceDown ? true : false ;
     }
 
-    private String ConvertToFaceValue(int cardValue) {
+    private String ConvertToFaceValue(float cardValue) {
         String result ;
 
-        switch (cardValue) {
+        switch ((int) cardValue) {
             case 1:
             case 14:
                 result = "Ace";
@@ -135,24 +137,31 @@ public class Card  {
 
     public String toStringBef() {
     	String suitImg = "", result = "";
+        try {
 
-        // set the card suit
-        switch (cardSuit) {
-            case Heart:
-                suitImg = "♥";
-                break;
-            case Diamond:
-                suitImg = "♦";
-                break;
-            case Spade:
-                suitImg = "♠";
-                break;
-            case Club:
-                suitImg = "♣";
-                break;
-            case Joker:
-                suitImg = (cardValue == 54) ? "♀":"♂";
-                break;
+            // set the card suit
+            switch (cardSuit) {
+                case Heart:
+                    suitImg = "♥";
+                    break;
+                case Diamond:
+                    suitImg = "♦";
+                    break;
+                case Spade:
+                    suitImg = "♠";
+                    break;
+                case Club:
+                    suitImg = "♣";
+                    break;
+                case Joker:
+                    suitImg = (cardValue == 54) ? "♀" : "♂";
+                    break;
+                case NoTrump:
+                    suitImg = "";
+                    break;
+            }
+        } catch (Exception ex) {
+            System.out.println("No card suit defined!");
         }
 
         // set the card's face value
@@ -184,7 +193,7 @@ public class Card  {
     }
 
     public void setCardSuit(CardSuit cardSuit) {
-        this.cardSuit = cardSuit;
+        this.cardSuit = cardSuit == null ? CardSuit.NoTrump : cardSuit;
     }
 
     public boolean IsAJoker() {

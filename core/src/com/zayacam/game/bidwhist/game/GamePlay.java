@@ -211,7 +211,10 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
             throw new IllegalStateException("Bid less than minimal allowed!");
         if ((bidPlayer.getBidHand_Books() > BidRule_Number_Range.MAX_BID.getValue()))
             throw new IllegalStateException("The Bid is greater than maximum allowed");
-        if ((bidPlayer.getBidDirection() != BidRule_Direction.NoTrump)
+
+        if ((bidPlayer.getBidDirection() == null)
+                || (bidPlayer.getBidDirection() != BidRule_Direction.NoTrump)
+                && (bidPlayer.getBidDirection() != null)
                 && (bidPlayer.getBidDirection() != BidRule_Direction.Downtown)
                 && (bidPlayer.getBidDirection() != BidRule_Direction.Uptown ))
             throw new IllegalStateException("The Bid direction must be DownTown, UpTown, or No Trump only!");
@@ -274,7 +277,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
             validPlay = true;
         } else if (!cardPlay.player.getHand().HasSuit(leadSuit)) {
             // the card played doesn't match the lead suit
-            if (GAME_SUIT == null && GAME_DIRECTION.equals(BidRule_Direction.NoTrump))
+            if (GAME_SUIT.equals(CardSuit.NoTrump) | (GAME_SUIT == null))
                 gameEvents.PlayerThrewOffSuit(cardPlay, leadSuit);
             else if (GAME_SUIT != null && GAME_SUIT.equals(cardPlay.card.getCardSuit()))
                 gameEvents.PlayerPlaysTrump(cardPlay);
@@ -323,7 +326,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         }
         PlayerOrderSet = true;
         Collections.sort(gamePlayers, new ComparePlayerTo(SortBy.PlayerOrder));
-        ShowPlayOrder();
+        //ShowPlayOrder();
     }
 
     private void ShowPlayOrder() {
@@ -353,6 +356,14 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     }
 
     @Override
+    public boolean PlayerThrewOffSuit(CardPlay cardPlayed, CardSuit leadSuit) {
+        Assets.PlayThrowOffCard();
+        cardPlayed.card.setBidDud(true);
+        cardPlayed.player.SetHandWinner(false);
+        return true;
+    }
+
+    @Override
     public boolean PlayerPlaysTrump(CardPlay cardPlayed) {
         Assets.PlayCuttingCard();
         cardPlayed.player.PlayedTrumpCard(cardPlayed.card);
@@ -363,7 +374,11 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
 
     @Override
     public BidPlayer JudgeTable(int playRound) {
-
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         System.out.println("\nJudging the cards on the table\n");
         gamePlayers.stream().forEach(bidPlayer -> bidPlayer.SetHandWinner(false));
 
@@ -375,7 +390,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
 
         tableHand.Sort(SortBy.CardValue);
         List<CardPlay> filteredTableHand = null;
-        boolean cutCardPlayed = false;
+        boolean nullSuitsPlayed, cutCardPlayed = false;
         cutCardPlayed = tableHand.stream().anyMatch(cp -> cp.card.IsTrumpCard());
         if (!cutCardPlayed)
             filteredTableHand = tableHand.stream()
@@ -383,6 +398,13 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         else
             filteredTableHand = tableHand.stream()
                     .filter(cp -> cp.card.IsTrumpCard()).collect(Collectors.toList());
+
+        if (GAME_SUIT.equals(CardSuit.NoTrump)) {
+            nullSuitsPlayed = filteredTableHand.stream().anyMatch(cp -> cp.card.IsAJoker());
+            if (nullSuitsPlayed)
+                filteredTableHand = filteredTableHand.stream()
+                        .filter(cp -> cp.card.IsAJoker()).collect(Collectors.toList());
+        }
 
         int winner = 0;
         switch (GAME_DIRECTION) {
@@ -400,14 +422,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         leadSuit = null;
         tableHand.clear();
         return bidplayer;
-    }
-
-    @Override
-    public boolean PlayerThrewOffSuit(CardPlay cardPlayed, CardSuit leadSuit) {
-        Assets.PlayThrowOffCard();
-        cardPlayed.card.setBidDud(true);
-        cardPlayed.player.SetHandWinner(false);
-        return true;
     }
 
     @Override
@@ -430,9 +444,9 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     public void TeamLostGameBid(int teamScore, BidPlayer bidWinner) {
         System.out.println("Team " + bidWinner.getTeamId() + ",you lost!");
         if (bidWinner.getTeamId() == 1)
-            team1FinalScore += 1;
-        else
             team2FinalScore += 1;
+        else
+            team1FinalScore += 1;
     }
 
     public void ResetTeamTricksScore() {

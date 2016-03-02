@@ -121,7 +121,12 @@ public class Hand extends ArrayList<Card> implements IHand{
 
 	@Override
 	public boolean HasSuit(CardSuit lookfor) {
-		boolean hasThisSuit = this.stream().anyMatch(c -> c.getCardSuit().equals(lookfor));
+		boolean hasThisSuit = false;
+		try {
+			hasThisSuit = this.stream().anyMatch(c -> c.getCardSuit().equals(lookfor));
+		} catch (Exception ex) {
+			System.out.println("XXX ERROR XXX : " + ex.toString());
+		}
 		return hasThisSuit;
 	}
 
@@ -130,15 +135,22 @@ public class Hand extends ArrayList<Card> implements IHand{
 		String faceValue;
 		for (Card c: this) {
 			c.setBidDud(false);
-			if (c.IsAJoker())
-				c.setCardSuit(gameSuit);
+
 			deckValue = c.getDeckValue();
 			faceValue = c.getFaceValue();
 			cardValue = c.getCardValue();
+
+			if (c.IsAJoker()) {
+				c.setCardSuit(gameSuit);
+				if (GamePlay.GAME_SUIT.equals(CardSuit.NoTrump)) {
+					c.setBidDud(true);
+					continue;
+				}
+			}
 			switch (direction) {
 				case Uptown:
 					if (c.IsAnAce())
-						c.setCardValue(c.getCardValue() + 13);
+						c.setCardValue(c.getCardValue() + (float) 13.5);
 					break;
 				case Downtown:
 					if (c.IsAJoker()) {
@@ -150,12 +162,6 @@ public class Hand extends ArrayList<Card> implements IHand{
 						c.setCardValue(-1);
 					} else {
 						//c.setCardValue(0);
-					}
-					break;
-				case NoTrump:
-					if (c.IsAJoker()) {
-						c.setCardSuit(gameSuit);
-						c.setBidDud(true);
 					}
 					break;
 			}

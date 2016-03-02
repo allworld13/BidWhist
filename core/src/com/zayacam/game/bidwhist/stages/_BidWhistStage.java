@@ -358,7 +358,6 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         }
     }
 
-
     protected void DrawGameBidLegend() {
         Assets.textBounds = new GlyphLayout();
         Assets.DefaultFont.setColor(Color.WHITE);
@@ -387,11 +386,15 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         Assets.DefaultFont.draw(batch, Assets.textBounds, this.getWidth() * .012f, getHeight() * 0.89f);
     }
 
+    protected void HilightPressedButton(Group grpParent) {
+        HilightPressedButton(null, grpParent);
+    }
 
     protected void HilightPressedButton(InputEvent event, Group grpParent) {
         for (Actor a : grpParent.getChildren()) {
             a.setColor(1, 1, 1, 1);
         }
-        event.getListenerActor().setColor(Color.GOLD);
+        if (event != null)
+            event.getListenerActor().setColor(Color.GOLD);
     }
 }

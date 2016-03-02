@@ -191,8 +191,10 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                         cardPlayed = new CardPlay(currentPlayer, selectedCard);
                         AnimatePlayOfSelectedCard(cardPlayed);
                         grpSouthPlayer.removeActor(hitActor);
-                        if (grpTableHand != null)
+                        if (grpTableHand != null) {
                             grpTableHand.addActor(selectedCard.PlayingCard());
+                            selectedCard.PlayingCard().setTouchable(Touchable.disabled);
+                        }
                     } else {
                         ResetRaiseOnAllCardsX(selectedCard, true);
                     }

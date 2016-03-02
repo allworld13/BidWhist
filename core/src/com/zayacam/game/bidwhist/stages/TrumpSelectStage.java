@@ -113,6 +113,7 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
             c.PlayingCard().setPosition(XPos, Assets.P1YBaseLine);
             c.SetIsRaised(false);
             c.SetReadyToPlay(true);
+            c.SetAvailable(true);
             c.PlayingCard().setSize(Assets.FirstPlayerCardWidth, Assets.FirstPlayerCardHeight);
             c.PlayingCard().setUserObject(c);
             c.PlayingCard().addListener(new CardClickListener(baseLine));
@@ -229,7 +230,7 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
             switch (GamePlay.GAME_DIRECTION) {
                 case NoTrump:
                     GamePlay.GAME_DIRECTION = (GamePlay.BidRule_Direction) event.getListenerActor().getUserObject();
-                    GamePlay.GAME_SUIT = null;
+                    GamePlay.GAME_SUIT = CardSuit.NoTrump;
                     break;
                 default:
                     GamePlay.GAME_SUIT = (CardSuit) event.getListenerActor().getUserObject();

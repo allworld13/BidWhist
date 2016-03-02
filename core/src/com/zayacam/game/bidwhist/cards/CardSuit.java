@@ -1,6 +1,7 @@
 package com.zayacam.game.bidwhist.cards;
 
 public enum CardSuit  {
+    NoTrump(0),
     Heart(1),
     Spade(2),
     Diamond(3),

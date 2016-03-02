@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.zayacam.Utils;
 import com.zayacam.game.Assets;
 import com.zayacam.game.BidWhistGame;
 import com.zayacam.game.bidwhist.game.BidPlayer;
@@ -63,6 +64,11 @@ public class BiddingStage extends _BidWhistStage {
         if (finishedBidding) {
             bidWinner = bidWhistGame.DetermineBidWinner();
             if (bidWinner == null) {
+                try {
+                    Utils.Beep();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 biddingPlayer = bidWhistGame.gamePlay.gamePlayers.get(bidWhistGame.gamePlay.MAX_NO_PLAYERS - 1);
                 biddingPlayer.setPlayerHasBidded(false);
                 bidWhistGame.YouMustBid(biddingPlayer);
@@ -267,6 +273,7 @@ public class BiddingStage extends _BidWhistStage {
                     }
                     break;
                 case "Pass":
+                    HilightPressedButton(null, tblNumbers);
                     bidWhistGame.PlayerPassed(biddingPlayer);
                     break;
             }

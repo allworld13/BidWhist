@@ -14,7 +14,7 @@ public interface IGameEvents {
     void PlayerHasBidded(BidPlayer biddingPlayer);
 
     //BidPlayer JudgeTable(int gameRound, CardSuit leadSuit);
-    BidPlayer JudgeTable(int gameRound);
+    BidPlayer JudgeTable(int gameRound) throws InterruptedException;
 
     void PlayerHasPassed(BidPlayer biddingPlayer);
 

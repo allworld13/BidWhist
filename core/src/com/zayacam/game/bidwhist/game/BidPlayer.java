@@ -316,7 +316,7 @@ public class BidPlayer implements IBidPlayerEvents {
     @Override
     public int AutoPlayCard(CardSuit leadSuit, int handRound) {
 
-        int result;
+        int result = 0;
         Random random = new Random();
         ArrayList<Card> cardsOfSuit = new ArrayList<>();
 
@@ -328,7 +328,11 @@ public class BidPlayer implements IBidPlayerEvents {
             }
         }
         if (cardsOfSuit.size() == 0 && hand.getSize() >= 0) {
-            result = random.nextInt(hand.getSize());
+            try {
+                result = random.nextInt(hand.getSize());
+            } catch (Exception ex) {
+                System.out.println(ex.toString());
+            }
         }
         else {
             int randIndex = random.nextInt(cardsOfSuit.size());
@@ -368,5 +372,9 @@ public class BidPlayer implements IBidPlayerEvents {
 
     public CardSuit getBidSuit() {
         return bidSuit;
+    }
+
+    public void setBidHand_Suit(CardSuit bidHand_Suit) {
+        this.bidSuit = bidHand_Suit;
     }
 }
