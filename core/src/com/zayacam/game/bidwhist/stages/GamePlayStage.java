@@ -23,11 +23,11 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
     private static boolean SHOWGAMEOVERPROMPT, GAMEOVER = false;
 
     BidPlayer firstPerson, lastRoundWinner = null;
-    private boolean willLose, validCardPlayed, cutCardPlayed;
     CardPlay cardPlayed;
-    private boolean newTableHand = true;
     float hw, hh;
     Dialog dialog = null;
+    private boolean willLose, validCardPlayed, cutCardPlayed;
+    private boolean newTableHand = true;
 
     public GamePlayStage(BidWhistGame bidWhistGame, ScreenViewport sViewport) throws InterruptedException {
         super(bidWhistGame, sViewport);
@@ -71,8 +71,9 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
             currentPlayer = GetNextPlayersPlay();
             if (currentPlayer.isHuman()) {
                 // get handled by the touched event
-                if (!grpSouthPlayer.isTouchable()) grpSouthPlayer.setTouchable(Touchable.enabled);
+                grpSouthPlayer.setTouchable(Touchable.enabled);
             } else {
+                grpSouthPlayer.setTouchable(Touchable.disabled);
                 System.out.println("\n Round: " + playRound + "    " + currentPlayer.toString());
                 //currentPlayer.getHand().ShowCards();
                 int playIndex = currentPlayer.AutoPlayCard(bidWhistGame.gamePlay.getLeadSuit(), playRound);
@@ -161,7 +162,10 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         Assets.PlayerNameFont.setColor(Color.PURPLE);
         Assets.textBounds.setText(Assets.PlayerNameFont, "Game Over");
         Assets.PlayerNameFont.draw(batch, Assets.textBounds, ((getWidth() - Assets.textBounds.width) / 2f) + 3f, (getHeight() * .78f) + 3f);
+
+
     }
+
 
     private void DrawRoundCount(SpriteBatch batch) {
         Assets.textBounds.setText(Assets.DefaultFont, "Round: " + playRound);
@@ -254,13 +258,11 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
             //grpTableHand.setBounds(this.getWidth() / 4, 400f, this.getWidth() / 6, this.getHeight() / 2);
         }
         newTableHand = false;
-        int idx;
         float YPos = 0, XPos = 0;
         for (CardPlay cp : bidWhistGame.gamePlay.tableHand) {
             float cardW, cardH;
             cardW = Assets.CardWidth;
             cardH = Assets.CardHeight;
-            idx = currentPlayer.getIndex();
 
             cp.card.PlayingCard().setBounds(XPos, YPos, cardW * .5f, cardH * .5f);
 

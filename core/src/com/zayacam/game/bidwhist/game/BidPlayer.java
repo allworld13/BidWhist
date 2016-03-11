@@ -1,7 +1,10 @@
 package com.zayacam.game.bidwhist.game;
 
 import com.zayacam.Utils;
-import com.zayacam.game.bidwhist.cards.*;
+import com.zayacam.game.bidwhist.cards.Card;
+import com.zayacam.game.bidwhist.cards.CardSuit;
+import com.zayacam.game.bidwhist.cards.Hand;
+import com.zayacam.game.bidwhist.cards.SortBy;
 
 import java.util.*;
 
@@ -28,6 +31,7 @@ public class BidPlayer implements IBidPlayerEvents {
     private boolean playerHasBidded = false;
     private CardSuit bidSuit;
     private boolean playerHasPlayed = false;
+    private GamePlay.BidRule_Direction bidHand_Direction;
 
     private BidPlayer() {
         id = UUID.randomUUID();
@@ -62,8 +66,6 @@ public class BidPlayer implements IBidPlayerEvents {
         if (awardedTheBid)
             gameEvents.BidAwarded();
     }
-
-    private GamePlay.BidRule_Direction bidHand_Direction;
 
     public void bidHand() {
         char choice;
@@ -142,10 +144,6 @@ public class BidPlayer implements IBidPlayerEvents {
         return bidHand_Books;
     }
 
-    public void setChatter(String chatter) {
-        this.chatter = chatter;
-    }
-
     public void setBidHand_Books(int bidHand_Books) {
         this.bidHand_Books = bidHand_Books;
     }
@@ -181,6 +179,10 @@ public class BidPlayer implements IBidPlayerEvents {
         return chatter;
     }
 
+    public void setChatter(String chatter) {
+        this.chatter = chatter;
+    }
+
     public boolean isHuman() {
         return isHuman;
     }
@@ -197,12 +199,12 @@ public class BidPlayer implements IBidPlayerEvents {
         this.playOrder = playOrder;
     }
 
-    public void setIndex(int index) {
-        this.index = index;
+    public int getIndex() {
+        return this.index;
     }
 
-    public int getIndex() {
-        return this.index ;
+    public void setIndex(int index) {
+        this.index = index;
     }
 
     public boolean isHandWinner() {
@@ -318,12 +320,11 @@ public class BidPlayer implements IBidPlayerEvents {
 
         int result = 0;
         Random random = new Random();
-        ArrayList<Card> cardsOfSuit = new ArrayList<>();
-
         System.out.print("\n\tThinking .....");
 
+        ArrayList<Card> cardsOfSuit = new ArrayList<>();
         for (Card c: getHand().getCards()) {
-            if (c.getCardSuit() == leadSuit) {
+            if (c.getCardSuit().equals(leadSuit)) {
                 cardsOfSuit.add(c);
             }
         }

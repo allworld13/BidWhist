@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.zayacam.Utils;
 
 import java.util.ArrayList;
 
@@ -17,15 +18,6 @@ public class Assets {
     public static final BitmapFont DefaultFont = new BitmapFont(Gdx.files.internal("fonts/roboto.fnt"));
 
     public static final Skin Skins = new Skin(Gdx.files.internal("uiskin.json"));
-    public static Animation loading_animation;
-    public static ArrayList<Image> gfxDeck;
-    public static ArrayList<TextureRegion> cardSuits = null;
-    public static Texture text_background;
-    public static Sprite sprite_background;
-    private static Sound sound;
-    public static GlyphLayout textBounds;
-    public static boolean isDeckDrawn;
-
     public static final int GameWidth = 850; //1920;
     public static final int GameHeight = 600;//1080;
     public static final int CardWidth = 225;
@@ -40,8 +32,16 @@ public class Assets {
     public static final float PlayerCard_Y_Ratio = 2.6F;
     public static final float PlayerNameEastWest = 0.38f;
     public static final float ScreenTitleYPos = 0.9f;
+    public static Animation loading_animation;
+    public static ArrayList<Image> gfxDeck;
+    public static ArrayList<TextureRegion> cardSuits = null;
+    public static Texture text_background;
+    public static Sprite sprite_background;
+    public static GlyphLayout textBounds;
+    public static boolean isDeckDrawn;
     public static float FirstPlayerCardWidth;
     public static float FirstPlayerCardHeight;
+    private static Sound sound;
 
     static {
         LoadSuits();
@@ -108,18 +108,39 @@ public class Assets {
     }
 
     public static void PlayDeckShuffling() {
-        sound = Gdx.audio.newSound(Gdx.files.internal("sounds/shuffleDeck.wav"));
-        sound.play();
+        try {
+            sound = Gdx.audio.newSound(Gdx.files.internal("sounds/shuffleDeck.wav"));
+            sound.play();
+        } catch (Exception ex) {
+            Utils.log("ERROR", "shuffleDeck.wav was not played!");
+        }
     }
 
     public static void PlayCuttingCard() {
+        try {
         sound = Gdx.audio.newSound(Gdx.files.internal("sounds/whipCrack.wav"));
         sound.play();
+        } catch (Exception ex) {
+            Utils.log("ERROR", "whipCrack.wav was not played!");
+        }
     }
 
     public static void PlayThrowOffCard() {
-        sound = Gdx.audio.newSound(Gdx.files.internal("sounds/dud.wav"));
-        sound.play();
+        try {
+            sound = Gdx.audio.newSound(Gdx.files.internal("sounds/dud.wav"));
+            sound.play();
+        } catch (Exception ex) {
+            Utils.log("ERROR", "dud.wav was not played!");
+        }
+    }
+
+    public static void PlayRanBoston() {
+        try {
+            sound = Gdx.audio.newSound(Gdx.files.internal("sounds/boston2.wav"));
+            sound.play();
+        } catch (Exception ex) {
+            Utils.log("ERROR", "boston2.wav was not played!");
+        }
     }
 
     public static void ClearScreen() {

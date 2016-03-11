@@ -9,79 +9,24 @@ import java.util.stream.Collectors;
 
 public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard {
 
-    public static boolean PlayerOrderSet;
-    private boolean gamePlayerOrderSet;
-
-    public boolean AllPlayersPlayedRound() {
-        boolean result = false;
-        result = gamePlayers.stream().allMatch(bp -> bp.HasPlayed());
-        return result;
-    }
-
-    public void SetAcesForUpTown() {
-
-    }
-
-    public enum BidRule_Number_Range {
-        PASS(0),
-        MIN_BID(3),
-        MAX_BID(7);
-
-        final int id;
-
-        BidRule_Number_Range(int id) {
-            this.id = id;
-        }
-
-        public int getValue() {
-            return id;
-        }
-
-    }
-    public enum BidRule_Direction {
-        Downtown(1),
-        Uptown(2),
-        NoTrump(3);
-        final int id;
-
-        BidRule_Direction(int id) {
-            this.id = id;
-        }
-
-        public int getValue() {
-            return id;
-        }
-
-        static BidRule_Direction fromValue(int value) {
-            for (BidRule_Direction direction : BidRule_Direction.values()) {
-                if (direction.id == value) {
-                    return direction;
-                }
-            }
-            return null;
-        }
-
-    }
-
-    public Deck deck;
-
-    public static IGameEvents gameEvents;
-    public boolean SportKitty;
-    public boolean ShowKitty;
     public static final int MAX_CARDS_TO_DISCARD = 6;
     public static final int MAX_PLAYER_HANDSIZE = 12;
-    public final int MAX_NO_PLAYERS = 4;
-    public ArrayList<BidPlayer> gamePlayers;
-    public Hand KittyHand;
-    public BidPlayer bidWinner;
+    public static boolean PlayerOrderSet;
+    public static IGameEvents gameEvents;
     public static BidRule_Direction GAME_DIRECTION;
     public static CardSuit GAME_SUIT;
     public static int GAME_BOOKS;
-    public TableHand tableHand;
-
     public static int team1GameScore, team2GameScore, team1FinalScore, team2FinalScore;
-
-
+    public final int MAX_NO_PLAYERS = 4;
+    public String WonOrLostMessage;
+    public Deck deck;
+    public boolean SportKitty;
+    public boolean ShowKitty;
+    public ArrayList<BidPlayer> gamePlayers;
+    public Hand KittyHand;
+    public BidPlayer bidWinner;
+    public TableHand tableHand;
+    private boolean gamePlayerOrderSet;
     private boolean gameStarted = false;
     private UUID id;
     private GameTable gameTable;
@@ -97,7 +42,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     //private boolean downTownBeatsUpTown;
     private CardSuit leadSuit = null;
     private int playerPlayCount = 0;
-
     //region ctors
     public GamePlay() {
         id = UUID.randomUUID();
@@ -108,7 +52,62 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         team1FinalScore = team2FinalScore = 0;
         isNewGame = true;
     }
+
+    private static void setGameDirection(BidPlayer bidWinner) {
+        bidWinner.getHand().ShowCards();
+        System.out.println(String.format("\nOk %1s, select the game direction: (D)owntown or (U)ptown?",
+                bidWinner.getPlayerName()));
+
+        boolean gameDirectionSet = false;
+        char choice;
+        int directionId = 0;
+        Scanner sc = new Scanner(System.in);
+        do {
+            choice = sc.next().charAt(0);
+            switch (choice) {
+                case 'd':
+                case 'D':
+                    directionId = 1;
+                    gameDirectionSet = true;
+                    break;
+                case 'u':
+                case 'U':
+                    directionId = 2;
+                    gameDirectionSet = true;
+                    break;
+                case 'q':
+                case 'Q':
+                    gameDirectionSet = true;
+                    break;
+            }
+        } while (!gameDirectionSet);
+        if (choice != 'q')
+            if (!gameDirectionSet)  // game Direction wasn't set
+                System.exit(0);
+
+        GAME_DIRECTION = BidRule_Direction.fromValue(directionId);
+        System.out.println();
+    }
+
+    public static void RunQuitGame() {
+        RunQuitGame(0);
+    }
+
+    public static void RunQuitGame(int exitCode) {
+        System.exit(exitCode);
+    }
+
+    public boolean AllPlayersPlayedRound() {
+        boolean result = gamePlayers.stream().allMatch(bp -> bp.HasPlayed());
+        return result;
+    }
     //endregion
+
+    public void SetAcesForUpTown() {
+
+    }
+
+    //region init stuff
 
     //region init
     public void Init() {
@@ -124,8 +123,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         //bidWinner.setAwardedTheBid(true);
     }
 
-    //region init stuff
-
     //region Deck init
     private void InitializeDeck() {
         CreateDeck();
@@ -137,11 +134,11 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         deck = new Deck(this, false);
     }
 
+    //endregion
+
     void ShuffleDeck() {
         deck.Shuffle();
     }
-
-    //endregion
 
     //Creates the game KittyHand
     void InitializeKitty() {
@@ -150,6 +147,10 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         if (gameEvents != null)
             gameEvents.KittyInitialized();
     }
+
+    //endregion
+
+    //region all players bidding
 
     //Initially adds all the players to the game, for play
     public void InitializePlayers() {
@@ -176,8 +177,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
 
     //endregion
 
-    //region all players bidding
-
     /*
         Declares the bid winner after all bids are accepted, and then declares the winner
     */
@@ -189,9 +188,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
 
         return bidWinner;
     }
-
-    //endregion
-
 
     @Override
     public UUID StartingNewGame() {
@@ -223,7 +219,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         validBid = true;
 
         if (bidPlayer.getBidHand_Books() > GAME_BOOKS) {
-
+            validBid = true;
         } else if (bidPlayer.getBidHand_Books() == GAME_BOOKS &&
                 bidPlayer.getBidDirection().ordinal() > GAME_DIRECTION.ordinal()) {
         } else {
@@ -264,7 +260,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         }
         return finalScore;
     }
-
 
     @Override
     public boolean PlaySelectedCard(CardPlay cardPlay) throws InterruptedException {
@@ -371,7 +366,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         return true;
     }
 
-
     @Override
     public BidPlayer JudgeTable(int playRound) {
         try {
@@ -433,20 +427,26 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
 
     @Override
     public void TeamWonGameBid(int teamScore, BidPlayer winner) {
-        System.out.println("Team "+ winner.getTeamId() +  ", you won!");
-        if (winner.getTeamId() == 1)
+        WonOrLostMessage = "Team " + bidWinner.getTeamId() + ",you won this game!";
+        System.out.println(WonOrLostMessage);
+        if (teamScore > 12) {
+            Assets.PlayRanBoston();
+        }
+        if (winner.getTeamId() == 1) {
             team1FinalScore += 1;
-        else
+        } else {
             team2FinalScore += 1;
+        }
     }
 
     @Override
     public void TeamLostGameBid(int teamScore, BidPlayer bidWinner) {
-        System.out.println("Team " + bidWinner.getTeamId() + ",you lost!");
-        if (bidWinner.getTeamId() == 1)
+        WonOrLostMessage = "Team " + bidWinner.getTeamId() + ",you lost this game!";
+        if (bidWinner.getTeamId() == 1) {
             team2FinalScore += 1;
-        else
+        } else {
             team1FinalScore += 1;
+        }
     }
 
     public void ResetTeamTricksScore() {
@@ -640,42 +640,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
 
     }
 
-    private static void setGameDirection(BidPlayer bidWinner) {
-        bidWinner.getHand().ShowCards();
-        System.out.println(String.format("\nOk %1s, select the game direction: (D)owntown or (U)ptown?",
-                bidWinner.getPlayerName()));
-
-        boolean gameDirectionSet = false ;
-        char choice;
-        int directionId = 0;
-        Scanner sc = new Scanner(System.in);
-        do {
-            choice = sc.next().charAt(0);
-            switch (choice) {
-                case 'd' :
-                case 'D' :
-                    directionId = 1;
-                    gameDirectionSet = true;
-                    break;
-                case 'u' :
-                case 'U' :
-                    directionId = 2;
-                    gameDirectionSet = true;
-                    break;
-                case 'q' :
-                case 'Q' :
-                    gameDirectionSet = true;
-                    break;
-            }
-        } while (!gameDirectionSet);
-        if (choice != 'q')
-            if (!gameDirectionSet)  // game Direction wasn't set
-                System.exit(0);
-
-        GAME_DIRECTION = BidRule_Direction.fromValue(directionId);
-        System.out.println();
-    }
-
     @Override
     public boolean EndGame() {
         int teamScore;
@@ -692,7 +656,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         return true;
     }
 
-    private boolean BidWinnerHasMadeBidButNoBoston(BidPlayer bidWinner) {
+    private boolean BidWinnerHasMadeBidButBNoBoston(BidPlayer bidWinner) {
         boolean result = false;
         int otherTeamScore = (bidWinner.getTeamId() == 1 ? team2GameScore : team1GameScore);
         if (otherTeamScore > 0 & GetTeamScore(bidWinner.getTeamId()) >= 6 + GAME_BOOKS) {
@@ -706,7 +670,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
                     break;
                 default:
                     break;
-
             }
         }
         return  result;
@@ -746,15 +709,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         return result;
     }
 
-    public static void RunQuitGame() {
-        RunQuitGame(0);
-    }
-
-    public static void RunQuitGame(int exitCode) {
-        System.exit(exitCode);
-    }
-
-
     @Override
     public void CardSelectedAndPlayed(CardPlay cardPlay) {
         cardPlay.card.CardSelected(cardPlay);
@@ -771,12 +725,12 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         team2GameScore = GetTeamScore(2);
     }
 
-    public void setGameStarted(boolean gameStarted) {
-        this.gameStarted = gameStarted;
-    }
-
     public boolean isGameStarted() {
         return gameStarted;
+    }
+
+    public void setGameStarted(boolean gameStarted) {
+        this.gameStarted = gameStarted;
     }
 
     @Override
@@ -807,6 +761,48 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
                 team1FinalScore,
                 team2FinalScore);
         return result;
+    }
+
+    public enum BidRule_Number_Range {
+        PASS(0),
+        MIN_BID(3),
+        MAX_BID(7);
+
+        final int id;
+
+        BidRule_Number_Range(int id) {
+            this.id = id;
+        }
+
+        public int getValue() {
+            return id;
+        }
+
+    }
+
+    public enum BidRule_Direction {
+        Downtown(1),
+        Uptown(2),
+        NoTrump(3);
+        final int id;
+
+        BidRule_Direction(int id) {
+            this.id = id;
+        }
+
+        static BidRule_Direction fromValue(int value) {
+            for (BidRule_Direction direction : BidRule_Direction.values()) {
+                if (direction.id == value) {
+                    return direction;
+                }
+            }
+            return null;
+        }
+
+        public int getValue() {
+            return id;
+        }
+
     }
 
 }
