@@ -36,7 +36,8 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
         super(bidWhistGame, sViewport);
         ScreenTitleLabel = "Pick your trump";
         CardsBaseLined = false;
-        noDiscards = 0;
+        noOfSelectedDiscards = 0;
+        bidWhistGame.ResetAllCards();
         GamePlay.team1GameScore = GamePlay.team2GameScore = 0;
 
         CardSelectedAdded = false;
@@ -63,6 +64,7 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
     @Override
     public void act(float delta) {
         super.act(delta);
+        //System.out.println("No of cards to discards: " + Integer.toString(noOfSelectedDiscards));
     }
 
     @Override
@@ -111,9 +113,6 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
         bidWhistGame.gamePlay.KittyHand.SortCards(SortBy.DeckValue);
         for (Card c : bidWhistGame.gamePlay.KittyHand) {
             c.PlayingCard().setPosition(XPos, Assets.P1YBaseLine);
-            c.SetIsRaised(false);
-            c.SetReadyToPlay(true);
-            c.SetAvailable(true);
             c.PlayingCard().setSize(Assets.FirstPlayerCardWidth, Assets.FirstPlayerCardHeight);
             c.PlayingCard().setUserObject(c);
             c.PlayingCard().addListener(new CardClickListener(baseLine));
@@ -133,8 +132,9 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
 
     @Override
     public void KittyCardPlayed(_BidWhistStage stage, Card selectedCard) {
-        noDiscards += selectedCard.IsRaised() ? 1 : -1;
-        Utils.log(stageName, "\t**Card selected**  : " + selectedCard.IsRaised() + " : " + noDiscards);
+        noOfSelectedDiscards += selectedCard.IsRaised() ? 1 : -1;
+        noOfSelectedDiscards = noOfSelectedDiscards < 0 ? 0 : noOfSelectedDiscards;
+        Utils.log(stageName, "\t** KittyCardPlayedCard selected**  : " + selectedCard.IsRaised() + " : " + noOfSelectedDiscards);
     }
 
     @Override

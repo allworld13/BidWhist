@@ -45,7 +45,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
     protected boolean hasStartedPlaying, finishedBidding = false;
     protected GamePlay.BidRule_Direction bidDirection = null;
     protected boolean ShowKitty = false;
-    protected int noDiscards = 0;
+    protected int noOfSelectedDiscards = 0;
     protected boolean CardSelectedAdded;
     protected Button btnPass, btnBid;
     protected int playRound = 1;
@@ -110,6 +110,9 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         try {
             baseLine = bidPlayer.getHand().get(0).PlayingCard().getY();
         } catch (Exception ex) {
+            if (bidPlayer == null)
+                System.out.println("Bid Player null game finished!");
+            return;
 
         }
         int cardIndex = 0;
@@ -223,26 +226,6 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         }
     }
 
-
-    protected class BidDirectionClicked extends ClickListener {
-        Table parentTable;
-
-        public BidDirectionClicked(Table tblDirection) {
-            parentTable = tblDirection;
-        }
-
-        @Override
-        public void clicked(InputEvent event, float x, float y) {
-            super.clicked(event, x, y);
-            Gdx.app.log(getStageName() + " -> Direction", " - " + event.getListenerActor().getName());
-            String btnName = event.getListenerActor().getName();
-
-            bidDirection = GamePlay.BidRule_Direction.valueOf(btnName);
-            HilightPressedButton(event, parentTable);
-        }
-    }
-
-
     @Override
     public boolean keyDown(int keyCode) {
         String fromStage, toStage = "";
@@ -253,7 +236,6 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                 toStage = "MainMenuStage";
                 MainMenuStage.MainMenuReset = false;
                 break;
-
             //region move forward
             case Input.Keys.SPACE:
                 Gdx.app.log(fromStage, "Leaving");
@@ -301,42 +283,6 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
             }
         }
         return false;
-    }
-
-    protected class CardClickListener extends ClickListener {
-        float baseLine;
-
-        public CardClickListener() {
-            super();
-            baseLine = 0;
-        }
-
-        public CardClickListener(float baseLine) {
-            this();
-            this.baseLine = baseLine;
-        }
-
-        @Override
-        public void clicked(InputEvent event, float x, float y) {
-            selectedCard = (Card) event.getTarget().getUserObject();
-            Gdx.app.log("Card Pressed", selectedCard.toString());
-            boolean isRaised;
-            switch (stageName) {
-                case "TrumpSelectStage":
-                    if (noDiscards <= GamePlay.MAX_CARDS_TO_DISCARD) {
-                        isRaised = ToggleRaiseOnCardsX(selectedCard, baseLine);
-                        ((TrumpSelectStage) (_BidWhistStage.this)).KittyCardPlayed(_BidWhistStage.this, selectedCard);
-                    }
-                    if (noDiscards == GamePlay.MAX_CARDS_TO_DISCARD) {
-                        ((TrumpSelectStage) (_BidWhistStage.this)).ReadyToDiscard(true);
-                    } else {
-                        ((TrumpSelectStage) (_BidWhistStage.this)).ReadyToDiscard(false);
-                    }
-                    break;
-            }
-
-            event.cancel();
-        }
     }
 
     protected boolean ToggleRaiseOnCardsX(Card selectedCard, float baseLine) {
@@ -396,5 +342,56 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         }
         if (event != null)
             event.getListenerActor().setColor(Color.GOLD);
+    }
+
+    protected class BidDirectionClicked extends ClickListener {
+        Table parentTable;
+
+        public BidDirectionClicked(Table tblDirection) {
+            parentTable = tblDirection;
+        }
+
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+            super.clicked(event, x, y);
+            Gdx.app.log(getStageName() + " -> Direction", " - " + event.getListenerActor().getName());
+            String btnName = event.getListenerActor().getName();
+
+            bidDirection = GamePlay.BidRule_Direction.valueOf(btnName);
+            HilightPressedButton(event, parentTable);
+        }
+    }
+
+    protected class CardClickListener extends ClickListener {
+        float baseLine;
+
+        public CardClickListener() {
+            super();
+            baseLine = 0;
+        }
+
+        public CardClickListener(float baseLine) {
+            this();
+            this.baseLine = baseLine;
+        }
+
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+            selectedCard = (Card) event.getTarget().getUserObject();
+            boolean isRaised = ToggleRaiseOnCardsX(selectedCard, baseLine);
+            Gdx.app.log("Card Pressed", selectedCard.toString());
+            switch (stageName) {
+                case "TrumpSelectStage":
+                    if (noOfSelectedDiscards <= GamePlay.MAX_CARDS_TO_DISCARD) {
+                        ((TrumpSelectStage) (_BidWhistStage.this)).KittyCardPlayed(_BidWhistStage.this, selectedCard);
+                    }
+                    if (noOfSelectedDiscards == GamePlay.MAX_CARDS_TO_DISCARD) {
+                        ((TrumpSelectStage) (_BidWhistStage.this)).ReadyToDiscard(true);
+                    } else {
+                        ((TrumpSelectStage) (_BidWhistStage.this)).ReadyToDiscard(false);
+                    }
+                    break;
+            }
+        }
     }
 }

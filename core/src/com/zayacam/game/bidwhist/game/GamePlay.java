@@ -24,7 +24,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     public boolean ShowKitty;
     public ArrayList<BidPlayer> gamePlayers;
     public Hand KittyHand;
-    public BidPlayer bidWinner;
+    public BidPlayer bidWinner, lastRoundWinner = null;
     public TableHand tableHand;
     private boolean gamePlayerOrderSet;
     private boolean gameStarted = false;
@@ -42,6 +42,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     //private boolean downTownBeatsUpTown;
     private CardSuit leadSuit = null;
     private int playerPlayCount = 0;
+
     //region ctors
     public GamePlay() {
         id = UUID.randomUUID();
@@ -97,17 +98,26 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         System.exit(exitCode);
     }
 
+    //Initialize playing card values
+    public static void RestCard(Card card) {
+        card.SetBidDud(false);
+        card.SetTrumpCard(false);
+        card.SetReadyToPlay(true);
+        card.SetIsRaised(false);
+        card.SetAvailable(true);
+    }
+    //endregion
+
     public boolean AllPlayersPlayedRound() {
         boolean result = gamePlayers.stream().allMatch(bp -> bp.HasPlayed());
         return result;
     }
-    //endregion
+
+    //region init stuff
 
     public void SetAcesForUpTown() {
 
     }
-
-    //region init stuff
 
     //region init
     public void Init() {
@@ -129,16 +139,20 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         ShuffleDeck();
     }
 
+    //endregion
+
     void CreateDeck() {
         deck = null;
         deck = new Deck(this, false);
     }
 
-    //endregion
-
     void ShuffleDeck() {
         deck.Shuffle();
     }
+
+    //endregion
+
+    //region all players bidding
 
     //Creates the game KittyHand
     void InitializeKitty() {
@@ -149,8 +163,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     }
 
     //endregion
-
-    //region all players bidding
 
     //Initially adds all the players to the game, for play
     public void InitializePlayers() {
@@ -174,8 +186,6 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
         if (gameEvents != null)
             gameEvents.PlayersInitialized();
     }
-
-    //endregion
 
     /*
         Declares the bid winner after all bids are accepted, and then declares the winner
@@ -265,8 +275,10 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     public boolean PlaySelectedCard(CardPlay cardPlay) throws InterruptedException {
         boolean validPlay = false;
 
-        if (leadSuit == null && cardPlay.card.getCardSuit() != null)
-            leadSuit = cardPlay.card.getCardSuit();
+        if (leadSuit == null) {
+            if (!cardPlay.card.getCardSuit().equals(CardSuit.NoTrump))
+                leadSuit = cardPlay.card.getCardSuit();
+        }
 
         if (cardPlay.card.getCardSuit().equals(leadSuit)) {
             validPlay = true;
@@ -294,6 +306,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
                     cardPlay.card.toStringBef()));
 
         }
+        Thread.sleep(350);
         return validPlay;
     }
 
@@ -353,7 +366,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     @Override
     public boolean PlayerThrewOffSuit(CardPlay cardPlayed, CardSuit leadSuit) {
         Assets.PlayThrowOffCard();
-        cardPlayed.card.setBidDud(true);
+        cardPlayed.card.SetBidDud(true);
         cardPlayed.player.SetHandWinner(false);
         return true;
     }
@@ -362,7 +375,7 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
     public boolean PlayerPlaysTrump(CardPlay cardPlayed) {
         Assets.PlayCuttingCard();
         cardPlayed.player.PlayedTrumpCard(cardPlayed.card);
-        cardPlayed.card.setTrumpCard(true);
+        cardPlayed.card.SetTrumpCard(true);
         return true;
     }
 
@@ -381,24 +394,27 @@ public class GamePlay extends Thread implements IGameEvents, IDeckEvents, ICard 
                 ,GAME_DIRECTION)
         );
         ShowTableCards(leadSuit);
-
         tableHand.Sort(SortBy.CardValue);
+
         List<CardPlay> filteredTableHand = null;
-        boolean nullSuitsPlayed, cutCardPlayed = false;
-        cutCardPlayed = tableHand.stream().anyMatch(cp -> cp.card.IsTrumpCard());
-        if (!cutCardPlayed)
-            filteredTableHand = tableHand.stream()
-                    .filter(cp -> !cp.card.isBidDud()).collect(Collectors.toList());
-        else
+        boolean cutCardPlayed = false;
+        if (GAME_SUIT.equals(CardSuit.NoTrump)) {
+            boolean anyJokers = tableHand.stream().anyMatch(cp -> cp.card.IsAJoker());
+            if (anyJokers) {
+                filteredTableHand = tableHand.stream()
+                        .filter(cp -> !cp.card.IsAJoker()).collect(Collectors.toList());
+            }
+        } else {  // a game with a trump suit defined
+            cutCardPlayed = tableHand.stream().anyMatch(cp -> cp.card.IsTrumpCard());
+        }
+        if (cutCardPlayed) {
             filteredTableHand = tableHand.stream()
                     .filter(cp -> cp.card.IsTrumpCard()).collect(Collectors.toList());
-
-        if (GAME_SUIT.equals(CardSuit.NoTrump)) {
-            nullSuitsPlayed = filteredTableHand.stream().anyMatch(cp -> cp.card.IsAJoker());
-            if (nullSuitsPlayed)
-                filteredTableHand = filteredTableHand.stream()
-                        .filter(cp -> cp.card.IsAJoker()).collect(Collectors.toList());
+        } else {
+            filteredTableHand = tableHand.stream()
+                    .filter(cp -> !cp.card.isBidDud()).collect(Collectors.toList());
         }
+
 
         int winner = 0;
         switch (GAME_DIRECTION) {

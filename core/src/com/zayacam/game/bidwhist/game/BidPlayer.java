@@ -263,7 +263,7 @@ public class BidPlayer implements IBidPlayerEvents {
     @Override
     public boolean PlayedTrumpCard(Card card) {
         System.out.println("\t\t*** "+ this.getPlayerName() +" says:  \"Hommie, I'm cutting!\"");
-        card.setTrumpCard(true);
+        card.SetTrumpCard(true);
         return true;
     }
 
@@ -321,6 +321,8 @@ public class BidPlayer implements IBidPlayerEvents {
         int result = 0;
         Random random = new Random();
         System.out.print("\n\tThinking .....");
+
+        this.hand.ShowCards();
 
         ArrayList<Card> cardsOfSuit = new ArrayList<>();
         for (Card c: getHand().getCards()) {

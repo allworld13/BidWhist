@@ -152,7 +152,6 @@ public class BiddingStage extends _BidWhistStage {
                     btnPass.getClickListener().clicked(null, 0, 0);
                     break;
             }
-
         }
         return true;
     }

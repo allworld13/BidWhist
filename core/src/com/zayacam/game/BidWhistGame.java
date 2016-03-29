@@ -1,9 +1,13 @@
 package com.zayacam.game;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.zayacam.game.bidwhist.cards.Card;
 import com.zayacam.game.bidwhist.game.BidPlayer;
 import com.zayacam.game.bidwhist.game.GamePlay;
 import com.zayacam.game.bidwhist.stages.*;
@@ -16,6 +20,18 @@ public class BidWhistGame extends Game implements InputProcessor {
 	public OrthographicCamera camera;
 
 	public boolean promptShown = false;
+
+	public void setLastRoundWinner(BidPlayer bidPlayer) {
+		if (gamePlay != null)
+			gamePlay.lastRoundWinner = bidPlayer;
+	}
+
+	public BidPlayer GetLastRoundWinner() {
+		if (gamePlay != null) {
+			return gamePlay.lastRoundWinner;
+		}
+		return null;
+	}
 
 	@Override
 	public void create() {
@@ -31,7 +47,7 @@ public class BidWhistGame extends Game implements InputProcessor {
 
 	@Override
 	public void render() {
-		//super.render();
+		super.render();
 		Assets.ClearScreen();
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();
@@ -167,6 +183,32 @@ public class BidWhistGame extends Game implements InputProcessor {
 
 	public void YouMustBid(BidPlayer biddingPlayer) {
 		Gdx.app.log("Bidding", "\t **** " + biddingPlayer.toString() + " must bid!");
+	}
+
+	public void ResetAllCards() {
+		try {
+			for (Card c : gamePlay.deck.getCards()) {
+				GamePlay.RestCard(c);
+			}
+		} catch (Exception ex) {
+		}
+		try {
+
+			for (Card c : gamePlay.KittyHand.getCards()) {
+				GamePlay.RestCard(c);
+			}
+		} catch (Exception ex) {
+		}
+		try {
+
+			for (BidPlayer bp : gamePlay.gamePlayers) {
+				for (Card c : bp.getHand().getCards()) {
+					GamePlay.RestCard(c);
+				}
+			}
+		} catch (Exception ex) {
+		}
+
 	}
 
 

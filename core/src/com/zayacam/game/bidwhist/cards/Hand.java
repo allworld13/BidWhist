@@ -134,7 +134,7 @@ public class Hand extends ArrayList<Card> implements IHand{
 		float deckValue, cardValue;
 		String faceValue;
 		for (Card c: this) {
-			c.setBidDud(false);
+			c.SetBidDud(false);
 
 			deckValue = c.getDeckValue();
 			faceValue = c.getFaceValue();
@@ -143,7 +143,7 @@ public class Hand extends ArrayList<Card> implements IHand{
 			if (c.IsAJoker()) {
 				c.setCardSuit(gameSuit);
 				if (GamePlay.GAME_SUIT.equals(CardSuit.NoTrump)) {
-					c.setBidDud(true);
+					c.SetBidDud(true);
 					continue;
 				}
 			}

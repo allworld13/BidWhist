@@ -9,9 +9,8 @@ import com.zayacam.game.bidwhist.game.GamePlay;
 
 public class Card  {
 
-    Image playingCard;
     public Rectangle bounds;
-
+    Image playingCard;
     private GamePlay gamePlay;
     private CardFacePosition cardFaceDisplay;
     private CardSuit cardSuit;
@@ -32,11 +31,7 @@ public class Card  {
     private Card() {
         this.cardFaceDisplay = CardFacePosition.FaceDown;
         this.cardFace = CardFace.None;
-        this.bidDud = false;
-        this.trumpCard = false;
-        this.readyToPlay = false;
-        this.raisedCard = false;
-        this.available = true;
+        GamePlay.RestCard(this);
 
     }
 
@@ -76,6 +71,10 @@ public class Card  {
 
     public CardSuit getCardSuit() {
         return this.cardSuit;
+    }
+
+    public void setCardSuit(CardSuit cardSuit) {
+        this.cardSuit = cardSuit == null ? CardSuit.NoTrump : cardSuit;
     }
 
     public float getCardValue() {
@@ -124,8 +123,8 @@ public class Card  {
             	result = "Little";
                 this.cardFace = CardFace.Joker;
             	break;
-            case 54 : 
-            	result = "Big";
+            case 54:
+                result = "Big";
                 this.cardFace = CardFace.Joker;
             	break;
             default:
@@ -188,19 +187,15 @@ public class Card  {
         return bidDud;
     }
 
-    public void setBidDud(boolean bidDud) {
+    public void SetBidDud(boolean bidDud) {
         this.bidDud = bidDud;
-    }
-
-    public void setCardSuit(CardSuit cardSuit) {
-        this.cardSuit = cardSuit == null ? CardSuit.NoTrump : cardSuit;
     }
 
     public boolean IsAJoker() {
         return this.cardFace == CardFace.Joker;
     }
 
-    public void setTrumpCard(boolean trumpCard) {
+    public void SetTrumpCard(boolean trumpCard) {
         this.trumpCard = trumpCard;
     }
 

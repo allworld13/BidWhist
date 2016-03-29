@@ -57,6 +57,7 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
             // check to see if the game is actually over
             System.out.println("Game Done!!");
             SHOWGAMEOVERPROMPT = bidWhistGame.gamePlay.EndGame();
+            SetNextGamePlayer(bidWinner);
             return;
         }
 
@@ -119,21 +120,30 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         GAMEOVER = playRound > GamePlay.MAX_PLAYER_HANDSIZE;
     }
 
+    private void SetNextGamePlayer(BidPlayer bidWinner) {
+        int nextIndex = bidWinner.getIndex();
+        if (nextIndex == 4) nextIndex = 0;
+        nextIndex++;
+        System.out.println("Next player to play:  Player: " + nextIndex);
+        try {
+            Utils.Beep();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void draw() {
         super.draw();
 
-        //if (!gamePlay.isGameStarted() ) {
         grpSouthPlayer = new Group();
         bidWhistGame.gamePlay.setGameStarted(true);
-        //}
 
         batch.begin();
         batch.draw(Assets.text_background, 0, 0, this.getWidth(), this.getHeight());
         ShowPlayersName(batch);
         DrawGameScore(batch);
 
-        DrawPlayerHand(batch, firstPerson);
 
         if (bidWhistGame.gamePlay.BidAwarded()) {
             DrawGameBidLegend();
@@ -141,8 +151,12 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         DrawRoundCount(batch);
         DrawTableHand(batch);
 
-        if (GAMEOVER)
+
+        if (GAMEOVER) {
             DrawGameOverPrompt(batch);
+        } else {
+            DrawPlayerHand(batch, firstPerson);
+        }
         batch.end();
     }
 
