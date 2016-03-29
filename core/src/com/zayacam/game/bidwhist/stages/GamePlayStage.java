@@ -191,6 +191,17 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if (GAMEOVER) {
+            try {
+                bidWinner = null;
+                bidWhistGame.ChangeScreenTo("BiddingStage");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            return false;
+        }
+
         touchedVector = new Vector2((float) screenX, (float) screenY);
         touchCoord = this.screenToStageCoordinates(touchedVector);
 
