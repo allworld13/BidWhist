@@ -30,7 +30,6 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
     boolean showTrump = true;
     private boolean CardsBaseLined;
 
-
     //region ctors
     public TrumpSelectStage(BidWhistGame bidWhistGame, ScreenViewport sViewport) {
         super(bidWhistGame, sViewport);
@@ -96,9 +95,14 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
         batch.end();
     }
 
+    @Override
+    public void dispose() {
+        super.dispose();
+    }
+
     /*
-        Gives the bid winner an opportunity to select a trump.
-     */
+            Gives the bid winner an opportunity to select a trump.
+         */
     private void ShowPickTrumpSelection() {
         //System.out.println();
         if (grpTrumps != null)
@@ -134,7 +138,7 @@ public class TrumpSelectStage extends _BidWhistStage implements IKittyEvents {
     public void KittyCardPlayed(_BidWhistStage stage, Card selectedCard) {
         noOfSelectedDiscards += selectedCard.IsRaised() ? 1 : -1;
         noOfSelectedDiscards = noOfSelectedDiscards < 0 ? 0 : noOfSelectedDiscards;
-        Utils.log(stageName, "\t** KittyCardPlayedCard selected**  : " + selectedCard.IsRaised() + " : " + noOfSelectedDiscards);
+        Utils.log(stageName, "\t** KittyCardPlayedCard selected**  : " + selectedCard.IsRaised() + " : no of cards selected:>  " + noOfSelectedDiscards);
     }
 
     @Override

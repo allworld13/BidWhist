@@ -45,7 +45,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
     protected boolean hasStartedPlaying, finishedBidding = false;
     protected GamePlay.BidRule_Direction bidDirection = null;
     protected boolean ShowKitty = false;
-    protected int noOfSelectedDiscards = 0;
+    protected int noOfSelectedDiscards;
     protected boolean CardSelectedAdded;
     protected Button btnPass, btnBid;
     protected int playRound = 1;
@@ -82,6 +82,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         this(vPort);
         this.bidWhistGame = bidWhistGame ;
         minBid = bidWhistGame.gamePlay.getMinimalBid();
+        noOfSelectedDiscards = 0;
     }
     //endregion
 
@@ -90,6 +91,15 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         Assets.ClearScreen();
         super.draw();
 
+    }
+
+    @Override
+    public void dispose() {
+        //bidWhistGame = null;
+        currentScreen = null;
+        currentPlayer = null;
+        screenTitle = null;
+        batch = null;
     }
 
     public String getStageName() {
@@ -278,6 +288,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
         if (toStage != "") {
             try {
                 bidWhistGame.ChangeScreenTo(toStage);
+                this.dispose();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -390,6 +401,7 @@ public abstract class _BidWhistStage extends Stage implements InputProcessor {
                     } else {
                         ((TrumpSelectStage) (_BidWhistStage.this)).ReadyToDiscard(false);
                     }
+                    //selectedCard.SetIsRaised(!isRaised);
                     break;
             }
         }

@@ -18,7 +18,6 @@ public class BidWhistGame extends Game implements InputProcessor {
 	public _BidWhistStage stage;
 	public ScreenViewport sViewport;
 	public OrthographicCamera camera;
-
 	public boolean promptShown = false;
 
 	public void setLastRoundWinner(BidPlayer bidPlayer) {
@@ -57,6 +56,7 @@ public class BidWhistGame extends Game implements InputProcessor {
 		if (stage != null)
 			stage.dispose();
 
+		stage = null;
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		switch (gamePlayScreen) {
 			case "MainMenuStage":

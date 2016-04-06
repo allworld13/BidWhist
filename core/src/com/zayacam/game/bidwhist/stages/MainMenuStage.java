@@ -59,6 +59,11 @@ public class MainMenuStage extends _BidWhistStage {
         batch.end();
     }
 
+    @Override
+    public void dispose() {
+        super.dispose();
+    }
+
     class MainMenuButtonClickListener extends ClickListener {
         @Override
         public void clicked(InputEvent event, float x, float y) {

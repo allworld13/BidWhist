@@ -30,6 +30,7 @@ public class BiddingStage extends _BidWhistStage {
         ScreenTitleLabel = "Place your bid";
 
         GamePlay.GAME_BOOKS = 0;
+        bidWhistGame.gamePlay.deck.Init();
         Assets.PlayDeckShuffling();
 
         tblBiddingNumbers = new Table();
@@ -107,6 +108,13 @@ public class BiddingStage extends _BidWhistStage {
         }
         DrawGameScore(batch);
         batch.end();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        tblBiddingNumbers = null;
+        tblNumbers = null;
     }
 
     @Override

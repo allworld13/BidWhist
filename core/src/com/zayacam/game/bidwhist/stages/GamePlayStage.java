@@ -120,18 +120,6 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         GAMEOVER = playRound > GamePlay.MAX_PLAYER_HANDSIZE;
     }
 
-    private void SetNextGamePlayer(BidPlayer bidWinner) {
-        int nextIndex = bidWinner.getIndex();
-        if (nextIndex == 4) nextIndex = 0;
-        nextIndex++;
-        System.out.println("Next player to play:  Player: " + nextIndex);
-        try {
-            Utils.Beep();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void draw() {
         super.draw();
@@ -143,7 +131,6 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         batch.draw(Assets.text_background, 0, 0, this.getWidth(), this.getHeight());
         ShowPlayersName(batch);
         DrawGameScore(batch);
-
 
         if (bidWhistGame.gamePlay.BidAwarded()) {
             DrawGameBidLegend();
@@ -158,6 +145,23 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
             DrawPlayerHand(batch, firstPerson);
         }
         batch.end();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+    }
+
+    private void SetNextGamePlayer(BidPlayer bidWinner) {
+        int nextIndex = bidWinner.getIndex();
+        if (nextIndex == 4) nextIndex = 0;
+        nextIndex++;
+        System.out.println("Next player to play:  Player: " + nextIndex);
+        try {
+            Utils.Beep();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private BidPlayer GetNextPlayersPlay() {
@@ -176,10 +180,7 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         Assets.PlayerNameFont.setColor(Color.PURPLE);
         Assets.textBounds.setText(Assets.PlayerNameFont, "Game Over");
         Assets.PlayerNameFont.draw(batch, Assets.textBounds, ((getWidth() - Assets.textBounds.width) / 2f) + 3f, (getHeight() * .78f) + 3f);
-
-
     }
-
 
     private void DrawRoundCount(SpriteBatch batch) {
         Assets.textBounds.setText(Assets.DefaultFont, "Round: " + playRound);
@@ -187,7 +188,6 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
         Assets.DefaultFont.draw(batch, Assets.textBounds, (getWidth() - Assets.textBounds.width) / 2f,
                 getHeight() * .7f);
     }
-
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
@@ -197,9 +197,10 @@ public class GamePlayStage extends _BidWhistStage implements InputProcessor {
                 bidWhistGame.ChangeScreenTo("BiddingStage");
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            } finally {
+                this.dispose();
             }
-
-            return false;
+            //return false;
         }
 
         touchedVector = new Vector2((float) screenX, (float) screenY);

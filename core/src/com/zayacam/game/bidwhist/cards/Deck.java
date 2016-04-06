@@ -3,18 +3,17 @@ package com.zayacam.game.bidwhist.cards;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.zayacam.game.Assets;
 import com.zayacam.game.bidwhist.game.GamePlay;
+
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Deck implements IHand {
     public static final int INIT_DECKSIZE = 52;
     public static final int SUIT_LENGTH = 13;
-
+	ArrayList<Card> deck;
+	boolean excludeJokers;
 	private GamePlay gamePlay;
 	private IDeckEvents deckEvents;
-
-    ArrayList<Card> deck;
-	boolean excludeJokers;
 
 	private Deck() {
 
@@ -69,7 +68,7 @@ public class Deck implements IHand {
 				card.setPlayingCard(Assets.gfxDeck.get(deckIndex));
 				card.PlayingCard().setTouchable(Touchable.enabled);
 			}
-
+			card.SetIsRaised(false);
 			this.AddCard(card);
         }
 		cs = CardSuit.Joker;
@@ -82,7 +81,8 @@ public class Deck implements IHand {
 		if (Assets.isDeckDrawn) card.setPlayingCard(Assets.gfxDeck.get(53));
         deck.add(card);
 
-    }
+		this.Init();
+	}
 
 	private CardSuit DetermineCardSuit(int deckIndex) {
 		CardSuit cs = null;
@@ -242,5 +242,12 @@ public class Deck implements IHand {
 		// TODO Auto-generated method stub
 		
 	}
- }
-    
+
+	public void Init() {
+		for (Card c : this.deck) {
+			c.SetAvailable(true);
+			c.SetReadyToPlay(true);
+			c.SetIsRaised(false);
+		}
+	}
+}
